@@ -1,7 +1,10 @@
 from abc import ABC,abstractmethod
 
 class Controller:
-    #tryStep(startPosition:int,startState:MechState, endPosition:int): (bool, MechState, Difficulty)
     @abstractmethod
-    def tryStep(startPosition, startState, endPosition):
+    def __init__(self, climber, stanceGraph):
+        pass
+
+    @abstractmethod
+    def tryStep(self, startPosition, startState, endPosition):
         pass

@@ -35,6 +35,6 @@ class Morphology :
     def getLength(self,part):
         return self.lengths[part]
     
-    def getPoid(self,partie):
+    def getWeight(self,part):
         return self.weights[part]
 

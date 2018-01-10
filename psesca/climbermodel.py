@@ -7,7 +7,7 @@ Created on Wed Dec 20 15:23:11 2017
 
 """Création des volumes"""
 
-from ode import *
+from ode import Body
 
 class ClimberModel:
     
@@ -15,7 +15,7 @@ class ClimberModel:
         self.morphology = morphology
 
     def addToODE(self, simulator, x0, y0, z0):
-        word = simulator.getWorld()
+        world = simulator.getWorld()
         morphology = self.morphology
 
         self.bodies = {}
@@ -24,7 +24,7 @@ class ClimberModel:
             self.bodies[part] = Body(world)
 
         for part in self.bodies :
-            self.bodies[part].setMass(morphology.getLength(part))
+            self.bodies[part].setMass(morphology.getWeight(part))
         
         #on commence par le bas !
         self.bodies['mollet_d'].setPosition(morphology.getLength('largeur')/2, 0, morphology.getLength('mollet')/2 )
@@ -34,6 +34,6 @@ class ClimberModel:
         self.bodies['cuisse_g'].setPosition(-morphology.getLength('largeur')/2, 0, morphology.getLength('mollet')+morphology.getLength('cuisse')/2 )
         
         self.bodies['tronc_bassin_bas'].setPosition(0, 0, morphology.getLength('mollet')+morphology.getLength('cuisse')+morphology.getLength('tronc_bassin_bas')/2)
-        self.bodies['tronc_bassin_haut'].setPosition(0, 0, morphology.getLength('mollet')+morphology.getLength('cuisse')+morphology.getLength('tronc_bassin_bas')+morphology.getLength('tronc_bassin_baut')/2)
+        self.bodies['tronc_bassin_haut'].setPosition(0, 0, morphology.getLength('mollet')+morphology.getLength('cuisse')+morphology.getLength('tronc_bassin_bas')+morphology.getLength('tronc_bassin_haut')/2)
         
         

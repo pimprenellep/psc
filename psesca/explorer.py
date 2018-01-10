@@ -1,7 +1,8 @@
 from abc import ABC,abstractmethod
 
 class Explorer(ABC) :
-    def __init__(self, route):
+    @abstractmethod
+    def __init__(self, stanceGraph):
         pass
     @abstractmethod
     def findPath(self):
