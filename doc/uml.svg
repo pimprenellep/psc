@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
-<svg width="80cm" height="69cm" viewBox="-139 -711 1598 1374" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="80cm" height="53cm" viewBox="-139 -395 1598 1058" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <g id="Arrière-plan">
     <g>
       <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="741.806" y="237.952" width="379.6" height="28"/>
@@ -150,27 +150,27 @@
       <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="61.087,77.646 77.087,72.646 61.087,67.646 "/>
     </g>
     <g>
-      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="678.274" y="-709.368" width="98.15" height="154"/>
-      <text font-size="16" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="727.349" y="-690.368">Stance</text>
-      <text font-size="11.2" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="727.349" y="-674.868">Contient quatre</text>
-      <text font-size="11.2" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="727.349" y="-660.868">entiers</text>
-      <text font-size="11.2" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="727.349" y="-646.868">correspondant</text>
-      <text font-size="11.2" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="727.349" y="-632.868">aux index des</text>
-      <text font-size="11.2" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="727.349" y="-618.868">prises dans</text>
-      <text font-size="11.2" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="727.349" y="-604.868">l'objet Route.</text>
-      <text font-size="11.2" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="727.349" y="-590.868">(-1) signifie</text>
-      <text font-size="11.2" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="727.349" y="-576.868">"sur aucune</text>
-      <text font-size="11.2" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="727.349" y="-562.868">prise".</text>
-      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="678.274" y="-555.368" width="98.15" height="68"/>
-      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="681.274" y="-541.368">+lh: int</text>
-      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="681.274" y="-525.368">+rh: int</text>
-      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="681.274" y="-509.368">+lf: int</text>
-      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="681.274" y="-493.368">+rf: int</text>
-      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="678.274" y="-487.368" width="98.15" height="8"/>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="1228.48" y="-324.226" width="98.15" height="154"/>
+      <text font-size="16" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="1277.55" y="-305.226">Stance</text>
+      <text font-size="11.2" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="1277.55" y="-289.726">Contient quatre</text>
+      <text font-size="11.2" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="1277.55" y="-275.726">entiers</text>
+      <text font-size="11.2" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="1277.55" y="-261.726">correspondant</text>
+      <text font-size="11.2" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="1277.55" y="-247.726">aux index des</text>
+      <text font-size="11.2" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="1277.55" y="-233.726">prises dans</text>
+      <text font-size="11.2" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="1277.55" y="-219.726">l'objet Route.</text>
+      <text font-size="11.2" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="1277.55" y="-205.726">(-1) signifie</text>
+      <text font-size="11.2" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="1277.55" y="-191.726">"sur aucune</text>
+      <text font-size="11.2" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="1277.55" y="-177.726">prise".</text>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="1228.48" y="-170.226" width="98.15" height="68"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="1231.48" y="-156.226">+lh: int</text>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="1231.48" y="-140.226">+rh: int</text>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="1231.48" y="-124.226">+lf: int</text>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="1231.48" y="-108.226">+rf: int</text>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="1228.48" y="-102.226" width="98.15" height="8"/>
     </g>
     <g>
-      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 8; stroke: #000000" points="727.349,-479.368 727.349,-417.228 770.786,-417.228 770.786,-353.793 "/>
-      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="765.786,-366.441 770.786,-350.441 775.786,-366.441 "/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 8; stroke: #000000" points="1277.55,-324.226 1276.77,-324.226 1276.77,-379.724 774.248,-379.724 774.248,-347.088 777.491,-347.088 "/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="790.139,-352.088 774.139,-347.088 790.139,-342.088 "/>
     </g>
     <g>
       <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="1295.48" y="59.2286" width="112.15" height="42"/>
