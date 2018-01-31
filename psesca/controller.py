@@ -8,3 +8,12 @@ class Controller:
     @abstractmethod
     def tryStep(self, startPosition, startState, endPosition):
         pass
+
+    def tests(self) :
+        if any([
+            self.simulator.tests()
+            ]):
+            print("Controller tests failed")
+            return True
+        else:
+            return False

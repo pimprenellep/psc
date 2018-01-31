@@ -8,3 +8,12 @@ class Explorer(ABC) :
     def findPath(self):
         pass
 
+    def tests(self) :
+        if any([
+            self.controller.tests()
+            ]):
+            print("Explorer tests failed")
+            return True
+        else:
+            return False
+

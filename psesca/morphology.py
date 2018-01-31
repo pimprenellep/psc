@@ -8,7 +8,8 @@ Created on Wed Dec 20 15:26:13 2017
 class Morphology :
     
     def __init__(self,height, weight):
-        self.weights = {'tete': 0.09 * weight, 
+        self.weights = {'total' : weight,
+                      'tete': 0.09 * weight, 
                       'tronc_bassin_1': 0.48/2 * weight,
                       'tronc_bassin_2': 0.48/2 * weight,
                       'avant-bras_g': 0.024 * weight,

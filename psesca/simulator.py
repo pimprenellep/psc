@@ -1,4 +1,5 @@
 from ode import World, Body, BallJoint, Mass
+import scipy.constants
 
 from .climbermodel import ClimberModel
 
@@ -9,6 +10,7 @@ from queue import Queue
 class Simulator:
     def __init__(self, route):
         self.world = World()
+        self.world.setGravity((0.0, 0.0, -scipy.constants.g))
 
         self.ODEParts = []
         self.ODEJoints = []
@@ -74,3 +76,36 @@ class Simulator:
         print("Positions of all parts :")
         for p in range(self.climber.nParts):
             print("\tPart " + str(p) + " (" + self.climber.parts[p].name + ") :" + str(self.ODEParts[p].getPosition()))
+
+    def tests(self) :
+        if any([
+            self.testFreeFall(100.0, 100000, 1e-6)
+            ]):
+            print("Simulator tests failed")
+            return True
+        else:
+            return False
+
+
+
+    def testFreeFall(self, time, divs, tolerance):
+        print("Test : free fall, time={}, divs={}, tolerance={}".format(time, divs, tolerance))
+
+        ref = 0;
+        pos0 = array(self.ODEParts[ref].getPosition())
+        for i in range(divs):
+            self.world.step(time / divs)
+        pos = array(self.ODEParts[ref].getPosition())
+        theo = array((0.0, 0.0, - scipy.constants.g * time * time / 2.0) )
+        gap = (pos - pos0) - theo
+
+        err2 = gap.dot(gap) / theo.dot(theo)
+
+        if err2 > tolerance :
+            print("Test free fall failed. (err2 = {}, tolerance = {})".format(err2, tolerance))
+            return True
+
+        print("Test free fall passed. (err2 = {}, tolerance = {})".format(err2, tolerance))
+        return False
+
+

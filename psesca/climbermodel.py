@@ -21,7 +21,7 @@ class ClimberModel(ABC):
                 ClimberPart(
                     name='lbody',
                     bbox=array((1.0,1.0,1.0)), 
-                    mass=1.0,
+                    mass=0.5 * self.morphology.getWeight('total'),
                     refRot=identity(3), 
                     shape=self.PartShape.Cylinder,
                     jointsId=[]
@@ -29,7 +29,7 @@ class ClimberModel(ABC):
                 ClimberPart(
                     name='ubody',
                     bbox=array((1.0,1.0,1.0)), 
-                    mass=1.0,
+                    mass=0.5 * self.morphology.getWeight('total'),
                     refRot=identity(3), 
                     shape=self.PartShape.Cylinder,
                     jointsId=[]
@@ -52,3 +52,6 @@ class ClimberModel(ABC):
                 parts=self.parts, nParts=self.nParts,
                 joints=self.joints, nJoints=self.nJoints
             )
+
+    def getMass(self):
+        return self.morphology.getWeight('total')
