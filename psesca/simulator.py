@@ -1,4 +1,4 @@
-from ode import World, Body, BallJoint
+from ode import World, Body, BallJoint, Mass
 
 from .climbermodel import ClimberModel
 
@@ -23,16 +23,25 @@ class Simulator:
         
         
         for p in range(climber.nParts):
+            cp = climber.parts[p]
             b = Body(self.world)
             self.ODEParts.append(b)
-            b.setRotation(climber.parts[p].refRot.flat)
+            b.setRotation(cp.refRot.flat)
+            m = Mass()
+            if cp.shape == ClimberModel.PartShape.Cylinder :
+                m.setCylinderTotal(cp.mass, 3, min(cp.bbox[0], cp.bbox[1])/2.0, cp.bbox[2])
+            else :
+                raise NotImplementedError("Unknown segment shape requested : {}".format(cp.shape))
+            b.setMass(m)
         
         
         for j in range(climber.nJoints):
-            if model.joints[j].freedom == ClimberModel.JointType.Hinge :
+            if climber.joints[j].freedom == ClimberModel.JointType.Hinge :
                 self.ODEJoints.append(HingeJoint(self.world))
-            else:
+            elif climber.joints[j].freedom == ClimberModel.JointType.Ball :
                 self.ODEJoints.append(BallJoint(self.world))
+            else :
+                raise NotImplementedError("Unknown joint type requested : {}".format(climber.joints[j].freedom))
             (p1, p2) = climber.joints[j].bodies
             self.ODEJoints[j].attach(self.ODEParts[p1], self.ODEParts[p2])
             
