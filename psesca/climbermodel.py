@@ -4,10 +4,14 @@ from numpy import array, matrix, identity
 from collections import namedtuple
 
 ClimberPart = namedtuple('ClimberPart', ['name', 'bbox', 'mass', 'refRot', 'jointsId'])
-ClimberJoint = namedtuple('ClimberJoint', ['bodies', 'relAnchors'])
+ClimberJoint = namedtuple('ClimberJoint', ['freedom', 'bodies', 'relAnchors'])
 ClimberComponents = namedtuple('ClimberComponents', ['parts', 'nParts', 'joints', 'nJoints'])
 
+
 class ClimberModel(ABC):
+    class JointType:
+        Hinge = 0
+        Ball = 1
     
     def __init__(self, morphology):
         self.morphology = morphology
@@ -29,6 +33,7 @@ class ClimberModel(ABC):
         self.nParts = len(self.parts)
         self.joints = [
                 ClimberJoint(
+                    freedom=self.JointType.Ball,
                     bodies=(0,1),
                     relAnchors=(array((0.0, 0.0, 0.5)), array((0.0,0.0,-0.5)))
                 )]

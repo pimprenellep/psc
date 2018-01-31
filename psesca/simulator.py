@@ -1,5 +1,7 @@
 from ode import World, Body, BallJoint
 
+from .climbermodel import ClimberModel
+
 from numpy import array, matrix, identity
 from collections import namedtuple
 from queue import Queue
@@ -27,8 +29,10 @@ class Simulator:
         
         
         for j in range(climber.nJoints):
-            # FIXME : joint type ???
-            self.ODEJoints.append(BallJoint(self.world))
+            if model.joints[j].freedom == ClimberModel.JointType.Hinge :
+                self.ODEJoints.append(HingeJoint(self.world))
+            else:
+                self.ODEJoints.append(BallJoint(self.world))
             (p1, p2) = climber.joints[j].bodies
             self.ODEJoints[j].attach(self.ODEParts[p1], self.ODEParts[p2])
             
