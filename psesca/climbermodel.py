@@ -31,6 +31,7 @@ class ClimberModel(ABC):
                     bbox=array((1.0,1.0,1.0)), 
                     mass=0.5 * self.morphology.getWeight('total'),
                     refRot=identity(3), 
+                    #refRot=matrix([[0.0,-1.0,0.0],[1.0,0.0,0.0],[0.0,0.0,1.0]]),
                     shape=self.PartShape.Cylinder,
                     jointsId=[]
                 )]
@@ -39,7 +40,7 @@ class ClimberModel(ABC):
                 ClimberJoint(
                     freedom=self.JointType.Ball,
                     bodies=(0,1),
-                    relAnchors=(array((0.0, 0.0, 0.5)), array((0.0,0.0,-0.5)))
+                    relAnchors=(array((0.0, 0.5, 0.0)), array((0.0, -0.5, 0.0)))
                 )]
         self.nJoints = len(self.joints)
         
