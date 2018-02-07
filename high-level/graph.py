@@ -62,6 +62,21 @@ def shortest_path(graph, origin, destination):
 
     return visited[destination], list(full_path)
 
+#utilisation de la fonction créégraphe d'Elisabeth avec pondération p entre le coût des postitions et le coût des arrêtes
+def create_Graph(p):
+    (G, Lpos, Lprise)= Creegraphe(Lprise,ini)
+    graph = Graph()
+    for i in range(len(Lpos)):
+        graph.add_node(i)
+    for i in range(len(Lpos)):
+        for j in range(len(Lpos[i]):
+            #on ajoute le coût de l'arrête +p*le coût du noeud
+            graph.add_edge(i,G[i][j][0],G[i][j][1]+p*Lpos[i][4])
+
+creat_Graph(1)
+#ini et final à déterminer
+print(shortest_path(graph,ini, final))
+
 if __name__ == '__main__':
     graph = Graph()
 
