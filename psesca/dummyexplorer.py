@@ -12,5 +12,5 @@ class DummyExplorer(Explorer) :
         self.controller = DummyController(self.climber, stanceGraph)
 
     def findPath(self):
-        print("Not implemented")
+        print("findPath : Not implemented")
     
