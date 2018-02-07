@@ -57,6 +57,7 @@ class Simulator:
         
         while(not op.empty()):
             p1 = op.get()
+            closed.add(p1)
             b1 = self.ODEParts[p1]
             pos1 = array(b1.getPosition())
             rot1 = matrix(b1.getRotation())
@@ -65,6 +66,11 @@ class Simulator:
             for j in climber.parts[p1].jointsId :
                 j_p1 = 0 if climber.joints[j].bodies[0] == p1 else 1
                 p2 = climber.joints[j].bodies[1 - j_p1]
+
+                if p2 in closed :
+                    continue
+                else:
+                    op.put(p2)
 
                 rot2 = climber.parts[p2].refRot
                 anchor = pos1 + rot1.dot( climber.parts[p1].bbox * climber.joints[j].relAnchors[j_p1] )
@@ -76,14 +82,14 @@ class Simulator:
                 m.setMode(AMotorEuler)
                 m.setAxis(0, 1, rot1.dot(climber.joints[j].relAxes[0]).flat)
                 m.setAxis(2, 2, rot2.dot(climber.joints[j].relAxes[1]).flat)
+
+                paramsBall  = [ParamLoStop, ParamHiStop, ParamLoStop2, ParamHiStop2, ParamLoStop3, ParamHiStop3]
+                paramsHinge = [ParamLoStop, ParamHiStop]
                 for (param, value) in zip(
-                        [ParamLoStop, ParamHiStop, ParamLoStop2, ParamHiStop2, ParamLoStop3, ParamHiStop3],
+                        paramsBall if climber.joints[j].freedom == ClimberModel.JointType.Ball else paramsHinge,
                         climber.joints[j].stops ):
                     m.setParam(param, value)
 
-                if(not p2 in closed):
-                    op.put(p2)
-            closed.add(p1)
             
         self.dumpFromOde()
 
