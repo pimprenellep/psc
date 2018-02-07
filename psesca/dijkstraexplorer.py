@@ -17,4 +17,8 @@ class DijkstraExplorer(Explorer) :
 
         # Code du parcours de graphe
         print("Traversing graph")
-
+        #utilise Lprise et ini
+    """create_Graph(1)
+#ini et final à déterminer
+print(shortest_path(graph,ini, final))
+"""
