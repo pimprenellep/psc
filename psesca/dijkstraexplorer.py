@@ -2,6 +2,7 @@ from .explorer import Explorer
 from .morphology import Morphology
 from .climbermodel import ClimberModel
 from .dummycontroller import DummyController
+from .graphDij import *
 
 class DijkstraExplorer(Explorer) :
     def __init__(self, stanceGraph):

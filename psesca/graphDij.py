@@ -1,7 +1,7 @@
 from collections import defaultdict, deque
 
 
-class Graph(object):
+class GraphDij(object):
     def __init__(self):
         self.nodes = set()
         self.edges = defaultdict(list)
@@ -65,15 +65,31 @@ def shortest_path(graph, origin, destination):
 #utilisation de la fonction créégraphe d'Elisabeth avec pondération p entre le coût des postitions et le coût des arrêtes
 def create_Graph(p):
     (G, Lpos, Lprise)= Creegraphe(Lprise,ini)
-    graph = Graph()
+    graph = GraphDij()
     for i in range(len(Lpos)):
         graph.add_node(i)
     for i in range(len(Lpos)):
-        for j in range(len(Lpos[i]):
+        for j in range(len(Lpos[i])):
             #on ajoute le coût de l'arrête +p*le coût du noeud
             graph.add_edge(i,G[i][j][0],G[i][j][1]+p*Lpos[i][4])
 
-creat_Graph(1)
+"""create_Graph(1)
 #ini et final à déterminer
 print(shortest_path(graph,ini, final))
+"""
+if __name__ == '__main__':
+    graph = Graph()
 
+    for node in ['A', 'B', 'C', 'D', 'E', 'F', 'G']:
+        graph.add_node(node)
+
+    graph.add_edge('A', 'B', 10)
+    graph.add_edge('A', 'C', 20)
+    graph.add_edge('B', 'D', 15)
+    graph.add_edge('C', 'D', 30)
+    graph.add_edge('B', 'E', 50)
+    graph.add_edge('D', 'E', 30)
+    graph.add_edge('E', 'F', 5)
+    graph.add_edge('F', 'G', 2)
+
+    print(shortest_path(graph, 'A', 'D')) # output: (25, ['A', 'B', 'D']) 
