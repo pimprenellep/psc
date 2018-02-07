@@ -1,4 +1,5 @@
-from ode import World, Body, BallJoint, Mass
+#from ode import World, Body, BallJoint, Mass, AMotor, AMotorEuler
+from ode import *
 import scipy.constants
 
 from .climbermodel import ClimberModel
@@ -14,6 +15,7 @@ class Simulator:
 
         self.ODEParts = []
         self.ODEJoints = []
+        self.ODEMotors = []
 
     def getWorld(self):
         return self.world
@@ -44,8 +46,10 @@ class Simulator:
                 self.ODEJoints.append(BallJoint(self.world))
             else :
                 raise NotImplementedError("Unknown joint type requested : {}".format(climber.joints[j].freedom))
+            self.ODEMotors.append(AMotor(self.world))
             (p1, p2) = climber.joints[j].bodies
             self.ODEJoints[j].attach(self.ODEParts[p1], self.ODEParts[p2])
+            self.ODEMotors[j].attach(self.ODEParts[p1], self.ODEParts[p2])
             
         closed = set()
         op = Queue()
@@ -61,11 +65,22 @@ class Simulator:
             for j in climber.parts[p1].jointsId :
                 j_p1 = 0 if climber.joints[j].bodies[0] == p1 else 1
                 p2 = climber.joints[j].bodies[1 - j_p1]
+
+                rot2 = climber.parts[p2].refRot
                 anchor = pos1 + rot1.dot( climber.parts[p1].bbox * climber.joints[j].relAnchors[j_p1] )
-                anchor2 = climber.parts[p2].refRot.dot( climber.parts[p2].bbox * climber.joints[j].relAnchors[1 - j_p1] )
+                anchor2 = rot2.dot( climber.parts[p2].bbox * climber.joints[j].relAnchors[1 - j_p1] )
                 self.ODEParts[p2].setPosition((anchor - anchor2).flat)
                 self.ODEJoints[j].setAnchor(anchor.flat)
                 
+                m = self.ODEMotors[j]
+                m.setMode(AMotorEuler)
+                m.setAxis(0, 1, rot1.dot(climber.joints[j].relAxes[0]).flat)
+                m.setAxis(2, 2, rot2.dot(climber.joints[j].relAxes[1]).flat)
+                for (param, value) in zip(
+                        [ParamLoStop, ParamHiStop, ParamLoStop2, ParamHiStop2, ParamLoStop3, ParamHiStop3],
+                        climber.joints[j].stops ):
+                    m.setParam(param, value)
+
                 if(not p2 in closed):
                     op.put(p2)
             closed.add(p1)
