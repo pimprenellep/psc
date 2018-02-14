@@ -1,4 +1,4 @@
-#from ode import World, Body, BallJoint, Mass, AMotor, AMotorEuler
+from .factory import Factory
 from ode import *
 import scipy.constants
 
@@ -10,12 +10,18 @@ from queue import Queue
 
 class Simulator:
     def __init__(self, route):
+        self.route = route
+        self.renderer = Factory.get().buildRenderer(route)
+
         self.world = World()
         self.world.setGravity((0.0, -scipy.constants.g, 0.0))
 
         self.ODEParts = []
         self.ODEJoints = []
         self.ODEMotors = []
+
+        self.model = None
+
 
     def getWorld(self):
         return self.world
@@ -97,6 +103,7 @@ class Simulator:
 
     def tests(self) :
         self.dumpFromOde()
+        self.testRenderer()
         if any([
             self.testFreeFall(100.0, 100000, 1e-6)
             ]):
@@ -105,7 +112,8 @@ class Simulator:
         else:
             return False
 
-
+    def testRenderer(self):
+        self.renderer.screenshot()
 
     def testFreeFall(self, time, divs, tolerance):
         print("Test : free fall, time={}, divs={}, tolerance={}".format(time, divs, tolerance))
