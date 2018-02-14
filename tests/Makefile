@@ -1,9 +1,9 @@
 all:
 
 test : basic.py
-	@echo 'Test : basic run'
+	@echo -e '\nTests : Basic run'
 	./basic.py
-	@echo 'Higher level only tests'
+	@echo -e '\nTests : Higher level'
 	./highlevel.py
-	@echo 'Test : main test suite'
+	@echo -e '\nTests : Full test suite'
 	./main.py

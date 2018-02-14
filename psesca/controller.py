@@ -1,9 +1,12 @@
 from abc import ABC,abstractmethod
+from .factory import Factory
 
 class Controller:
-    @abstractmethod
     def __init__(self, climber, stanceGraph):
-        pass
+        self.climber = climber
+        self.graph = stanceGraph
+        self.simulator = Factory.get().buildSimulator(stanceGraph.getRoute())
+        self.simulator.addClimber(climber)
 
     @abstractmethod
     def tryStep(self, startPosition, startState, endPosition):
