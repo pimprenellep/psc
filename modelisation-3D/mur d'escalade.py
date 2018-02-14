@@ -1,6 +1,4 @@
 
-# Originally by Matthias Baas.
-# Updated by Pierre Gay to work without pygame or cgkit.
 
 import sys, os, random, time
 from math import *
