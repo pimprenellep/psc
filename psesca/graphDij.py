@@ -1,14 +1,15 @@
 from collections import defaultdict, deque
+import heapq
 
 
 class GraphDij(object):
     def __init__(self):
-        self.nodes = set()
+        self.nodes = []
         self.edges = defaultdict(list)
         self.distances = {}
 
     def add_node(self, value):
-        self.nodes.add(value)
+        self.nodes.append(value)
 
     def add_edge(self, from_node, to_node, distance):
         self.edges[from_node].append(to_node)
@@ -16,7 +17,66 @@ class GraphDij(object):
         self.distances[(from_node, to_node)] = distance
 
 
-def dijkstra(graph, initial):
+ 
+class PriorityQueue(list):
+ 
+    def __init__(self, data):
+        super(Heap, self).__init__()
+        for i, x in enumerate(data):
+            self.push(i, x)
+ 
+    def push(self, priority, item):
+        """
+            On push en rajoute une priorité
+        """
+        heapq.heappush(self, (priority, item))
+ 
+    def pop(self):
+        """
+            On pop en retirant la proprité
+        """
+        return heapq.heappop(self)[1]
+ 
+    def __len__(self):
+        return len(self)
+ 
+    def __iter__(self):
+        """
+            Comme on a une méthode next(), on peut se retourner soi-même.
+            Ainsi la boucle for appelera next() automatiquement. 
+        """
+        return self
+ 
+    def next(self):
+        """ 
+           On depop la liste du plus petit au plus grand.
+        """
+        try:
+            return self.pop()
+        except IndexError:
+            raise StopIteration
+
+
+def dijkstra(graph, source):
+    n=len(graph)
+    dist=[10000000]*n
+    previous[v]=-1
+    dist[source]=0
+    Queue = PriorityQueue(graph)
+    while Queue.len()>0 :
+        u= Queue.pop()
+        for node in graph.edges[u]:
+            distance = dist[u]+graph.distances([u,node])
+            if(distance < dist[node]):
+                dist[node]= distance
+                previous[node]=u
+                Queue.push(distance,node)
+    return previous
+            
+
+
+
+    
     visited = {initial: 0}
     path = {}
 
