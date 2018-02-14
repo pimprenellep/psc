@@ -11,7 +11,7 @@ from queue import Queue
 class Simulator:
     def __init__(self, route):
         self.world = World()
-        self.world.setGravity((0.0, 0.0, -scipy.constants.g))
+        self.world.setGravity((0.0, -scipy.constants.g, 0.0))
 
         self.ODEParts = []
         self.ODEJoints = []
@@ -115,7 +115,7 @@ class Simulator:
         for i in range(divs):
             self.world.step(time / divs)
         pos = array(self.ODEParts[ref].getPosition())
-        theo = array((0.0, 0.0, - scipy.constants.g * time * time / 2.0) )
+        theo = array((0.0, - scipy.constants.g * time * time / 2.0, 0.0) )
         gap = (pos - pos0) - theo
 
         err2 = gap.dot(gap) / theo.dot(theo)
