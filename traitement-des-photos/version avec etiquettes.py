@@ -98,8 +98,8 @@ def proche_gris(pixel1):
 Liste_voies=[]
 imgNtemp=Image.new(img.mode,img.size)
 imgchiffre=Image.new(img.mode,img.size)
-#for m in range(len(Liste_barycentres)):
-for m in range(29):
+for m in range(len(Liste_barycentres)-1):
+#for m in range(29):
     image=Image.new(img.mode,(2*Liste_barycentres[m][2],2*Liste_barycentres[m][3]))
     #imgNtemp=Image.new(img.mode,(2*Liste_barycentres[m][2],2*Liste_barycentres[m][3]))
     for i in range(2*Liste_barycentres[m][2]-2):
