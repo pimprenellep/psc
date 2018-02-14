@@ -1,15 +1,10 @@
 from .explorer import Explorer
-from .morphology import Morphology
-from .climbermodel import ClimberModel
 from .dummycontroller import DummyController
 from .graphDij import *
 
 class DijkstraExplorer(Explorer) :
     def __init__(self, stanceGraph):
-        morphology = Morphology(170, 60)
-        self.climber = ClimberModel(morphology)
-        self.graph = stanceGraph
-        self.controller = DummyController(self.climber, stanceGraph)
+        super().__init__(stanceGraph)
 
     def findPath(self):
         G, Lpos = self.graph.getGraphRep()
