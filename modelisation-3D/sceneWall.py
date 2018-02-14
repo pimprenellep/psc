@@ -4,17 +4,18 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 
-import climbingWall
-    
+import ode 
+import climbingWall as cl
+
+
+
 ## prepare_GL
 def prepare_GL():
     """Prepare drawing.
     """
-
     # Viewport
     glViewport(0,0,300,480) #x,y spécifie la position du coin gauche bas de la fenetre (en pixel), les deux chiffres suivants précisent la taille de l'image
     
-
     # Initialize
     glClearColor(0.8,0.8,0.9,0)# couleur de l'arrière plan
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -40,8 +41,7 @@ def prepare_GL():
     glEnable(GL_LIGHT0)
 
     # View transformation
-    gluLookAt (-10.0, 3.0, 1., 0., 0., 0, 0, 1, 0) #position of the eye point (3), position of the reference point (3), up vector (3)
-    #gluLookAt (3.4,3.6., 0., 0., 0., 0., 0., 1., 0.)
+    gluLookAt (-10.0, 5.0, 3., 0., 0., 0, 0, 1, 0) #position of the eye point (3), position of the reference point (3), up vector (3)
 
 
 # Initialize Glut
@@ -58,5 +58,51 @@ glutInitWindowPosition (x, y);
 glutInitWindowSize (width, height);
 glutCreateWindow (b"testode")
 
+## draw_body : partie openGL
+def draw_body(body):
+    """Draw an ODE body.
+    """
 
-glutIdleFunc (_idlefunc)
+    x,y,z = body.getPosition() 
+    R = body.getRotation()
+    rot = [R[0], R[3], R[6], 0.,
+           R[1], R[4], R[7], 0.,
+           R[2], R[5], R[8], 0.,
+           x, y, z, 1.0]
+    glPushMatrix()
+    glMultMatrixd(rot) # on met rot au carré
+    if body.shape=="box":
+        sx,sy,sz = body.boxsize
+        glScalef(sx, sy, sz)
+        glutSolidCube(1)
+    glPopMatrix()
+
+
+## keyboard callback
+def _keyfunc (c, x, y):
+    sys.exit (0)
+
+glutKeyboardFunc (_keyfunc)
+
+## draw callback
+def _drawfunc ():
+    # Draw the scene
+    print("dozpid")
+    prepare_GL()
+    #for b in bodies:
+        #draw_body(b)
+    cl.soclefunc()
+    draw_body(cl.socle)
+    cl.prisefunc(0.,0.,0.,1.,1.,2.)
+    draw_body(cl.prises[0])
+    print("draw")
+    glutSwapBuffers ()
+    
+    
+print("ici")
+glutDisplayFunc (_drawfunc)
+
+
+
+
+glutMainLoop ()

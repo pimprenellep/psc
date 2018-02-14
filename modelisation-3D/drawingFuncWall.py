@@ -7,10 +7,6 @@ from OpenGL.GLUT import *
 
 
 # geometric utility functions
-def scalp (vec, scal):
-    vec[0] *= scal
-    vec[1] *= scal
-    vec[2] *= scal
 
 def length (vec):
     return sqrt (vec[0]**2 + vec[1]**2 + vec[2]**2)
