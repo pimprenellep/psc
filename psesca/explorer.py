@@ -1,9 +1,15 @@
 from abc import ABC,abstractmethod
+from .morphology import Morphology
+from .climbermodel import ClimberModel
+from .factory import Factory
 
 class Explorer(ABC) :
-    @abstractmethod
     def __init__(self, stanceGraph):
-        pass
+        morphology = Morphology(170, 60)
+        self.climber = ClimberModel(morphology)
+        self.graph = stanceGraph
+        self.controller = Factory.get().buildController(self.climber, stanceGraph)
+
     @abstractmethod
     def findPath(self):
         pass
