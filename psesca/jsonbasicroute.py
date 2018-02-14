@@ -8,6 +8,7 @@ import json
 class JSONBasicRoute(Route):
     def __init__(self, jtext):
         l = json.loads(jtext)
-        self.holds = map(lambda h : Hold(*h), l)
+        self.holds = [Hold(x=h[1], y=h[0], shape=h[2:]) for h in l]
+        self.holds.sort(key=lambda h : h.y)
 
 

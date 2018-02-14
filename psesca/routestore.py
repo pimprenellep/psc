@@ -10,5 +10,5 @@ class RouteStore(ABC):
     # @param routeId abstract identifier for a route in the store
     @abstractmethod
     def getRoute(self, routeId):
-        pass:
+        pass
 

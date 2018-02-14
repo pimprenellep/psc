@@ -14,6 +14,6 @@ class JSONRouteStore(RouteStore):
     ## Retrieves a route from the store
     # @param routeId basename of the json file to load
     def getRoute(self, routeId):
-        f = open(routeId + ".json")
+        f = open(self.dir + '/' + routeId + ".json")
         jtext = f.read()
         return JSONBasicRoute(jtext)
