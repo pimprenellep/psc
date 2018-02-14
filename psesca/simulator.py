@@ -90,15 +90,13 @@ class Simulator:
                         climber.joints[j].stops ):
                     m.setParam(param, value)
 
-            
-        self.dumpFromOde()
-
     def dumpFromOde(self):
         print("Positions of all parts :")
         for p in range(self.climber.nParts):
             print("\tPart " + str(p) + " (" + self.climber.parts[p].name + ") :" + str(self.ODEParts[p].getPosition()))
 
     def tests(self) :
+        self.dumpFromOde()
         if any([
             self.testFreeFall(100.0, 100000, 1e-6)
             ]):

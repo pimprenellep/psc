@@ -5,7 +5,7 @@ from .factory import Factory
 
 class Explorer(ABC) :
     def __init__(self, stanceGraph):
-        morphology = Morphology(170, 60)
+        morphology = Morphology(1.70, 60)
         self.climber = ClimberModel(morphology)
         self.graph = stanceGraph
         self.controller = Factory.get().buildController(self.climber, stanceGraph)

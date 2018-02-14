@@ -18,30 +18,172 @@ class ClimberModel(ABC):
     
     def __init__(self, morphology):
         self.morphology = morphology
+        m = self.morphology
         self.parts = [
                 ClimberPart(
                     name='lbody',
-                    bbox=array((1.0,1.0,1.0)), 
-                    mass=0.5 * self.morphology.getWeight('total'),
+                    bbox=array((1.0, 1.0, 1.0))*m.getLength('lbody'), 
+                    mass=m.getWeight('lbody'),
                     refRot=identity(3), 
                     shape=self.PartShape.Cylinder,
                     jointsId=[]
                 ),
                 ClimberPart(
                     name='ubody',
-                    bbox=array((1.0,1.0,1.0)), 
-                    mass=0.5 * self.morphology.getWeight('total'),
+                    bbox=array((1.0, 1.0, 1.0)) * m.getLength('ubody'), 
+                    mass= m.getWeight('ubody'),
                     refRot=identity(3), 
                     #refRot=matrix([[0.0,-1.0,0.0],[1.0,0.0,0.0],[0.0,0.0,1.0]]),
                     shape=self.PartShape.Cylinder,
                     jointsId=[]
+                ),
+                ClimberPart(
+                    name='head',
+                    bbox=array((1.0,1.0,1.0))* m.getLength('head'),
+                    mass = m.getWeight('head'),
+                    refRot=identity(3),
+                    shape=self.PartShape.Cylinder,
+                    jointsId=[]
+                ), 
+                ClimberPart(
+                    name='arm_right',
+                    bbox=array((0.25,1.0,0.25))* m.getLength('arm'),
+                    mass = m.getWeight('arm'),
+                    refRot=identity(3),
+                    shape=self.PartShape.Cylinder,
+                    jointsId=[]
+                ),
+                ClimberPart(
+                    name='arm_left',
+                    bbox=array((0.25,1.0,0.25))* m.getLength('arm'),
+                    mass = m.getWeight('arm'),
+                    refRot=identity(3),
+                    shape=self.PartShape.Cylinder,
+                    jointsId=[]
+                ),
+                ClimberPart(
+                    name='forearm_right',
+                    bbox=array((0.25,1.0,0.25))* m.getLength('forearm'),
+                    mass = m.getWeight('forearm'),
+                    refRot=identity(3),
+                    shape=self.PartShape.Cylinder,
+                    jointsId=[]
+                ),
+                ClimberPart(
+                    name='forearm_left',
+                    bbox=array((0.25,1.0,0.25))* m.getLength('forearm'),
+                    mass = m.getWeight('forearm'),
+                    refRot=identity(3),
+                    shape=self.PartShape.Cylinder,
+                    jointsId=[]
+                ),
+                ClimberPart(
+                    name='thigh_right',
+                    bbox=array((0.25,1.0,0.25))* m.getLength('thigh'),
+                    mass = m.getWeight('thigh'),
+                    refRot=identity(3),
+                    shape=self.PartShape.Cylinder,
+                    jointsId=[]
+                ),
+                ClimberPart(
+                    name='thigh_left',
+                    bbox=array((0.25,1.0,0.25))* m.getLength('thigh'),
+                    mass = m.getWeight('thigh'),
+                    refRot=identity(3),
+                    shape=self.PartShape.Cylinder,
+                    jointsId=[]
+                ),
+                ClimberPart(
+                    name='leg_right',
+                    bbox=array((0.25,1.0,0.25))* m.getLength('leg'),
+                    mass = m.getWeight('leg'),
+                    refRot=identity(3),
+                    shape=self.PartShape.Cylinder,
+                    jointsId=[]
+                ),
+                ClimberPart(
+                    name='leg_left',
+                    bbox=array((0.25,1.0,0.25))* m.getLength('leg'),
+                    mass = m.getWeight('leg'),
+                    refRot=identity(3),
+                    shape=self.PartShape.Cylinder,
+                    jointsId=[]
                 )]
+
         self.nParts = len(self.parts)
+
+        ip = dict( (p.name, i) for i,p in enumerate(self.parts) )
+
+        # WARNING : joint axes are not set yet, nor stops !!!
+
         self.joints = [
                 ClimberJoint(
                     freedom=self.JointType.Ball,
-                    bodies=(0,1),
+                    bodies=(ip['lbody'], ip['ubody']),
                     relAnchors=(array((0.0, 0.5, 0.0)), array((0.0, -0.5, 0.0))),
+                    relAxes=(array((0.0, 0.0, 1.0)), array((0.0, 1.0, 0.0))),
+                    stops=(-pi/2, pi/2, -pi/2, pi/2, -pi/2, pi/2)
+                ),
+                ClimberJoint(
+                    freedom=self.JointType.Ball,
+                    bodies=(ip['ubody'], ip['head']),
+                    relAnchors=(array((0.0, 0.5, 0.0)), array((0.0, -0.5, 0.0))),
+                    relAxes=(array((0.0, 0.0, 1.0)), array((0.0, 1.0, 0.0))),
+                    stops=(-pi/2, pi/2, -pi/2, pi/2, -pi/2, pi/2)
+                ),
+                ClimberJoint(
+                    freedom=self.JointType.Ball,
+                    bodies=(ip['ubody'], ip['arm_right']),
+                    relAnchors=(array((0.5, 0.5, 0.0)), array((0.0, -0.5, 0.0))),
+                    relAxes=(array((0.0, 0.0, 1.0)), array((0.0, 1.0, 0.0))),
+                    stops=(-pi/2, pi/2, -pi/2, pi/2, -pi/2, pi/2)
+                ),
+                ClimberJoint(
+                    freedom=self.JointType.Ball,
+                    bodies=(ip['ubody'], ip['arm_left']),
+                    relAnchors=(array((-0.5, 0.5, 0.0)), array((0.0, -0.5, 0.0))),
+                    relAxes=(array((0.0, 0.0, 1.0)), array((0.0, 1.0, 0.0))),
+                    stops=(-pi/2, pi/2, -pi/2, pi/2, -pi/2, pi/2)
+                ),
+                ClimberJoint(
+                    freedom=self.JointType.Hinge,
+                    bodies=(ip['arm_right'], ip['forearm_right']),
+                    relAnchors=(array((0.0, 0.5, 0.0)), array((0.0, -0.5, 0.0))),
+                    relAxes=(array((0.0, 0.0, 1.0)), array((0.0, 1.0, 0.0))),
+                    stops=(-pi/2, pi/2, -pi/2, pi/2, -pi/2, pi/2)
+                ),
+                ClimberJoint(
+                    freedom=self.JointType.Hinge,
+                    bodies=(ip['arm_left'], ip['forearm_left']),
+                    relAnchors=(array((0.0, 0.5, 0.0)), array((0.0, -0.5, 0.0))),
+                    relAxes=(array((0.0, 0.0, 1.0)), array((0.0, 1.0, 0.0))),
+                    stops=(-pi/2, pi/2, -pi/2, pi/2, -pi/2, pi/2)
+                ),
+                ClimberJoint(
+                    freedom=self.JointType.Ball,
+                    bodies=(ip['lbody'], ip['thigh_right']),
+                    relAnchors=(array((0.25, -0.5, 0.0)), array((0.0, 0.5, 0.0))),
+                    relAxes=(array((0.0, 0.0, 1.0)), array((0.0, 1.0, 0.0))),
+                    stops=(-pi/2, pi/2, -pi/2, pi/2, -pi/2, pi/2)
+                ),
+                ClimberJoint(
+                    freedom=self.JointType.Ball,
+                    bodies=(ip['lbody'], ip['thigh_left']),
+                    relAnchors=(array((-0.25, -0.5, 0.0)), array((0.0, 0.5, 0.0))),
+                    relAxes=(array((0.0, 0.0, 1.0)), array((0.0, 1.0, 0.0))),
+                    stops=(-pi/2, pi/2, -pi/2, pi/2, -pi/2, pi/2)
+                ),
+                ClimberJoint(
+                    freedom=self.JointType.Hinge,
+                    bodies=(ip['thigh_right'], ip['leg_right']),
+                    relAnchors=(array((0.0, -0.5, 0.0)), array((0.0, 0.5, 0.0))),
+                    relAxes=(array((0.0, 0.0, 1.0)), array((0.0, 1.0, 0.0))),
+                    stops=(-pi/2, pi/2, -pi/2, pi/2, -pi/2, pi/2)
+                ),
+                ClimberJoint(
+                    freedom=self.JointType.Hinge,
+                    bodies=(ip['thigh_left'], ip['leg_left']),
+                    relAnchors=(array((0.0, -0.5, 0.0)), array((0.0, 0.5, 0.0))),
                     relAxes=(array((0.0, 0.0, 1.0)), array((0.0, 1.0, 0.0))),
                     stops=(-pi/2, pi/2, -pi/2, pi/2, -pi/2, pi/2)
                 )]
