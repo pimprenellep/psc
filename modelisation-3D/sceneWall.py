@@ -70,7 +70,7 @@ def draw_body(body):
            R[2], R[5], R[8], 0.,
            x, y, z, 1.0]
     glPushMatrix()
-    glMultMatrixd(rot) # on met rot au carré
+    glMultMatrixd(rot) # on met rot au carré <- (etienne) heu... non.
     if body.shape=="box":
         sx,sy,sz = body.boxsize
         glScalef(sx, sy, sz)
