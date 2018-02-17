@@ -2,7 +2,7 @@ from .factory import Factory
 from ode import *
 import scipy.constants
 
-from .climbermodel import ClimberModel
+from .native import ClimberModel
 
 from numpy import array, matrix, identity
 from collections import namedtuple

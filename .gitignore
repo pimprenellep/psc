@@ -2,3 +2,6 @@
 *.pyc
 *.swp
 *.swo
+*.so
+*.o
+*.a

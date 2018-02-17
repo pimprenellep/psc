@@ -1,4 +1,5 @@
 all : 
+	$(MAKE) -C psesca $@
 	$(MAKE) -C doc $@
 	$(MAKE) -C tests $@
 

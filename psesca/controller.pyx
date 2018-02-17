@@ -5,8 +5,8 @@ class Controller:
     def __init__(self, climber, stanceGraph):
         self.climber = climber
         self.graph = stanceGraph
-        self.simulator = Factory.get().buildSimulator(stanceGraph.getRoute())
-        self.simulator.addClimber(climber)
+        #self.simulator = Factory.get().buildSimulator(stanceGraph.getRoute())
+        #self.simulator.addClimber(climber)
 
     @abstractmethod
     def tryStep(self, startPosition, startState, endPosition):
@@ -14,7 +14,7 @@ class Controller:
 
     def tests(self) :
         if any([
-            self.simulator.tests()
+            False #self.simulator.tests()
             ]):
             print("Controller tests failed")
             return True
