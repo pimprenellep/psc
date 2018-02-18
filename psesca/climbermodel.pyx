@@ -1,9 +1,9 @@
 from climbermodel cimport _ClimberModel
 
 cdef class ClimberModel:
-    cdef _ClimberModel *thisobject
+    cdef _ClimberModel *thisptr
     def __cinit__(self, Morphology morphology):
-        self.thisobject = new _ClimberModel(morphology.thisobject);
+        self.thisptr = new _ClimberModel(morphology.thisobject);
 
     def __dealloc__(self):
-        del self.thisobject
+        del self.thisptr

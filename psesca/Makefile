@@ -1,11 +1,10 @@
-all : native.so
+all : nativelib native.so
 
-native.so : native.o native.a
-	g++ -shared -pthread -o $@ $< native/morphology.o native/climbermodel.o
-
-native.a :
+native.so : native.o native/native.a
+	g++ -shared -pthread -lode -o $@ $^
+	
+nativelib :
 	$(MAKE) -C native
-	cp -u native/native.a native.a
 	
 %.o : %.cpp
 	g++ -c -fPIC -fwrapv ${CXXFLAGS} -fno-strict-aliasing -I/usr/include/python3.5 -o $@ $<

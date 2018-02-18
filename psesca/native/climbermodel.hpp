@@ -38,11 +38,11 @@ class ClimberModel {
 		float getMass() const;
 	private:
 		Morphology const * morphology;
-		ClimberPart parts[Morphology::N_PARTS];
+		struct ClimberPart parts[Morphology::N_PARTS];
 		int nParts;
-		ClimberJoint joints[Morphology::N_PARTS - 1];
+		struct ClimberJoint joints[Morphology::N_PARTS - 1];
 		int nJoints;
-		ClimberComponents components;
+		struct ClimberComponents components;
 };
 
 #endif // _CLIMBERMODEL_HPP

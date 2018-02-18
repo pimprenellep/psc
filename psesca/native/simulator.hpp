@@ -17,9 +17,11 @@ class Simulator {
 		bool tests() const;
 
 	private:
-		dWorldID world;
 		ClimberModel const * model;
 		struct ClimberModel::ClimberComponents climber;
+		dWorldID world;
+		dBodyID * ODEParts;
+		dJointID * ODEJoints;
 };
 
 #endif // _SIMULATOR_HPP

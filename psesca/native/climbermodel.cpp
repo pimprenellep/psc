@@ -3,11 +3,13 @@
 #include "climbermodel_tables.hpp"
 
 ClimberModel::ClimberModel(Morphology const *m) :
-	morphology(m), nParts(Morphology::N_PARTS), nJoints(Morphology::N_PARTS - 1),
-	components{.parts = parts, .nParts = nParts,
-			.joints = joints, .nJoints = nJoints}
+	morphology(m), nParts(Morphology::N_PARTS), nJoints(Morphology::N_PARTS - 1)
 {
-#define X(PART, BBOX) \
+	int i = 0;
+	components = (struct ClimberComponents){.parts = parts, .nParts = nParts,
+			.joints = joints, .nJoints = nJoints};
+#define AI(...) {__VA_ARGS__}
+#define X(PART, BBOX ) \
 	parts[Morphology::PART] = (struct ClimberPart){	\
 		.bbox = BBOX,				\
 		.mass = morphology->getMass(Morphology::PART),	\
@@ -15,18 +17,18 @@ ClimberModel::ClimberModel(Morphology const *m) :
 		.nJoints = 0,				\
 		.joints = 0				\
 	};
-	//CLIMBERMODEL_PARTS_TABLE
-
+	CLIMBERMODEL_PARTS_TABLE
 #undef X
+
 #define X(TYPE, PART1, PART2, RELANCHOR1, RELANCHOR2, RELAXIS1, RELAXIS2, STOPS) \
-	(struct ClimberJoint){			\
+	joints[i++] = (struct ClimberJoint){			\
 		.type = TYPE,			\
-		.parts = {Morphology::PART1, Morphology::PART2}		\
+		.parts = {Morphology::PART1, Morphology::PART2},		\
 		.relAnchors = { RELANCHOR1, RELANCHOR2 }, \
 		.relAxes = { RELAXIS1, RELAXIS2 },	\
-		.stops = { STOPS }	\
-	},
-	// joints = { CLIMBERMODEL_JOINTS_TABLE };
+		.stops = STOPS 	\
+	};
+	CLIMBERMODEL_JOINTS_TABLE
 #undef X
 
 }

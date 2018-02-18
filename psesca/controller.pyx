@@ -1,22 +1,18 @@
-from abc import ABC,abstractmethod
-from .factory import Factory
+from controller cimport _Controller
 
-class Controller:
-    def __init__(self, climber, stanceGraph):
-        self.climber = climber
-        self.graph = stanceGraph
-        #self.simulator = Factory.get().buildSimulator(stanceGraph.getRoute())
-        #self.simulator.addClimber(climber)
+cdef class Controller:
+    cdef _Controller * thisptr
 
-    @abstractmethod
+    def __init__(self, ClimberModel climber, stanceGraph):
+        self.thisptr = new _Controller(climber.thisptr)
+
+        #self.graph = stanceGraph
+
+    def __dealloc__(self):
+        del self.thisptr
+
     def tryStep(self, startPosition, startState, endPosition):
         pass
 
     def tests(self) :
-        if any([
-            False #self.simulator.tests()
-            ]):
-            print("Controller tests failed")
-            return True
-        else:
-            return False
+        return self.thisptr.tests()
