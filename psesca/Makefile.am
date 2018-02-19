@@ -18,6 +18,6 @@ all-local :
 %.cpp : %.pyx
 	cython --cplus $<
 
-native.pyx : morphology.pyx climbermodel.pyx controller.pyx
+native.pyx : morphology.pyx climbermodel.pyx controller.pyx wha_shape.pyx
 	cat $^ > $@
 
