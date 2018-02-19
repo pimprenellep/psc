@@ -1,0 +1,1 @@
+SUBDIRS = psesca tests doc
