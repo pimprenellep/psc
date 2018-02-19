@@ -1,13 +1,13 @@
 SUBDIRS = native
 
-lib_LTLIBRARIES=libwrappers.la
-libwrappers_la_LDFLAGS=-pthread -lode
-libwrappers_la_LIBADD= native/libnative.a
-libwrappers_la_CXXFLAGS=-fPIC -fwrapv -fno-strict-aliasing -I/usr/include/python3.5
-libwrappers_la_SOURCES = native.cpp
+lib_LTLIBRARIES=native.la
+native_la_LDFLAGS=-pthread -lode -module -avoid-version -shared
+native_la_LIBADD= native/libnative.a
+native_la_CXXFLAGS=-fPIC -fwrapv -fno-strict-aliasing -I/usr/include/python3.5
+native_la_SOURCES = native.cpp
 
 all-local :
-	cp -uL .libs/libwrappers.so native.so
+	cp -uL .libs/native.so native.so
 
 #ative.so : native.o native/libnative.a
 #	g++ -shared -pthread -lode -o $@ $^
