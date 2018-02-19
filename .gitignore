@@ -5,6 +5,8 @@
 *.so
 *.o
 *.a
+*.la
+*.lo
 Makefile
 */Makefile
 *.in
@@ -21,5 +23,12 @@ depcomp
 install-sh
 missing
 stamp-h1
-
 test-driver
+config.guess
+config.h.in~
+config.sub
+libtool
+ltmain.sh
+*/.deps/*
+*/.libs/*
+

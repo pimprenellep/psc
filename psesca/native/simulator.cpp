@@ -53,6 +53,60 @@ void Simulator::addClimber(ClimberModel const * m)
 		dJointAttach(ODEJoints[i],
 				ODEParts[j.parts[0]], ODEParts[j.parts[1]]);
 	}
+
+	bool *closed = new bool[climber.nParts]{false};
+	int *open = new int[climber.nParts];
+	int top = 0;
+	open[top++] = 0;
+
+	while(top) {
+		int ip1 = open[--top];
+		closed[ip1] = true;
+
+		struct ClimberModel::ClimberPart const& p1 = climber.parts[ip1];
+
+		for(int p1ij = 0; p1ij < p1.nJoints ; p1ij++) {
+			int ij = p1.joints[p1ij];
+			struct ClimberModel::ClimberJoint const& j = climber.joints[ij];
+			int ji1 = (j.parts[0] == ip1) ? 0 : 1;
+			int ji2 = 1 - ji1;
+			int ip2 = j.parts[ji2];
+
+			if(closed[ip2])
+				continue;
+			open[top++] = ip2;
+
+			struct ClimberModel::ClimberPart const& p2 = climber.parts[ip2];
+			dReal relAnchor1[3];
+			dReal relAnchor2[3];
+			for(int d = 0; d < 3; d++) {
+				relAnchor1[d] = p1.bbox[d] * j.relAnchors[ji1][d];
+				relAnchor2[d] = p2.bbox[d] * j.relAnchors[ji2][d];
+			}
+			dVector3 anchor1, anchor2;
+			dBodyGetRelPointPos(ODEParts[ip1], relAnchor1[0], relAnchor1[1], relAnchor1[2], anchor1);
+			dBodyGetRelPointPos(ODEParts[ip2], relAnchor2[0], relAnchor2[1], relAnchor2[2], anchor2);
+			dVector3 delta;
+			for(int d = 0; d < 3; d++) {
+				delta[d] = anchor1[d] - anchor2[d];
+			}
+			dBodySetPosition(ODEParts[ip2], delta[0], delta[1], delta[2]);
+			switch(j.type) {
+			case ClimberModel::JT_HINGE:
+				dJointSetHingeAnchor(ODEJoints[ij], anchor1[0], anchor1[1], anchor1[2]);
+				break;
+			case ClimberModel::JT_BALL:
+				dJointSetBallAnchor(ODEJoints[ij], anchor1[0], anchor1[1], anchor1[2]);
+				break;
+			}
+
+
+		}
+
+	}
+
+	delete[] closed;
+	delete[] open;
 }
 
 void Simulator::dumpFromOde() const

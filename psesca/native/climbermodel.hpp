@@ -34,12 +34,14 @@ class ClimberModel {
 		};
 
 		ClimberModel(Morphology const *m);
+		~ClimberModel();
 		ClimberComponents const& getComponents() const;
 		float getMass() const;
 	private:
 		Morphology const * morphology;
 		struct ClimberPart parts[Morphology::N_PARTS];
 		int nParts;
+		int * partsJoints;
 		struct ClimberJoint joints[Morphology::N_PARTS - 1];
 		int nJoints;
 		struct ClimberComponents components;
