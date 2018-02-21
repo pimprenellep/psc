@@ -1,8 +1,8 @@
-#from ode import World, Body, BallJoint, Mass, AMotor, AMotorEuler
+from .factory import Factory
 from ode import *
 import scipy.constants
 
-from .climbermodel import ClimberModel
+from .native import ClimberModel
 
 from numpy import array, matrix, identity
 from collections import namedtuple
@@ -10,12 +10,18 @@ from queue import Queue
 
 class Simulator:
     def __init__(self, route):
+        self.route = route
+        self.renderer = Factory.get().buildRenderer(route)
+
         self.world = World()
-        self.world.setGravity((0.0, 0.0, -scipy.constants.g))
+        self.world.setGravity((0.0, -scipy.constants.g, 0.0))
 
         self.ODEParts = []
         self.ODEJoints = []
         self.ODEMotors = []
+
+        self.model = None
+
 
     def getWorld(self):
         return self.world
@@ -90,15 +96,14 @@ class Simulator:
                         climber.joints[j].stops ):
                     m.setParam(param, value)
 
-            
-        self.dumpFromOde()
-
     def dumpFromOde(self):
         print("Positions of all parts :")
         for p in range(self.climber.nParts):
             print("\tPart " + str(p) + " (" + self.climber.parts[p].name + ") :" + str(self.ODEParts[p].getPosition()))
 
     def tests(self) :
+        self.dumpFromOde()
+        self.testRenderer()
         if any([
             self.testFreeFall(100.0, 100000, 1e-6)
             ]):
@@ -107,7 +112,8 @@ class Simulator:
         else:
             return False
 
-
+    def testRenderer(self):
+        self.renderer.screenshot()
 
     def testFreeFall(self, time, divs, tolerance):
         print("Test : free fall, time={}, divs={}, tolerance={}".format(time, divs, tolerance))
@@ -117,7 +123,7 @@ class Simulator:
         for i in range(divs):
             self.world.step(time / divs)
         pos = array(self.ODEParts[ref].getPosition())
-        theo = array((0.0, 0.0, - scipy.constants.g * time * time / 2.0) )
+        theo = array((0.0, - scipy.constants.g * time * time / 2.0, 0.0) )
         gap = (pos - pos0) - theo
 
         err2 = gap.dot(gap) / theo.dot(theo)

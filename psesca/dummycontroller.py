@@ -1,16 +1,15 @@
-from .controller import Controller
-from .simulator import Simulator
+from .native import Controller
 
 
 class DummyController(Controller):
 
     def __init__(self, climber, stanceGraph):
-        self.climber = climber
-        self.graph = stanceGraph
-        self.simulator = Simulator(stanceGraph.getRoute())
-        self.simulator.addClimber(climber)
+        super().__init__(climber, stanceGraph)
 
     def tryStep(startPosition, startState, endPosition) :
-        print("Not implemented.")
+        print("Dummy controller, tryStep not implemented.")
+
+    def tests(self):
+        print("Dummy controller, skipping tests")
 
 

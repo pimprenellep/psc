@@ -1,44 +1,28 @@
-from .route             import Route
 from .stancegraph       import StanceGraph
-from .dummyexplorer     import DummyExplorer
-from .dijkstraexplorer      import DijkstraExplorer
+from .factory           import Factory
+from .defaultfactory    import DefaultFactory
+from .jsonroutestore    import JSONRouteStore
+
 
 class Application :
+    def __init__(self):
+        Factory.set(DefaultFactory())
+        self.routeStore = JSONRouteStore('../samples/json_v1')
+
     def cotationFromImage(self, image) :
-        route = Route(image)
+        route = self.routeStore.getRoute('verte')
         stanceGraph = StanceGraph(route)
-        explorer = DijkstraExplorer(stanceGraph)
+        explorer = Factory.get().buildExplorer(stanceGraph)
         explorer.findPath()
 
-    def testODE(self, image):
-        route = Route(image)
+    def tests(self, image):
+        route = self.routeStore.getRoute('verte')
         stanceGraph = StanceGraph(route)
-        explorer = DummyExplorer(stanceGraph)
-        explorer.findPath()
+        explorer = Factory.get().buildExplorer(stanceGraph)
         if any([
             explorer.tests()
-            ]):
-            print("ODE tests failed")
-            return True
-        else:
-            return False
-
-    def testHighLevel(self, image):
-        route = Route(image)
-        stanceGraph = StanceGraph(route)
-        explorer = DijkstraExplorer(stanceGraph)
-        explorer.findPath()
-
-        return False
-
-    def tests(self, image) :
-        if any([
-            self.testODE(image),
-            self.testHighLevel(image)
             ]):
             print("Global tests failed")
             return True
         else:
             return False
-
-

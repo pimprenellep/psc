@@ -1,7 +1,11 @@
+from abc import ABC,abstractmethod
+from collections import namedtuple
 
-class Route :
+Hold=namedtuple("Hold", ["x", "y", "shape"])
+
+class Route(ABC) :
     def __init__(self, image):
-        pass
+        self.holds = []
 
     def getHolds(self):
-        return []
+        return self.holds

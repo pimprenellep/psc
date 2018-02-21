@@ -98,8 +98,8 @@ def proche_gris(pixel1):
 Liste_voies=[]
 imgNtemp=Image.new(img.mode,img.size)
 imgchiffre=Image.new(img.mode,img.size)
-#for m in range(len(Liste_barycentres)):
-for m in range(29):
+for m in range(len(Liste_barycentres)-1):
+#for m in range(29):
     image=Image.new(img.mode,(2*Liste_barycentres[m][2],2*Liste_barycentres[m][3]))
     #imgNtemp=Image.new(img.mode,(2*Liste_barycentres[m][2],2*Liste_barycentres[m][3]))
     for i in range(2*Liste_barycentres[m][2]-2):
@@ -152,7 +152,7 @@ def print_voie(L):
                 pixel=imgN.getpixel((Liste[0]+i-Liste[2]+1,Liste[1]+j-Liste[3]+1))
                 if abs(256-r)>30 and abs(256-b)>=30 and abs(256-g)>=30:
                     imgNN.putpixel((Liste[0]+i-Liste[2]+1,Liste[1]+j-Liste[3]+1), pixel)
-
+    return Liste
     imgNN.save('voie_L.png')
     imgNN.show()
 
