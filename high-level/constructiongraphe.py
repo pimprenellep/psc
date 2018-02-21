@@ -1,4 +1,5 @@
 from positionspossibles import *
+from dessin_graphe import *
 from math import *
 
 # "presente" cherche si la position pos est déjà dans la listes des positions Lpos, et l'ajoute si elle n'y est pas et l'ajoute aussi à la file et renvoie son indice dans la liste Lpos
@@ -36,6 +37,11 @@ from math import *
 #        ajout_file(file, pos, dernier, courant)
 #    return(ajoute, Lpos)
 
+def echange_xy(L):
+    for i in range(len(L)):
+        L[i][1],L[i][0]=L[i][0],L[i][1]
+    return(L)
+
 def presente(pos,Lpos,file,dernier,courant): #Lpos pas ordonnée (OK sans "ajout_file")  Rq : ATTENTION ici pos est une vraie position !!! (pas un indice dans Lpos)
     j=len(Lpos)-1
     trouve=False
@@ -53,7 +59,7 @@ def presente(pos,Lpos,file,dernier,courant): #Lpos pas ordonnée (OK sans "ajout
 
     
 # les voisins______________________________________________________________________________________________________________________________________
-def type_de_pos(pos):
+def type_de_pos(pos): #rq: ici c'est une vraie position
     if pos[0]==-1:
         return(3.2,1)
     elif pos[1]==-1:
@@ -375,6 +381,7 @@ def retirer_file(file, dernier, courant):
 
 # le graphe
 def creegraphe(Lprises, ini):
+    Lprises=echange_xy(Lprises)
     G=[]
     Lpos=[ini]
     file=[0] #ce sont des indices des positions dans la liste "Lpos"
@@ -391,6 +398,7 @@ def creegraphe(Lprises, ini):
             voisins_de_courant,Lpos,file = voisins_de_pos_32prises(file[courant],Lprises,p_m,G,Lpos,file,dernier,courant)
         G=G+[voisins_de_courant]
         file, dernier, courant = retirer_file(file, dernier, courant)
+    dessin_graphe(G, Lpos, Lprises)
     return(G,Lpos, len(G), len(Lpos))
 
 

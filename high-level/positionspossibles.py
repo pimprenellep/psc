@@ -5,12 +5,14 @@
 
 from math import *
 
-b=1.75
-t=1
-j=2
+b=80
+t=50
+j=100
 alpha=1.8
-dmin=0.8
-dloin=0.5
+dmin=50
+dloin=20
+dsouple=20
+
 
 #fontion distance
 def d(A,B):
@@ -68,7 +70,9 @@ def PDpeutatteindreC3(A,B,C,Lprises):
         if ((dab>b+t+j)or(dab<dmin)):
             return((False,0))
         if A==C:
-            return((True,0)) #ATTENTION /!\ changer l'heuristique
+            if A[3]<=d2pieds:
+                hch_p=6*(10/A[3]-10/d2pieds)/B[3] #/b3 car c'est plus dur de changer de pied quand la prise de main est petite, 6 à changer
+            return((True,hch_p)) 
         elif dab>=b+t:
             return(PDcas1(A,B,C,dab,Lprises))
         elif dab>=j:
@@ -124,8 +128,11 @@ def PDcas1(A,B,C,dab,Lprises):
             if M<dloin :
                 hloin=hloin + (dloin-M)*5/dloin
     if possible:
-        hinstable = abs(B[0]-(A[0]+C[0])/2)*4/10 #10=10cm, 4 à modifier ?
-    return(possible, hcroisé+hloin+hinstable)
+        hinstable = abs(B[0]-(A[0]+C[0])/2)*7/10 #10=10cm, 7 à modifier ?
+        L=dsouple-abs(pper(A,B,A,C))
+        if L>=0:
+            hsouple=L/10*(d(A,B)/(j+t+b))**2*10
+    return(possible, hcroisé+hloin+hinstable+hsouple)
 
 def PDcas2(A,B,C,dab,l,Lprises):
     hloin=0
@@ -173,8 +180,11 @@ def PDcas2(A,B,C,dab,l,Lprises):
             if M<dloin :
                 hloin=hloin + (dloin-M)*5/dloin
     if possible:
-        hinstable = abs(B[0]-(A[0]+C[0])/2)*4/10 #10=10cm, 4 à modifier ?
-    return(possible, hcroisé+hloin+hinstable)
+        hinstable = abs(B[0]-(A[0]+C[0])/2)*7/10 #10=10cm, 7 à modifier ?
+        L=dsouple-abs(pper(A,B,A,C))
+        if L>=0:
+            hsouple=L/10*(d(A,B)/(j+t+b))**2*10
+    return(possible, hcroisé+hloin+hinstable+hsouple)
 
 #fonction MAIN GAUCHE bouge. A=l'un des pieds, B=main droite. C=prise potentielle Main Gauche
 def MGpeutatteindreC3(A,B,C,Lprises):
@@ -189,7 +199,9 @@ def MDpeutatteindreC3(A,B,C,Lprises):
         if ((dab>b+t+j)or(dab<dmin)):
             return((False,0))
         if B==C:
-            return((True,0)) #ATTENTION /!\ changer l'heuristique
+            if B[3]<=d2mains:
+                hch_m=4*(10/B[3]-10/d2mains)/A[3] #/b3 car c'est plus dur de changer de main quand la prise de pied est petite, 4 à changer
+            return((True,hch_m)) 
         elif dab>=b+t-b:
             return(MDcas1(A,B,C,dab,Lprises))
         elif dab>=dmin:
@@ -248,7 +260,7 @@ def MDcas1(A,B,C,dab,Lprises):
                 if L<dloin :
                     hloin=(dloin-L)*5/dloin
     if possible:
-        hinstable = abs(A[0]-(C[0]+B[0])/2)*4/10 #10=10cm, 4 à modifier ?
+        hinstable = abs(A[0]-(C[0]+B[0])/2)*7/10 #10=10cm, 7 à modifier ?
     return(possible, hcroisé+hloin+hinstable)
 
 def MDcas2(A,B,C,dab,Lprises):
@@ -283,7 +295,7 @@ def MDcas2(A,B,C,dab,Lprises):
                 if L<dloin :
                     hloin=(dloin-L)*5/dloin
     if possible:
-        hinstable = abs(A[0]-(C[0]+B[0])/2)*4/10 #10=10cm, 4 à modifier ?
+        hinstable = abs(A[0]-(C[0]+B[0])/2)*7/10 #10=10cm, 7 à modifier ?
     return(possible, hcroisé+hloin+hinstable)
 
 def hlibre(pos):
@@ -293,17 +305,56 @@ def hlibre(pos):
         h=h+2
     return(h)
 
-#def hmm3(pos):
+def mp(A,B,C):
+    Bp=[A[0],B[1]]
+    Cp=[A[0],C[1]]
+    t1=d(Bp,B)/d(A,B)
+    t2=d(Cp,C)/d(A,C)
+    hmp=(t1+t2)/2*40 #40 à changer
+    return(hmp)
+
+def hmp3(pos):
+    if pos[0]==-1 :
+        A,B,C=pos[1],pos[2],pos[3]
+        if A[0]<=min(B[0],C[0]):
+            return(mp(A,B,C))
+    elif pos[1]==-1 :
+        A,B,C=pos[0],pos[2],pos[3]
+        if A[0]>=max(B[0],C[0]):
+            return(mp(A,B,C))
     
-#def hmp3(pos):
+def mm(A,B,C):
+    Ap=[B[0],A[1]]
+    Cp=[B[0],C[1]]
+    t1=d(Ap,A)/d(A,B)
+    t2=d(Cp,C)/d(C,B)
+    hmm=(t1+t2)/2*20 #20 à changer
+    return(hmm)
+    
+def hmm3(pos):
+    if pos[2]==-1 :
+        A,C,B=pos[0],pos[1],pos[3]
+        if B[0]<=min(A[0],C[0]):
+            return(mp(A,B,C))
+    elif pos[3]==-1 :
+        A,C,B=pos[0],pos[1],pos[2]
+        if B[0]>=max(A[0],C[0]):
+            return(mp(A,B,C))
     
 #def htailleprises(pos):
 
-#def hch_p(pos): (2p sur la m prise)
-
-#def hch_m(pos): (2m sur la même prise)
+#def hch_p(pos): #(2p sur la m prise)
     
-#def hsouplesse(pos):
+
+#def hch_m(pos): #(2m sur la même prise)
+    
+def hsouplesse(pos):
+    if type_de_pos(pos)[0]==3.1:
+        L=dsouple-abs(pper(A,B,A,C))
+        if L>=0:
+            hsouple=L/10*(d(A,B)/(j+t+b))**2*10
+    return(hsouple)
+            
 
 
 #Atention : le booléen renvoyé est bon, mais pas l'heuristique
