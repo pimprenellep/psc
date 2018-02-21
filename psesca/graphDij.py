@@ -13,7 +13,7 @@ class GraphDij(object):
 
     def add_edge(self, from_node, to_node, distance):
         self.edges[from_node].append(to_node)
-        self.edges[to_node].append(from_node)
+        "self.edges[to_node].append(from_node)"
         self.distances[(from_node, to_node)] = distance
 
 
@@ -55,29 +55,71 @@ class PriorityQueue(list):
             return self.pop()
         except IndexError:
             raise StopIteration
+        
+class Heap(object):
+    """ A neat min-heap wrapper which allows storing items by priority
+        and get the lowest item out first (pop()).
+        Also implements the iterator-methods, so can be used in a for
+        loop, which will loop through all items in increasing priority order.
+        Remember that accessing the items like this will iteratively call
+        pop(), and hence empties the heap! """
+
+    def __init__(self):
+        """ create a new min-heap. """
+        self._heap = []
+
+    def push(self, priority, item):
+        """ Push an item with priority into the heap.
+            Priority 0 is the highest, which means that such an item will
+            be popped first."""
+        assert priority >= 0
+        heapq.heappush(self._heap, (priority, item))
+
+    def pop(self):
+        """ Returns the item with lowest priority. """
+        item = heapq.heappop(self._heap)[1] # (prio, item)[1] == item
+        return item
+
+    def __len__(self):
+        return len(self._heap)
+
+    def __iter__(self):
+        """ Get all elements ordered by asc. priority. """
+        return self
+
+    def next(self):
+        """ Get all elements ordered by their priority (lowest first). """
+        try:
+            return self.pop()
+        except IndexError:
+            raise StopIteration
 
 
 def dijkstra(graph, source):
-    n=len(graph)
+    n=len(graph.nodes)
     dist=[10000000]*n
-    previous[v]=-1
+    previous = [0]*n
+    for i in range(n):
+        previous[i]=-1
     dist[source]=0
-    Queue = PriorityQueue(graph)
-    while Queue.len()>0 :
+    Queue = Heap()
+    Queue.push(0,source)
+    while len(Queue)>0 :
         u= Queue.pop()
         for node in graph.edges[u]:
-            distance = dist[u]+graph.distances([u,node])
+            print(u, node)
+            distance = dist[u]+graph.distances[(u,node)]
             if(distance < dist[node]):
                 dist[node]= distance
                 previous[node]=u
                 Queue.push(distance,node)
-    return previous
+    return previous, dist
             
 
 
 
     
-    visited = {initial: 0}
+"""    visited = {initial: 0}
     path = {}
 
     nodes = set(graph.nodes)
@@ -106,8 +148,19 @@ def dijkstra(graph, source):
                 path[edge] = min_node
 
     return visited, path
+"""
+def short_path(graph, source, destination):
+    previous, dist = dijkstra(graph, source)
+    full_path = deque()
+    current = previous[destination]
+    while current !=source :
+        full_path.appendleft(current)
+        current = previous[current]
+    full_path.appendleft(source)
+    full_path.append(destination)
+    return dist[destination], list(full_path)
 
-
+"""
 def shortest_path(graph, origin, destination):
     visited, paths = dijkstra(graph, origin)
     full_path = deque()
@@ -121,6 +174,7 @@ def shortest_path(graph, origin, destination):
     full_path.append(destination)
 
     return visited[destination], list(full_path)
+"""
 
 #utilisation de la fonction créégraphe d'Elisabeth avec pondération p entre le coût des postitions et le coût des arrêtes
 def create_Graph(p):
@@ -138,18 +192,19 @@ def create_Graph(p):
 print(shortest_path(graph,ini, final))
 """
 if __name__ == '__main__':
-    graph = Graph()
+    graph = GraphDij()
 
-    for node in ['A', 'B', 'C', 'D', 'E', 'F', 'G']:
+    for node in [0, 1, 2, 3, 4, 5, 6]:
         graph.add_node(node)
 
-    graph.add_edge('A', 'B', 10)
-    graph.add_edge('A', 'C', 20)
-    graph.add_edge('B', 'D', 15)
-    graph.add_edge('C', 'D', 30)
-    graph.add_edge('B', 'E', 50)
-    graph.add_edge('D', 'E', 30)
-    graph.add_edge('E', 'F', 5)
-    graph.add_edge('F', 'G', 2)
+    graph.add_edge(0, 1, 10)
+    graph.add_edge(0, 2, 20)
+    graph.add_edge(0,3,25)
+    graph.add_edge(1, 3, 15)
+    graph.add_edge(2, 3, 30)
+    graph.add_edge(1, 4, 50)
+    graph.add_edge(3, 4, 30)
+    graph.add_edge(4, 5, 5)
+    graph.add_edge(5, 6, 2)
 
-    print(shortest_path(graph, 'A', 'D')) # output: (25, ['A', 'B', 'D']) 
+    print(short_path(graph, 0, 3)) # output: (25, ['A', 'B', 'D']) 
