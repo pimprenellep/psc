@@ -1,5 +1,5 @@
 from .route import Route, Hold
-from .wha_shape import WHAShape
+from .native import WHAShape
 
 import json
 

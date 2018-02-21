@@ -1,5 +1,4 @@
-all:
-
+TESTS = basic.py highlevel.py main.py
 test : basic.py
 	@echo -e '\nTests : Basic run'
 	./basic.py
