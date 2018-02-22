@@ -2,9 +2,16 @@ SUBDIRS = native
 
 lib_LTLIBRARIES=native.la
 native_la_LDFLAGS=-pthread ${ODE_LIBS} ${EGL_LIBS} -module -avoid-version -shared
-native_la_LIBADD= native/libnative.a
-native_la_CXXFLAGS=-fPIC -fwrapv -fno-strict-aliasing ${PY3_CFLAGS}
-native_la_SOURCES = native.cpp
+native_la_CXXFLAGS=-fPIC -fwrapv -fno-strict-aliasing ${PY3_CFLAGS} ${ODE_CFLAGS} ${EGL_CFLAGS}
+native_la_SOURCES = native.cpp \
+	native/simulator.cpp	\
+	native/climbermodel.cpp	\
+	native/morphology.cpp	\
+	native/controller.cpp	\
+	native/wha_shape.cpp	\
+	native/route.cpp	\
+	native/stancegraph.cpp	\
+	native/renderer.cpp
 
 all-local :
 	cp -uL .libs/native.so native.so
