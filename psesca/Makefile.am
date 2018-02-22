@@ -1,7 +1,7 @@
 SUBDIRS = native
 
 lib_LTLIBRARIES=native.la
-native_la_LDFLAGS=-pthread -lode -module -avoid-version -shared
+native_la_LDFLAGS=-pthread -lode -lEGL -module -avoid-version -shared
 native_la_LIBADD= native/libnative.a
 native_la_CXXFLAGS=-fPIC -fwrapv -fno-strict-aliasing -I/usr/include/python3.5
 native_la_SOURCES = native.cpp

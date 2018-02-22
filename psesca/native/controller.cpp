@@ -2,9 +2,9 @@
 
 Controller::Controller(ClimberModel const * c, StanceGraph const * sg):
 	climber(c),
-	stanceGraph(sg),
-	simulator(new Simulator(sg->getRoute()))
+	stanceGraph(sg)
 {
+	simulator = new Simulator(sg->getRoute());
 	simulator->addClimber(climber);
 }
 

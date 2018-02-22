@@ -8,6 +8,7 @@
 
 #include "climbermodel.hpp"
 #include "route.hpp"
+#include "renderer.hpp"
 
 class Simulator {
 	public:
@@ -24,6 +25,7 @@ class Simulator {
 		dWorldID world;
 		dBodyID * ODEParts;
 		dJointID * ODEJoints;
+		Renderer * renderer;
 };
 
 #endif // _SIMULATOR_HPP
