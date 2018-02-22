@@ -13,7 +13,9 @@ AC_PROG_CXX
 AC_PROG_RANLIB
 
 # Checks for libraries.
-AC_CHECK_LIB([ode], [dWorldCreate])
+PKG_CHECK_MODULES([PY3], [python3])
+PKG_CHECK_MODULES([ODE], [ode])
+PKG_CHECK_MODULES([EGL], [egl])
 
 # Checks for header files.
 
