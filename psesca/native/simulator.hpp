@@ -7,10 +7,11 @@
 
 
 #include "climbermodel.hpp"
+#include "route.hpp"
 
 class Simulator {
 	public:
-		Simulator();
+		Simulator(Route const * route);
 		~Simulator(); 
 		void addClimber(ClimberModel const * m);
 		void dumpFromOde() const;
@@ -18,6 +19,7 @@ class Simulator {
 
 	private:
 		ClimberModel const * model;
+		Route const * route;
 		struct ClimberModel::ClimberComponents climber;
 		dWorldID world;
 		dBodyID * ODEParts;

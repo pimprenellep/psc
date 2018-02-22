@@ -14,7 +14,7 @@ cdef class Route:
     #  its subclasses
     def __init__(self, holds):
         cdef int n = len(holds)
-        cdef _Hold * _holds = <_Hold *>malloc(n * sizeof(_holds[0]))
+        cdef _Hold * _holds = <_Hold *>malloc(n * sizeof(_Hold))
         cdef int i
 
         self.__holds = holds

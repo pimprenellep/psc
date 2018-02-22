@@ -1,6 +1,7 @@
 #include "simulator.hpp"
 
-Simulator::Simulator() :
+Simulator::Simulator(Route const* r) :
+	route(r),
 	world(dWorldCreate()),
 	model(0),
 	ODEParts(0),

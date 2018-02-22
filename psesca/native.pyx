@@ -21,10 +21,8 @@ from controller cimport _Controller
 cdef class Controller:
     cdef _Controller * thisptr
 
-    def __init__(self, ClimberModel climber, stanceGraph):
-        self.thisptr = new _Controller(climber.thisptr)
-
-        #self.graph = stanceGraph
+    def __init__(self, ClimberModel climber, StanceGraph stanceGraph):
+        self.thisptr = new _Controller(climber.thisptr, stanceGraph.thisptr)
 
     def __dealloc__(self):
         del self.thisptr
@@ -63,7 +61,7 @@ cdef class Route:
     #  its subclasses
     def __init__(self, holds):
         cdef int n = len(holds)
-        cdef _Hold * _holds = <_Hold *>malloc(n * sizeof(_holds[0]))
+        cdef _Hold * _holds = <_Hold *>malloc(n * sizeof(_Hold))
         cdef int i
 
         self.__holds = holds
@@ -78,3 +76,23 @@ cdef class Route:
     
     def getHolds(self):
         return self.__holds
+from stancegraph cimport _StanceGraph
+from route cimport _Route
+
+cdef class StanceGraph :
+    cdef _StanceGraph *thisptr
+    cdef object pyroute
+    def __cinit__(self, Route route) :
+        self.thisptr = new _StanceGraph(route.thisptr)
+        self.pyroute = route
+
+    def __dealloc__(self):
+        del self.thisptr
+
+    def getRoute(self):
+        return self.pyroute
+
+    def getGraphRep(self):
+        return ([], [])
+        
+
