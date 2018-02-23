@@ -3,21 +3,15 @@
 #include <iostream>
 #include <cassert>
 
-#define ERROR_CASE(E) \
-	case E:		\
-	std::cerr << "EGL error is " #E << std::endl; \
-	break;
 
 #define DIEIFN(ok, msg)		\
 	if(!(ok)) {		\
 		std::cerr << "Renderer : " msg << std::endl;	\
-		switch(eglGetError()) {				\
-		ERRORS(ERROR_CASE)				\
-		}						\
+		printEGLError();				\
 		return;						\
 	}
 
-#define ERRORS(X)	\
+#define ERRORS_EGL(X)	\
 	X(EGL_SUCCESS)		\
 	X(EGL_NOT_INITIALIZED)	\
 	X(EGL_BAD_ACCESS)	\
@@ -34,6 +28,50 @@
 	X(EGL_BAD_SURFACE)	\
 	X(EGL_CONTEXT_LOST)
 
+void Renderer::printEGLError()
+{
+	EGLint err = eglGetError();
+
+#define ERROR_CASE(E) \
+	case E:		\
+	std::cerr << "EGL error is " #E << std::endl; \
+	break;
+
+	switch(err) {
+		ERRORS_EGL(ERROR_CASE)
+	default:
+		std::cerr << "Unknown EGL error : " << err << std::endl;
+	}
+
+#undef ERROR_CASE
+}
+
+#define ERRORS_GL(X)	\
+	X(GL_NO_ERROR)	\
+	X(GL_INVALID_ENUM)	\
+	X(GL_INVALID_VALUE)	\
+	X(GL_INVALID_OPERATION)	\
+	X(GL_STACK_OVERFLOW)	\
+	X(GL_STACK_UNDERFLOW)	\
+	X(GL_OUT_OF_MEMORY)
+
+void Renderer::printGLError()
+{
+	GLenum err = glGetError();
+
+#define ERROR_CASE(E) \
+	case E:		\
+	std::cerr << "GL error is " #E << std::endl; \
+	break;
+
+	switch(err) {
+		ERRORS_GL(ERROR_CASE)
+	default:
+		std::cerr << "Unknown GL error : " << err << std::endl;
+	}
+
+#undef ERROR_CASE
+}
 Renderer::Renderer() :
 	display(EGL_NO_DISPLAY),
 	context(EGL_NO_CONTEXT)
@@ -114,13 +152,16 @@ Renderer::Renderer() :
 	context = eglCreateContext(display, config, EGL_NO_CONTEXT, 0);
 	DIEIFN(context != EGL_NO_CONTEXT, "Cannot create context");
 
-
+	ok = eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, context);
+	DIEIFN(ok, "Cannot bind context");
 
 	std::cerr << "Api initialized :" << std::endl;
-	std::cerr << glGetString(GL_VENDOR) << std::endl;
+	printGLError();
+	std::cout << glGetString(GL_VENDOR) << std::endl;
+	printGLError();
 	std::cerr << glGetString(GL_RENDERER) << std::endl;
-	std::cerr << glGetString(GL_VERSION) << std::endl;
-	std::cerr << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+	std::cerr << "OpenGL " << glGetString(GL_VERSION) << std::endl;
+	std::cerr << "GLSL " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
 	
 	std::cout << "Renderer initialized (EGL "<<major<<"."<<minor<<")." << std::endl;

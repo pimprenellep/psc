@@ -13,6 +13,9 @@ class Renderer {
 	       	Renderer();
 		~Renderer();
 	private:
+		void printGLError();
+		void printEGLError();
+	
 		EGLDisplay display;
 		EGLContext context;
 };
