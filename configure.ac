@@ -16,6 +16,7 @@ AC_PROG_RANLIB
 PKG_CHECK_MODULES([PY3], [python3])
 PKG_CHECK_MODULES([ODE], [ode])
 PKG_CHECK_MODULES([EGL], [egl])
+PKG_CHECK_MODULES([OpenGL], [gl])
 
 # Checks for header files.
 
