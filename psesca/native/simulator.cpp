@@ -1,12 +1,12 @@
 #include "simulator.hpp"
 
 Simulator::Simulator(Route const* r) :
+	model(0),
 	route(r),
 	world(dWorldCreate()),
-	model(0),
 	ODEParts(0),
 	ODEJoints(0),
-	renderer(new Renderer())
+	renderer(new Renderer(route))
 {
 	climber = (struct ClimberModel::ClimberComponents){0, 0, 0, 0};
 	dWorldSetGravity(world, 0.0, - GSL_CONST_MKSA_GRAV_ACCEL, 0.0);

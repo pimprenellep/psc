@@ -8,6 +8,7 @@ native_la_SOURCES = native.cpp \
 	native/climbermodel.cpp	\
 	native/morphology.cpp	\
 	native/controller.cpp	\
+	native/shape.cpp	\
 	native/wha_shape.cpp	\
 	native/route.cpp	\
 	native/stancegraph.cpp	\

@@ -5,6 +5,10 @@ WHAShape::WHAShape(float w, float h, float a) :
 {
 }
 
+WHAShape::~WHAShape()
+{
+}
+
 void WHAShape::glDraw(float x, float y) const
 {
 }

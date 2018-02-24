@@ -8,6 +8,7 @@
 	if(!(ok)) {		\
 		std::cerr << "Renderer : " msg << std::endl;	\
 		printEGLError();				\
+		printGLError();				\
 		return;						\
 	}
 
@@ -72,12 +73,12 @@ void Renderer::printGLError()
 #undef ERROR_CASE
 }
 
-Renderer::Renderer() :
-	display(EGL_NO_DISPLAY),
-	context(EGL_NO_CONTEXT),
-	pbuffer(EGL_NO_SURFACE),
+Renderer::Renderer(const Route *r) :
+	route(r),
 	width(1024),
-	height(768)
+	height(768),
+	display(EGL_NO_DISPLAY),
+	context(EGL_NO_CONTEXT)
 {
 	EGLBoolean ok;
 
@@ -124,19 +125,6 @@ Renderer::Renderer() :
 	std::cerr << eglQueryString(display, EGL_CLIENT_APIS) << std::endl;
 	std::cerr << eglQueryString(display, EGL_EXTENSIONS) << std::endl;
 
-	ok = eglBindAPI(EGL_OPENGL_API);
-	DIEIFN(ok, "Renderer : cannot bind api.");
-
-	
-	static const EGLint configAttribs[] = {
-		EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
-		EGL_BLUE_SIZE, 8,
-		EGL_GREEN_SIZE, 8,
-		EGL_RED_SIZE, 8,
-		EGL_DEPTH_SIZE, 8,
-		EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
-		EGL_NONE
-	};
 	EGLConfig config;
 	EGLint requires[] = {
 		EGL_RENDERABLE_TYPE,	EGL_OPENGL_BIT,
@@ -150,28 +138,25 @@ Renderer::Renderer() :
 	std::cerr << nConfigs << " matching configs available." << std::endl;
 	ok = eglChooseConfig(display, requires, &config, 1, &nConfigs);
 	DIEIFN(ok && nConfigs, "Cannot get config.")
+
+	ok = eglBindAPI(EGL_OPENGL_API);
+	DIEIFN(ok, "Renderer : cannot bind api.");
 	
 	context = eglCreateContext(display, config, EGL_NO_CONTEXT, 0);
 	DIEIFN(context != EGL_NO_CONTEXT, "Cannot create context");
 
-	EGLint pbuffer_attribs[] = {
-		EGL_WIDTH, width,
-		EGL_HEIGHT, height,
-		EGL_NONE};
-
-	pbuffer = eglCreatePbufferSurface(display, config, pbuffer_attribs);
-	DIEIFN(pbuffer != EGL_NO_SURFACE, "Cannot create pbuffer.");
-
-	ok = eglMakeCurrent(display, pbuffer, pbuffer, context);
+	ok = eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, context);
 	DIEIFN(ok, "Cannot bind context");
 
+
 	std::cerr << "Api initialized :" << std::endl;
-	/*
 	std::cerr << glGetString(GL_VENDOR) << std::endl;
 	std::cerr << glGetString(GL_RENDERER) << std::endl;
 	std::cerr << "OpenGL " << glGetString(GL_VERSION) << std::endl;
 	std::cerr << "GLSL " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-	*/
+
+	glEnable(GL_DEBUG_OUTPUT);
+
 	// straight from SO
 	GLuint fbo, render_buf;
 	glGenFramebuffers(1,&fbo);
@@ -181,13 +166,134 @@ Renderer::Renderer() :
 	glBindFramebuffer(GL_FRAMEBUFFER,fbo);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, render_buf);
 	glBindFramebuffer(GL_FRAMEBUFFER,fbo);
+	glViewport(0, 0, width, height);
 
 	
 	std::cout << "Renderer initialized (EGL "<<major<<"."<<minor<<")." << std::endl;
 
+	loadShaders();
+	loadRoute();
 	glClearColor(1.0, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	draw();
 	saveToFile("out.ppm");
+	
+}
+
+void Renderer::loadShaders()
+{
+	const char *vertexShaderSource =
+		"#version 130\n"
+		//"layout(location = 0) in vec3 position;"
+		"in vec4 position;"
+		"void main()"
+		"{"
+		"	gl_Position = position - vec4(0.5, 0.5, 0.0, 0.0);"
+		"}"
+		;
+	const int vertexSourceLength = strlen(vertexShaderSource);
+	const char *fragmentShaderSource =
+		"#version 130\n"
+		"out vec4 color;"
+		"void main()"
+		"{"
+		"	color = vec4( 0.0, 1.0, 0.0, 1.0 );"
+		"}"
+		;
+	const int fragmentSourceLength = strlen(fragmentShaderSource);
+
+	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	GLuint program = glCreateProgram();
+	GLint status;
+
+	glShaderSource(vertexShader, 1, &vertexShaderSource, &vertexSourceLength);
+	glCompileShader(vertexShader);
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
+	if(!status) {
+		GLint log_length = 0;
+		glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &log_length);
+		char * log = new char[log_length];
+		glGetShaderInfoLog(vertexShader, log_length, 0, log);
+		std::cerr << "Cannot compile vertex shader :" << std::endl
+			<< log;
+	}
+
+	glShaderSource(fragmentShader, 1, &fragmentShaderSource, &fragmentSourceLength);
+	glCompileShader(fragmentShader);
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
+	if(!status) {
+		GLint log_length = 0;
+		glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &log_length);
+		char * log = new char[log_length];
+		glGetShaderInfoLog(fragmentShader, log_length, 0, log);
+		std::cerr << "Cannot compile fragment shader :" << std::endl
+			<< log;
+	}
+
+	glAttachShader(program, vertexShader);
+	glBindAttribLocation(program, 0, "position");
+	glAttachShader(program, fragmentShader);
+	glBindFragDataLocation(program, 0, "color");
+
+	glLinkProgram(program);
+	glGetProgramiv(program, GL_LINK_STATUS, &status);
+	DIEIFN(status, "Cannot link shader.");
+	glUseProgram(program);
+	printGLError();
+
+}
+
+void Renderer::loadRoute()
+{
+	GLuint routeArray, routeBuffer;
+	GLfloat sq[] = {
+		0.0, 0.0, 0.0, 
+		1.0, 0.0, 0.0,
+		0.0, 1.0, 0.0,
+		1.0, 1.0, 0.0
+	};
+	glGenBuffers(1, &routeBuffer);
+	glGenVertexArrays(1, &routeArray);
+
+	glBindBuffer(GL_ARRAY_BUFFER, routeBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(sq), sq, GL_STATIC_DRAW);
+
+	glBindVertexArray(routeArray);
+	glBindVertexBuffer(0, routeBuffer, 0, 3 * sizeof(*sq));
+	glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);
+	glVertexAttribBinding(0, 0);
+	glEnableVertexAttribArray(0);
+
+}
+
+void Renderer::draw()
+{
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glFinish();
+	printGLDebug();
+	printGLError();
+}
+
+void Renderer::printGLDebug()
+{
+	int nMessages = 0;
+	char *msg = 0;
+	int length = 0;
+	int nextLength;
+
+	glGetIntegerv(GL_DEBUG_LOGGED_MESSAGES, &nMessages);
+	for(int i = 0; i < nMessages; i++) {
+		glGetIntegerv(GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH, &nextLength);
+		if(nextLength > length) {
+			delete msg;
+			msg = new char[nextLength];
+			length = nextLength;
+		}
+		glGetDebugMessageLog(1, length, 0, 0, 0, 0, 0, msg);
+		std::cerr << msg << std::endl;
+	}
+	delete msg;
 }
 
 bool Renderer::saveToFile(const char *file)
@@ -204,12 +310,7 @@ bool Renderer::saveToFile(const char *file)
 
 	for(unsigned char *p = buf; p != buf + 4*width*height; p++) *p = 255;
 
-	int tg;
-	//glReadBuffer(GL_BACK);
-	//glGetIntegerv(GL_DRAW_BUFFER, &tg);
-	//std::cerr << tg << std::endl;
 	glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buf);
-	printGLError();
 
 	stm << "P6\n"<<width<<'\n'<<height<<"\n255\n";
 	unsigned char *p = buf + 4*width*(height-1);
