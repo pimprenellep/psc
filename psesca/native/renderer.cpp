@@ -80,6 +80,37 @@ Renderer::Renderer(const Route *r) :
 	display(EGL_NO_DISPLAY),
 	context(EGL_NO_CONTEXT)
 {
+	initContext();
+	if(context == EGL_NO_CONTEXT)
+		return;
+
+	std::cerr << "Api initialized :" << std::endl;
+	std::cerr << glGetString(GL_VENDOR) << std::endl;
+	std::cerr << glGetString(GL_RENDERER) << std::endl;
+	std::cerr << "OpenGL " << glGetString(GL_VERSION) << std::endl;
+	std::cerr << "GLSL " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+
+	glEnable(GL_DEBUG_OUTPUT);
+
+	// straight from SO
+	glGenFramebuffers(1,&framebuffer);
+	glGenRenderbuffers(1,&renderbuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, width, height);
+	glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, renderbuffer);
+	glViewport(0, 0, width, height);
+
+	loadShaders();
+	loadRoute();
+	glClearColor(1.0, 0.0, 0.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	draw();
+	saveToFile("out.ppm");
+}
+
+void Renderer::initContext()
+{
 	EGLBoolean ok;
 
 	std::cerr << eglQueryString(EGL_NO_DISPLAY, EGL_EXTENSIONS) << std::endl;
@@ -106,7 +137,6 @@ Renderer::Renderer(const Route *r) :
 		display = eglGetPlatformDisplayEXT(EGL_PLATFORM_DEVICE_EXT, EGL_DEFAULT_DISPLAY, 0);
 	} else {
 		std::cout << "No devices found, trying to get default display." << std::endl;
-		//display = eglGetPlatformDisplayEXT(EGL_PLATFORM_GBM_MESA, EGL_DEFAULT_DISPLAY, 0);
 		display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 	}
 	if(display == EGL_NO_DISPLAY) {
@@ -125,10 +155,15 @@ Renderer::Renderer(const Route *r) :
 	std::cerr << eglQueryString(display, EGL_CLIENT_APIS) << std::endl;
 	std::cerr << eglQueryString(display, EGL_EXTENSIONS) << std::endl;
 
-	EGLConfig config;
+	EGLConfig *configs;
 	EGLint requires[] = {
+		EGL_RED_SIZE,		8,
+		EGL_GREEN_SIZE,		8,
+		EGL_BLUE_SIZE,		8,
+		EGL_ALPHA_SIZE,		8,
+		EGL_CONFORMANT,		EGL_OPENGL_BIT,
 		EGL_RENDERABLE_TYPE,	EGL_OPENGL_BIT,
-		EGL_SURFACE_TYPE,	EGL_PBUFFER_BIT,
+		EGL_SURFACE_TYPE,	0,
 		EGL_NONE };
 	int nConfigs = 0;
 
@@ -136,55 +171,36 @@ Renderer::Renderer(const Route *r) :
 	std::cerr << nConfigs << " configs available." << std::endl;
 	ok = eglChooseConfig(display, requires, 0, 0, &nConfigs);
 	std::cerr << nConfigs << " matching configs available." << std::endl;
-	ok = eglChooseConfig(display, requires, &config, 1, &nConfigs);
-	DIEIFN(ok && nConfigs, "Cannot get config.")
+	configs = new EGLConfig[nConfigs];
+	ok = eglChooseConfig(display, requires, configs, nConfigs, &nConfigs);
+	DIEIFN(ok && nConfigs, "Cannot get config.");
 
 	ok = eglBindAPI(EGL_OPENGL_API);
 	DIEIFN(ok, "Renderer : cannot bind api.");
 	
-	context = eglCreateContext(display, config, EGL_NO_CONTEXT, 0);
+	int iConfig = 0;
+	while(context == EGL_NO_CONTEXT && iConfig < nConfigs) {
+		std::cerr << "Trying config " << iConfig << "..." << std::endl;
+		context = eglCreateContext(display, configs[iConfig], EGL_NO_CONTEXT, 0);
+		if(context == EGL_NO_CONTEXT){
+			printEGLError();
+		}
+		iConfig++;
+
+	}
 	DIEIFN(context != EGL_NO_CONTEXT, "Cannot create context");
+	delete[] configs;
 
 	ok = eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, context);
 	DIEIFN(ok, "Cannot bind context");
 
-
-	std::cerr << "Api initialized :" << std::endl;
-	std::cerr << glGetString(GL_VENDOR) << std::endl;
-	std::cerr << glGetString(GL_RENDERER) << std::endl;
-	std::cerr << "OpenGL " << glGetString(GL_VERSION) << std::endl;
-	std::cerr << "GLSL " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-
-	glEnable(GL_DEBUG_OUTPUT);
-
-	// straight from SO
-	GLuint fbo, render_buf;
-	glGenFramebuffers(1,&fbo);
-	glGenRenderbuffers(1,&render_buf);
-	glBindRenderbuffer(GL_RENDERBUFFER, render_buf);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, width, height);
-	glBindFramebuffer(GL_FRAMEBUFFER,fbo);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, render_buf);
-	glBindFramebuffer(GL_FRAMEBUFFER,fbo);
-	glViewport(0, 0, width, height);
-
-	
-	std::cout << "Renderer initialized (EGL "<<major<<"."<<minor<<")." << std::endl;
-
-	loadShaders();
-	loadRoute();
-	glClearColor(1.0, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	draw();
-	saveToFile("out.ppm");
-	
+	std::cout << "Context initialized (EGL "<<major<<"."<<minor<<")." << std::endl;
 }
 
 void Renderer::loadShaders()
 {
 	const char *vertexShaderSource =
 		"#version 130\n"
-		//"layout(location = 0) in vec3 position;"
 		"in vec4 position;"
 		"void main()"
 		"{"
@@ -202,33 +218,37 @@ void Renderer::loadShaders()
 		;
 	const int fragmentSourceLength = strlen(fragmentShaderSource);
 
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	GLuint program = glCreateProgram();
-	GLint status;
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	program = glCreateProgram();
+	GLint status = 0;
 
 	glShaderSource(vertexShader, 1, &vertexShaderSource, &vertexSourceLength);
 	glCompileShader(vertexShader);
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
 	if(!status) {
-		GLint log_length = 0;
+		GLint log_length = 1;
 		glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &log_length);
 		char * log = new char[log_length];
+		log[0] = '\0';
 		glGetShaderInfoLog(vertexShader, log_length, 0, log);
 		std::cerr << "Cannot compile vertex shader :" << std::endl
 			<< log;
+		delete[] log;
 	}
 
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, &fragmentSourceLength);
 	glCompileShader(fragmentShader);
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
 	if(!status) {
-		GLint log_length = 0;
+		GLint log_length = 1;
 		glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &log_length);
 		char * log = new char[log_length];
+		log[0]= '\0';
 		glGetShaderInfoLog(fragmentShader, log_length, 0, log);
 		std::cerr << "Cannot compile fragment shader :" << std::endl
 			<< log;
+		delete[] log;
 	}
 
 	glAttachShader(program, vertexShader);
@@ -240,8 +260,8 @@ void Renderer::loadShaders()
 	glGetProgramiv(program, GL_LINK_STATUS, &status);
 	DIEIFN(status, "Cannot link shader.");
 	glUseProgram(program);
-	printGLError();
 
+	glReleaseShaderCompiler();
 }
 
 void Renderer::loadRoute()
@@ -286,14 +306,14 @@ void Renderer::printGLDebug()
 	for(int i = 0; i < nMessages; i++) {
 		glGetIntegerv(GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH, &nextLength);
 		if(nextLength > length) {
-			delete msg;
+			delete[] msg;
 			msg = new char[nextLength];
 			length = nextLength;
 		}
 		glGetDebugMessageLog(1, length, 0, 0, 0, 0, 0, msg);
 		std::cerr << msg << std::endl;
 	}
-	delete msg;
+	delete[] msg;
 }
 
 bool Renderer::saveToFile(const char *file)
@@ -324,13 +344,29 @@ bool Renderer::saveToFile(const char *file)
 		p -= 2*4*width;
 	}
 
-	delete buf;
+	delete[] buf;
 	stm.close();
 	return false;
 }
 
 Renderer::~Renderer()
 {
+	/*
+	glFinish();
+	glUseProgram(0);
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+	glDeleteProgram(program);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, 0);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, 0, 0);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glDeleteRenderbuffers(1, &renderbuffer);
+	glDeleteFramebuffers(1, &framebuffer);
+	*/
+	eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+	eglDestroyContext(display, context);
 	eglTerminate(display);
+	std::cerr << "Renderer destroyed" << std::endl;
 }
 

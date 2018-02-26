@@ -20,6 +20,7 @@ class Renderer {
 		~Renderer();
 		bool saveToFile(const char *file);
 	private:
+		void initContext();
 		void draw();
 		void loadShaders();
 		void loadRoute();
@@ -34,6 +35,11 @@ class Renderer {
 		EGLDisplay display;
 		EGLContext context;
 		EGLSurface pbuffer;
+		GLuint framebuffer;
+		GLuint renderbuffer;
+		GLuint vertexShader;
+		GLuint fragmentShader;
+		GLuint program;
 };
 
 #endif // _RENDERER_HPP
