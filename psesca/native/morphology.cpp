@@ -1,7 +1,8 @@
 #include "morphology.hpp"
 
 Morphology::Morphology(float h, float m) :
-	height(h), mass(m)
+	mass(m),
+	height(h)
 {
 #define X(PART, MASS, LENGTH) \
 	relMass[PART] = MASS;	\

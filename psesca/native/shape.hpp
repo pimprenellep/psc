@@ -9,6 +9,7 @@ class Shape {
 	public:
 		/// Draw the hold in current OpenGL context
 		virtual void glDraw(float x, float y) const = 0;
+		virtual ~Shape();
 };
 
 #endif // _SHAPE_HPP

@@ -8,6 +8,7 @@ class WHAShape : public Shape {
 	public:
 		WHAShape(float width, float height, float area);
 		virtual void glDraw(float x, float y) const;
+		virtual ~WHAShape();
 	private:
 		float width;
 		float height;

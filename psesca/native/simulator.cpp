@@ -3,11 +3,11 @@
 const float g =  9.80665;
 
 Simulator::Simulator(Route const* r) :
-	route(r),
 	model(0),
+	route(r),
 	ODEParts(0),
 	ODEJoints(0),
-	renderer(new Renderer())
+	renderer(new Renderer(route))
 {
 	climber = (struct ClimberModel::ClimberComponents){0, 0, 0, 0};
 	dInitODE();

@@ -1,5 +1,7 @@
 #include "route.hpp"
 
+#include <cstdlib>
+
 Route::Route(int n, struct Hold *h) :
 	nHolds(n),
 	holds(h)
@@ -8,7 +10,7 @@ Route::Route(int n, struct Hold *h) :
 
 Route::~Route()
 {
-	delete holds;
+	free(holds);
 }
 
 const Hold * Route::getHolds() const
