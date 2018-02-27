@@ -11,6 +11,7 @@
 #include <GL/gl.h>
 #include <GL/glext.h>
 
+
 #include <string.h>
 #include <fstream>
 
@@ -23,6 +24,7 @@ class Renderer {
 		void initContext();
 		void draw();
 		void loadShaders();
+		void initProjection();
 		void loadRoute();
 		void printGLError();
 		void printEGLError();

@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <cassert>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 #define DIEIFN(ok, msg)		\
@@ -102,6 +104,7 @@ Renderer::Renderer(const Route *r) :
 	glViewport(0, 0, width, height);
 
 	loadShaders();
+	initProjection();
 	loadRoute();
 	glClearColor(1.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -202,9 +205,10 @@ void Renderer::loadShaders()
 	const char *vertexShaderSource =
 		"#version 130\n"
 		"in vec4 position;"
+		"uniform mat4 projection;"
 		"void main()"
 		"{"
-		"	gl_Position = position - vec4(0.5, 0.5, 0.0, 0.0);"
+		"	gl_Position = projection * position;"
 		"}"
 		;
 	const int vertexSourceLength = strlen(vertexShaderSource);
@@ -262,6 +266,36 @@ void Renderer::loadShaders()
 	glUseProgram(program);
 
 	glReleaseShaderCompiler();
+}
+
+void Renderer::initProjection()
+{
+	glm::vec3 t(3.0, 0.0, 3.0);
+	glm::vec3 vz(-1.0, 0.0, -1.0);
+	glm::vec3 vx(1.0, 0.0, -1.0);
+	glm::vec3 vy(0.0, 1.0, 0.0);
+
+	float angle = glm::radians(90.0);
+	float aspect = (float)width / height;
+	float near = 1.0;
+
+	vz = near * glm::normalize(vz);
+	vx = near * (float)tan(angle / 2.0) * glm::normalize(vx);
+	vy = near / aspect * (float)tan(angle / 2.0) * vy;
+
+	glm::mat3x3 v(vx, vy, vz);
+	v = glm::inverse(v);
+	t = -v * t;
+	std::cerr << t[0] <<", "<<t[1]<<","<<t[2]<<std::endl;
+	glm::mat4x4 m(
+			v[0][0], v[1][0], v[2][0], t[0],
+			v[0][1], v[1][1], v[2][1], t[1],
+			v[0][2], v[1][2], v[2][2], t[2] - near,
+			v[0][2]/near, v[1][2]/near, v[2][2]/near, t[2]/near
+		     );
+
+	GLint loc = glGetUniformLocation(program, "projection");
+	glUniformMatrix4fv(loc, 1, GL_TRUE, glm::value_ptr(m));
 }
 
 void Renderer::loadRoute()
