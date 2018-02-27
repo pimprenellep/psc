@@ -2,7 +2,6 @@
 #define _SIMULATOR_HPP
 
 #include <iostream>
-#include <gsl/gsl_const_mksa.h>
 #include <ode/ode.h>
 
 
@@ -17,6 +16,7 @@ class Simulator {
 		void addClimber(ClimberModel const * m);
 		void dumpFromOde() const;
 		bool tests() const;
+		bool testFreeFall(float time, int divs, float tolerance) const;
 
 	private:
 		ClimberModel const * model;
@@ -25,6 +25,7 @@ class Simulator {
 		dWorldID world;
 		dBodyID * ODEParts;
 		dJointID * ODEJoints;
+		dJointID * ODEMotors;
 		Renderer * renderer;
 };
 

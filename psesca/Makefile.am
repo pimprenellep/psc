@@ -1,7 +1,7 @@
 SUBDIRS = native
 
 lib_LTLIBRARIES=native.la
-native_la_LDFLAGS=-pthread ${ODE_LIBS} ${EGL_LIBS} -module -avoid-version -shared
+native_la_LDFLAGS=${ODE_LIBS} ${EGL_LIBS} -module -avoid-version -shared
 native_la_CXXFLAGS=-fPIC -fwrapv -fno-strict-aliasing ${PY3_CFLAGS} ${ODE_CFLAGS} ${EGL_CFLAGS}
 native_la_SOURCES = native.cpp \
 	native/simulator.cpp	\
