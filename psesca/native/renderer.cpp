@@ -270,14 +270,14 @@ void Renderer::loadShaders()
 
 void Renderer::initProjection()
 {
-	glm::vec3 t(3.0, 0.0, 3.0);
-	glm::vec3 vz(-1.0, 0.0, -1.0);
-	glm::vec3 vx(1.0, 0.0, -1.0);
+	glm::vec3 t(1.0, 0.5, 3.0);
+	glm::vec3 vz = -t;
 	glm::vec3 vy(0.0, 1.0, 0.0);
+	glm::vec3 vx = glm::cross(vz, vy);
 
 	float angle = glm::radians(90.0);
 	float aspect = (float)width / height;
-	float near = 1.0;
+	float near = 0.1;
 
 	vz = near * glm::normalize(vz);
 	vx = near * (float)tan(angle / 2.0) * glm::normalize(vx);
@@ -290,8 +290,8 @@ void Renderer::initProjection()
 	glm::mat4x4 m(
 			v[0][0], v[1][0], v[2][0], t[0],
 			v[0][1], v[1][1], v[2][1], t[1],
-			v[0][2], v[1][2], v[2][2], t[2] - near,
-			v[0][2]/near, v[1][2]/near, v[2][2]/near, t[2]/near
+			v[0][2], v[1][2], v[2][2], t[2] - 1.0,
+			v[0][2], v[1][2], v[2][2], t[2]
 		     );
 
 	GLint loc = glGetUniformLocation(program, "projection");
