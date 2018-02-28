@@ -14,71 +14,12 @@
 		return;						\
 	}
 
-#define ERRORS_EGL(X)	\
-	X(EGL_SUCCESS)		\
-	X(EGL_NOT_INITIALIZED)	\
-	X(EGL_BAD_ACCESS)	\
-	X(EGL_BAD_ALLOC)	\
-	X(EGL_BAD_ATTRIBUTE)	\
-	X(EGL_BAD_CONFIG)	\
-	X(EGL_BAD_CONTEXT)	\
-	X(EGL_BAD_CURRENT_SURFACE)	\
-	X(EGL_BAD_DISPLAY)	\
-	X(EGL_BAD_MATCH)	\
-	X(EGL_BAD_NATIVE_PIXMAP)	\
-	X(EGL_BAD_NATIVE_WINDOW)	\
-	X(EGL_BAD_PARAMETER)	\
-	X(EGL_BAD_SURFACE)	\
-	X(EGL_CONTEXT_LOST)
-
-void Renderer::printEGLError()
-{
-	EGLint err = eglGetError();
-
-#define ERROR_CASE(E) \
-	case E:		\
-	std::cerr << "EGL error is " #E << std::endl; \
-	break;
-
-	switch(err) {
-		ERRORS_EGL(ERROR_CASE)
-	default:
-		std::cerr << "Unknown EGL error : " << err << std::endl;
-	}
-
-#undef ERROR_CASE
-}
-
-#define ERRORS_GL(X)	\
-	X(GL_NO_ERROR)	\
-	X(GL_INVALID_ENUM)	\
-	X(GL_INVALID_VALUE)	\
-	X(GL_INVALID_OPERATION)	\
-	X(GL_INVALID_FRAMEBUFFER_OPERATION)	\
-	X(GL_OUT_OF_MEMORY)
-
-void Renderer::printGLError()
-{
-	GLenum err = glGetError();
-
-#define ERROR_CASE(E) \
-	case E:		\
-	std::cerr << "GL error is " #E << std::endl; \
-	break;
-
-	switch(err) {
-		ERRORS_GL(ERROR_CASE)
-	default:
-		std::cerr << "Unknown GL error : " << err << std::endl;
-	}
-
-#undef ERROR_CASE
-}
 
 Renderer::Renderer(const Route *r) :
 	route(r),
 	width(1024),
 	height(768),
+	sampling(4),
 	display(EGL_NO_DISPLAY),
 	context(EGL_NO_CONTEXT),
 	stripsFirst(0)
@@ -95,25 +36,43 @@ Renderer::Renderer(const Route *r) :
 
 	glEnable(GL_DEBUG_OUTPUT);
 
+	
+	GLenum status;
+
 	glGenFramebuffers(1,&framebuffer);
+	glGenFramebuffers(1, &rb_framebuffer);
 	glGenRenderbuffers(1,&renderbuffer);
 	glGenRenderbuffers(1,&depthbuffer);
+	glGenRenderbuffers(1,&rb_renderbuffer);
 
-	glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER,framebuffer);
 
 	glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, width, height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, renderbuffer);
-
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, sampling, GL_RGBA, width, height);
+	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, renderbuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, depthbuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffer);
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, sampling, GL_DEPTH_COMPONENT, width, height);
+	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffer);
+	status = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+	DIEIFN(status == GL_FRAMEBUFFER_COMPLETE, "Incomplete framebuffer.");
+
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, rb_framebuffer);
+
+	glBindRenderbuffer(GL_RENDERBUFFER, rb_renderbuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, width, height);
+	glFramebufferRenderbuffer(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, rb_renderbuffer);
+	status = glCheckFramebufferStatus(GL_READ_FRAMEBUFFER);
+	DIEIFN(status == GL_FRAMEBUFFER_COMPLETE, "Incomplete readback framebuffer.");
+
+	/*
+	*/
 
 	glViewport(0, 0, width, height);
 
 	loadShaders();
 	initProjection();
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_MULTISAMPLE);
 	//glEnable(GL_BLEND);
 	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//glEnable(GL_POLYGON_SMOOTH);
@@ -122,6 +81,8 @@ Renderer::Renderer(const Route *r) :
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	draw();
 	saveToFile("out.ppm");
+	printGLDebug();
+	printGLError();
 }
 
 void Renderer::initContext()
@@ -172,12 +133,6 @@ void Renderer::initContext()
 
 	EGLConfig *configs;
 	EGLint requires[] = {
-		EGL_RED_SIZE,		8,
-		EGL_GREEN_SIZE,		8,
-		EGL_BLUE_SIZE,		8,
-		EGL_ALPHA_SIZE,		8,
-		EGL_CONFORMANT,		EGL_OPENGL_BIT,
-		EGL_DEPTH_SIZE,		8,
 		EGL_RENDERABLE_TYPE,	EGL_OPENGL_BIT,
 		EGL_SURFACE_TYPE,	0,
 		EGL_NONE };
@@ -386,9 +341,8 @@ void Renderer::draw()
 			GL_UNSIGNED_SHORT,
  			(void**)stripsFirst,
 			stripsCount.size());
+
 	glFinish();
-	printGLDebug();
-	printGLError();
 }
 
 void Renderer::printGLDebug()
@@ -426,6 +380,12 @@ bool Renderer::saveToFile(const char *file)
 
 	for(unsigned char *p = buf; p != buf + 4*width*height; p++) *p = 255;
 
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER,rb_framebuffer);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER,framebuffer);
+	glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER,framebuffer);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER,rb_framebuffer);
+
 	glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buf);
 
 	stm << "P6\n"<<width<<'\n'<<height<<"\n255\n";
@@ -443,6 +403,67 @@ bool Renderer::saveToFile(const char *file)
 	delete[] buf;
 	stm.close();
 	return false;
+}
+
+#define ERRORS_EGL(X)	\
+	X(EGL_SUCCESS)		\
+	X(EGL_NOT_INITIALIZED)	\
+	X(EGL_BAD_ACCESS)	\
+	X(EGL_BAD_ALLOC)	\
+	X(EGL_BAD_ATTRIBUTE)	\
+	X(EGL_BAD_CONFIG)	\
+	X(EGL_BAD_CONTEXT)	\
+	X(EGL_BAD_CURRENT_SURFACE)	\
+	X(EGL_BAD_DISPLAY)	\
+	X(EGL_BAD_MATCH)	\
+	X(EGL_BAD_NATIVE_PIXMAP)	\
+	X(EGL_BAD_NATIVE_WINDOW)	\
+	X(EGL_BAD_PARAMETER)	\
+	X(EGL_BAD_SURFACE)	\
+	X(EGL_CONTEXT_LOST)
+
+void Renderer::printEGLError()
+{
+	EGLint err = eglGetError();
+
+#define ERROR_CASE(E) \
+	case E:		\
+	std::cerr << "EGL error is " #E << std::endl; \
+	break;
+
+	switch(err) {
+		ERRORS_EGL(ERROR_CASE)
+	default:
+		std::cerr << "Unknown EGL error : " << err << std::endl;
+	}
+
+#undef ERROR_CASE
+}
+
+#define ERRORS_GL(X)	\
+	X(GL_NO_ERROR)	\
+	X(GL_INVALID_ENUM)	\
+	X(GL_INVALID_VALUE)	\
+	X(GL_INVALID_OPERATION)	\
+	X(GL_INVALID_FRAMEBUFFER_OPERATION)	\
+	X(GL_OUT_OF_MEMORY)
+
+void Renderer::printGLError()
+{
+	GLenum err = glGetError();
+
+#define ERROR_CASE(E) \
+	case E:		\
+	std::cerr << "GL error is " #E << std::endl; \
+	break;
+
+	switch(err) {
+		ERRORS_GL(ERROR_CASE)
+	default:
+		std::cerr << "Unknown GL error : " << err << std::endl;
+	}
+
+#undef ERROR_CASE
 }
 
 Renderer::~Renderer()
@@ -464,6 +485,5 @@ Renderer::~Renderer()
 	eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 	eglDestroyContext(display, context);
 	eglTerminate(display);
-	std::cerr << "Renderer destroyed" << std::endl;
 }
 
