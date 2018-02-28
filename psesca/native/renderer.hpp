@@ -1,7 +1,6 @@
 #ifndef _RENDERER_HPP
 #define _RENDERER_HPP
 
-#include "route.hpp"
 
 #define EGL_EGLEXT_PROTOTYPES
 #include <EGL/egl.h>
@@ -11,9 +10,13 @@
 #include <GL/gl.h>
 #include <GL/glext.h>
 
+#include <glm/mat4x4.hpp>
 
 #include <string.h>
 #include <fstream>
+#include <vector>
+
+#include "route.hpp"
 
 class Renderer {
 	public:
@@ -39,9 +42,17 @@ class Renderer {
 		EGLSurface pbuffer;
 		GLuint framebuffer;
 		GLuint renderbuffer;
+		GLuint depthbuffer;
 		GLuint vertexShader;
 		GLuint fragmentShader;
 		GLuint program;
+
+		std::vector<GLfloat> stripsComponents;
+		std::vector<GLfloat> stripsNormals;
+		std::vector<unsigned short> stripsIndexes;
+		std::vector<GLsizei> stripsCount;
+		unsigned short ** stripsFirst;
+
 };
 
 #endif // _RENDERER_HPP

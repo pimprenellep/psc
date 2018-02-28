@@ -17,3 +17,8 @@ const Hold * Route::getHolds() const
 {
 	return holds;
 }
+
+const int Route::getNHolds() const
+{
+	return nHolds;
+}

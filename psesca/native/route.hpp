@@ -20,6 +20,7 @@ class Route {
 		 */
 		~Route();
 		const Hold * getHolds() const;
+		const int getNHolds() const;
 	private:
 		int nHolds;
 		Hold *holds;

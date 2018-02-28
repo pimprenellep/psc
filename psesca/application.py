@@ -10,13 +10,13 @@ class Application :
         self.routeStore = JSONRouteStore('../samples/json_v1')
 
     def cotationFromImage(self, image) :
-        route = self.routeStore.getRoute('verte')
+        route = self.routeStore.getRoute('verte_scaled')
         stanceGraph = StanceGraph(route)
         explorer = Factory.get().buildExplorer(stanceGraph)
         explorer.findPath()
 
     def tests(self, image):
-        route = self.routeStore.getRoute('verte')
+        route = self.routeStore.getRoute('verte_scaled')
         stanceGraph = StanceGraph(route)
         explorer = Factory.get().buildExplorer(stanceGraph)
         if any([

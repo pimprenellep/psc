@@ -80,7 +80,8 @@ Renderer::Renderer(const Route *r) :
 	width(1024),
 	height(768),
 	display(EGL_NO_DISPLAY),
-	context(EGL_NO_CONTEXT)
+	context(EGL_NO_CONTEXT),
+	stripsFirst(0)
 {
 	initContext();
 	if(context == EGL_NO_CONTEXT)
@@ -94,19 +95,30 @@ Renderer::Renderer(const Route *r) :
 
 	glEnable(GL_DEBUG_OUTPUT);
 
-	// straight from SO
 	glGenFramebuffers(1,&framebuffer);
 	glGenRenderbuffers(1,&renderbuffer);
+	glGenRenderbuffers(1,&depthbuffer);
+
+	glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
+
 	glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, width, height);
-	glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, renderbuffer);
+
+	glBindRenderbuffer(GL_RENDERBUFFER, depthbuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffer);
+
 	glViewport(0, 0, width, height);
 
 	loadShaders();
 	initProjection();
+	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glEnable(GL_POLYGON_SMOOTH);
 	loadRoute();
-	glClearColor(1.0, 0.0, 0.0, 1.0);
+	glClearColor(0.8, 0.8, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	draw();
 	saveToFile("out.ppm");
@@ -165,6 +177,7 @@ void Renderer::initContext()
 		EGL_BLUE_SIZE,		8,
 		EGL_ALPHA_SIZE,		8,
 		EGL_CONFORMANT,		EGL_OPENGL_BIT,
+		EGL_DEPTH_SIZE,		8,
 		EGL_RENDERABLE_TYPE,	EGL_OPENGL_BIT,
 		EGL_SURFACE_TYPE,	0,
 		EGL_NONE };
@@ -205,19 +218,25 @@ void Renderer::loadShaders()
 	const char *vertexShaderSource =
 		"#version 130\n"
 		"in vec4 position;"
+		"in vec4 vNormal;"
+		"centroid out vec4 normal;"
 		"uniform mat4 projection;"
 		"void main()"
 		"{"
 		"	gl_Position = projection * position;"
+		"	normal = vNormal;"
 		"}"
 		;
 	const int vertexSourceLength = strlen(vertexShaderSource);
 	const char *fragmentShaderSource =
 		"#version 130\n"
+		"centroid in vec4 normal;"
 		"out vec4 color;"
+		"uniform vec4 light;"
 		"void main()"
 		"{"
-		"	color = vec4( 0.0, 1.0, 0.0, 1.0 );"
+		"	color = dot(light, normal) * vec4( 0.3, 0.3, 0.3, 1.0 );"
+		"	gl_FragDepth = gl_FragCoord[2];"
 		"}"
 		;
 	const int fragmentSourceLength = strlen(fragmentShaderSource);
@@ -257,6 +276,7 @@ void Renderer::loadShaders()
 
 	glAttachShader(program, vertexShader);
 	glBindAttribLocation(program, 0, "position");
+	glBindAttribLocation(program, 1, "vNormal");
 	glAttachShader(program, fragmentShader);
 	glBindFragDataLocation(program, 0, "color");
 
@@ -265,13 +285,18 @@ void Renderer::loadShaders()
 	DIEIFN(status, "Cannot link shader.");
 	glUseProgram(program);
 
+	glm::vec3 light(1.0, 3.0, 2.0);
+	light = glm::normalize(light);
+	GLint loc = glGetUniformLocation(program, "light");
+	glUniform4f(loc, light[0], light[1], light[2], 1.0 );
 	glReleaseShaderCompiler();
 }
 
 void Renderer::initProjection()
 {
-	glm::vec3 t(1.0, 0.5, 3.0);
-	glm::vec3 vz = -t;
+	glm::vec3 t(0.0, 1.0, 2.0);
+	glm::vec3 vz(1.0, 1.0, 0.0);
+	vz -= t;
 	glm::vec3 vy(0.0, 1.0, 0.0);
 	glm::vec3 vx = glm::cross(vz, vy);
 
@@ -286,7 +311,6 @@ void Renderer::initProjection()
 	glm::mat3x3 v(vx, vy, vz);
 	v = glm::inverse(v);
 	t = -v * t;
-	std::cerr << t[0] <<", "<<t[1]<<","<<t[2]<<std::endl;
 	glm::mat4x4 m(
 			v[0][0], v[1][0], v[2][0], t[0],
 			v[0][1], v[1][1], v[2][1], t[1],
@@ -300,30 +324,68 @@ void Renderer::initProjection()
 
 void Renderer::loadRoute()
 {
-	GLuint routeArray, routeBuffer;
-	GLfloat sq[] = {
-		0.0, 0.0, 0.0, 
-		1.0, 0.0, 0.0,
-		0.0, 1.0, 0.0,
-		1.0, 1.0, 0.0
-	};
+	GLuint routeArray, routeBuffer, normalsBuffer;
+	
+	const int nHolds = route->getNHolds();
+	const Hold *holds = route->getHolds();
+
+	for(int i = 0; i < nHolds; i++) {
+		glm::mat4 trans(
+				1.0, 0.0, 0.0, 0.0,
+				0.0, 1.0, 0.0, 0.0,
+				0.0, 0.0, 1.0, 0.0,
+				holds[i].x, holds[i].y, 0.0, 1.0
+			       );
+		holds[i].shape->getStrips(stripsComponents, stripsNormals, stripsIndexes, stripsCount, trans);
+	}
+	GLsizei bufSize = stripsComponents.size() * sizeof(stripsComponents[0]);
+
 	glGenBuffers(1, &routeBuffer);
+	glGenBuffers(1, &normalsBuffer);
 	glGenVertexArrays(1, &routeArray);
 
-	glBindBuffer(GL_ARRAY_BUFFER, routeBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(sq), sq, GL_STATIC_DRAW);
-
 	glBindVertexArray(routeArray);
-	glBindVertexBuffer(0, routeBuffer, 0, 3 * sizeof(*sq));
+
+	glBindBuffer(GL_ARRAY_BUFFER, routeBuffer);
+	glBufferData(GL_ARRAY_BUFFER, 
+			bufSize,
+			&(stripsComponents[0]),
+			GL_STATIC_DRAW);
+	glBindVertexBuffer(0, routeBuffer, 0, 3 * sizeof(stripsComponents[0]));
+
+	glBindBuffer(GL_ARRAY_BUFFER, normalsBuffer);
+	glBufferData(GL_ARRAY_BUFFER, 
+			bufSize,
+			&(stripsNormals[0]),
+			GL_STATIC_DRAW);
+	glBindVertexBuffer(1, normalsBuffer, 0, 3 * sizeof(stripsNormals[0]));
+
 	glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);
 	glVertexAttribBinding(0, 0);
 	glEnableVertexAttribArray(0);
 
+	glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, 0);
+	glVertexAttribBinding(1, 1);
+	glEnableVertexAttribArray(1);
+
+	int nStrips = stripsCount.size();
+	stripsFirst = new unsigned short* [nStrips];
+	
+	int cum = 0;
+	stripsFirst[0] = &(stripsIndexes[0]);
+	for(int i = 1; i < nStrips; i++) {
+		cum += stripsCount[i-1];
+		stripsFirst[i] = &(stripsIndexes[cum]);
+	}
 }
 
 void Renderer::draw()
 {
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glMultiDrawElements(GL_TRIANGLE_STRIP,
+			&(stripsCount[0]),
+			GL_UNSIGNED_SHORT,
+ 			(void**)stripsFirst,
+			stripsCount.size());
 	glFinish();
 	printGLDebug();
 	printGLError();
@@ -385,6 +447,7 @@ bool Renderer::saveToFile(const char *file)
 
 Renderer::~Renderer()
 {
+	delete[] stripsFirst;
 	/*
 	glFinish();
 	glUseProgram(0);
