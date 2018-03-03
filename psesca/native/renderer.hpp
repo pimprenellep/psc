@@ -35,12 +35,13 @@ class Renderer {
 	
 
 		const Route * route;
+
 		int width;
 		int height;
 		GLsizei sampling;
+
 		EGLDisplay display;
 		EGLContext context;
-		EGLSurface pbuffer;
 		GLuint framebuffer;
 		GLuint renderbuffer;
 		GLuint rb_framebuffer, rb_renderbuffer;

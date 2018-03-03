@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "shaders.hpp"
 
 #define DIEIFN(ok, msg)		\
 	if(!(ok)) {		\
@@ -170,31 +171,11 @@ void Renderer::initContext()
 
 void Renderer::loadShaders()
 {
-	const char *vertexShaderSource =
-		"#version 130\n"
-		"in vec4 position;"
-		"in vec4 vNormal;"
-		"centroid out vec4 normal;"
-		"uniform mat4 projection;"
-		"void main()"
-		"{"
-		"	gl_Position = projection * position;"
-		"	normal = vNormal;"
-		"}"
-		;
-	const int vertexSourceLength = strlen(vertexShaderSource);
-	const char *fragmentShaderSource =
-		"#version 130\n"
-		"centroid in vec4 normal;"
-		"out vec4 color;"
-		"uniform vec4 light;"
-		"void main()"
-		"{"
-		"	color = dot(light, normal) * vec4( 0.3, 0.3, 0.3, 1.0 );"
-		"	gl_FragDepth = gl_FragCoord[2];"
-		"}"
-		;
-	const int fragmentSourceLength = strlen(fragmentShaderSource);
+	const char *vertexShaderSource = Shaders::getVertexSource();
+	const int vertexSourceLength = Shaders::getVertexSize();
+
+	const char *fragmentShaderSource = Shaders::getFragmentSource();
+	const int fragmentSourceLength = Shaders::getFragmentSize();
 
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);

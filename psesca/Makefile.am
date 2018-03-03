@@ -12,10 +12,18 @@ native_la_SOURCES = native.cpp \
 	native/wha_shape.cpp	\
 	native/route.cpp	\
 	native/stancegraph.cpp	\
-	native/renderer.cpp
+	native/renderer.cpp	\
+	native/shaders.cpp	\
+	native/vertex.s		\
+	native/fragment.s
 
-all-local :
-	cp -uL .libs/native.so native.so
+all-local : native.so
+
+native.so : native.la
+	cp -uL .libs/native.so $@
+
+%.s : %.glsl
+	touch $@
 
 %.cpp : %.pyx
 	cython --cplus $<

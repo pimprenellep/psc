@@ -10,7 +10,7 @@ AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
 AC_PROG_CXX
-AC_PROG_RANLIB
+AM_PROG_AS
 
 # Checks for libraries.
 PKG_CHECK_MODULES([PY3], [python3])
