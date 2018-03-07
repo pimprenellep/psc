@@ -12,6 +12,8 @@ alpha=1.8
 dmin=50
 dloin=20
 dsouple=20
+d2pieds=12
+d2mains=12
 
 
 #fontion distance
@@ -58,11 +60,11 @@ def cosAlK(a,b,c):
 
 # ATTENTION ces fonctions prennent en argument les prises elles-mêmes!
 #fonction PIED GAUCHE bouge. A=Pied Droit, B=l'une des mains. C=prise potentielle Pied Gauche
-def PGpeutatteindreC3(A,B,C,Lprises):
-    return(PDpeutatteindreC3(C,B,A,Lprises))
+def PGpeutatteindreC3(A,B,C,main,Lprises,n):
+    return(PDpeutatteindreC3(C,B,A,Lprises,n))
 
-#fonction PIED DROIT bouge. A=Pied Gauche, B=l'une des mains. C=prise potentielle Pied Droit
-def PDpeutatteindreC3(A,B,C,Lprises):
+#fonction PIED DROIT bouge. A=Pied Gauche, B=l'une des mains (main = 2 ou 3), C=prise potentielle Pied Droit
+def PDpeutatteindreC3(A,B,C,main,Lprises,n): 
     if C[1]>=B[1]:
         return((False,0)) #attention à l'ordre des arguments
     else:
@@ -74,17 +76,17 @@ def PDpeutatteindreC3(A,B,C,Lprises):
                 hch_p=6*(10/A[3]-10/d2pieds)/B[3] #/b3 car c'est plus dur de changer de pied quand la prise de main est petite, 6 à changer
             return((True,hch_p)) 
         elif dab>=b+t:
-            return(PDcas1(A,B,C,dab,Lprises))
+            return(PDcas1(A,B,C,main,dab,Lprises,n))
         elif dab>=j:
-            return(PDcas2(A,B,C,dab,j,Lprises))
+            return(PDcas2(A,B,C,main,dab,j,Lprises,n))
         elif dab>=dmin:
-            return(PDcas2(A,B,C,dab,dab,Lprises))
+            return(PDcas2(A,B,C,main,dab,dab,Lprises,n))
 
-def PDcas1(A,B,C,dab,Lprises):
+def PDcas1(A,B,C,main,dab,Lprises,n):
     hloin=0
     hcroisé=0
     hinstable=0
-    hmm=0
+    hsouple=0
     possible=False
     if adroite(A,B,C): #bon côté
         E=((B[0]-A[0])*j/dab+A[0],(B[1]-A[1])*j/dab+A[1])
@@ -132,12 +134,17 @@ def PDcas1(A,B,C,dab,Lprises):
         L=dsouple-abs(pper(A,B,A,C))
         if L>=0:
             hsouple=L/10*(d(A,B)/(j+t+b))**2*10
-    return(possible, hcroisé+hloin+hinstable+hsouple)
+        if n==3:
+            h = (hcroisé+hloin+hsouple+hinstable + hmm3(A,B,C,main))/(A[3]+B[3]+C[3])
+        elif n==4:
+            h=hcroisé+hloin+hsouple
+    return(possible, h)
 
-def PDcas2(A,B,C,dab,l,Lprises):
+def PDcas2(A,B,C,main,dab,l,Lprises,n):
     hloin=0
     hcroisé=0
     hinstable=0
+    hsouple=0
     possible=False
     if adroite(A,B,C): #bon côté
         E=((B[0]-A[0])*j/dab+A[0],(B[1]-A[1])*j/dab+A[1])
@@ -164,7 +171,7 @@ def PDcas2(A,B,C,dab,l,Lprises):
                 if L<dloin :
                     hloin=(dloin-L)*5/dloin           
     else: #mauvais côté
-        hcroisé=2
+        hcroisé=2 # 2 à changer ?
         if cossc(A,B,C)<=0:
             L=j-d(A,C)
             if L>=0 :
@@ -184,14 +191,18 @@ def PDcas2(A,B,C,dab,l,Lprises):
         L=dsouple-abs(pper(A,B,A,C))
         if L>=0:
             hsouple=L/10*(d(A,B)/(j+t+b))**2*10
-    return(possible, hcroisé+hloin+hinstable+hsouple)
+        if n==3:
+            h =  (hcroisé+hloin+hsouple+hinstable + hmm3(A,B,C,main))/(A[3]+B[3]+C[3])
+        elif n==4:
+            h =  hcroisé+hloin+hsouple
+    return(possible, h)
 
-#fonction MAIN GAUCHE bouge. A=l'un des pieds, B=main droite. C=prise potentielle Main Gauche
-def MGpeutatteindreC3(A,B,C,Lprises):
-    return(MDpeutatteindreC3(A,C,B,Lprises))
+#fonction MAIN GAUCHE bouge. A=l'un des pieds (pied = 0 ou 1), B=main droite. C=prise potentielle Main Gauche
+def MGpeutatteindreC3(A,B,C,pied,Lprises,n):
+    return(MDpeutatteindreC3(A,C,B,Lprises,n))
     
 #fonction MAIN DROITE bouge. A=l'un des pieds, B=main gauche. C=prise potentielle Main Droite
-def MDpeutatteindreC3(A,B,C,Lprises):
+def MDpeutatteindreC3(A,B,C,pied,Lprises,n):
     if C[1]<=A[1]:
         return((False,0)) #attention à l'ordre des arguments
     else:
@@ -203,11 +214,11 @@ def MDpeutatteindreC3(A,B,C,Lprises):
                 hch_m=4*(10/B[3]-10/d2mains)/A[3] #/b3 car c'est plus dur de changer de main quand la prise de pied est petite, 4 à changer
             return((True,hch_m)) 
         elif dab>=b+t-b:
-            return(MDcas1(A,B,C,dab,Lprises))
+            return(MDcas1(A,B,C,pied,dab,Lprises))
         elif dab>=dmin:
-            return(MDcas2(A,B,C,dab,Lprises))
+            return(MDcas2(A,B,C,pied,dab,Lprises))
 
-def MDcas1(A,B,C,dab,Lprises):
+def MDcas1(A,B,C,pied,dab,Lprises,n):
     hloin=0
     hcroisé=0
     hinstable=0
@@ -234,6 +245,7 @@ def MDcas1(A,B,C,dab,Lprises):
                 if L<dloin :
                     hloin=(dloin-L)*5/dloin
     else: #mauvais côté
+        hcroise = 1 #1 à changer ?
         if cossc(E,A,C)>=0:
             L=b-d(E,C)
             if L>=0 :
@@ -261,9 +273,13 @@ def MDcas1(A,B,C,dab,Lprises):
                     hloin=(dloin-L)*5/dloin
     if possible:
         hinstable = abs(A[0]-(C[0]+B[0])/2)*7/10 #10=10cm, 7 à modifier ?
-    return(possible, hcroisé+hloin+hinstable)
+        if n==3:
+            h = (hcroisé+hloin+hinstable + hmp3(A,B,C,pied))/(A[3]+B[3]+C[3])
+        elif n==4:
+            h=hcroisé+hloin
+    return(possible, h)
 
-def MDcas2(A,B,C,dab,Lprises):
+def MDcas2(A,B,C,pied,dab,Lprises,n):
     hloin=0
     hcroisé=0
     hinstable=0
@@ -275,6 +291,7 @@ def MDcas2(A,B,C,dab,Lprises):
             if L<dloin :
                 hloin=(dloin-L)*5/dloin 
     else: #mauvais côté
+        hcroisé = 1 #1 à changer ?
         if cossc(B,A,C)<=0:
             L=b-d(B,C)
             if L>=0 :
@@ -296,78 +313,117 @@ def MDcas2(A,B,C,dab,Lprises):
                     hloin=(dloin-L)*5/dloin
     if possible:
         hinstable = abs(A[0]-(C[0]+B[0])/2)*7/10 #10=10cm, 7 à modifier ?
-    return(possible, hcroisé+hloin+hinstable)
+        if n==3:
+            h = (hcroisé+hloin+hinstable + hmp3(A,B,C,pied))/(A[3]+B[3]+C[3])
+        elif n==4:
+            h=hcroisé+hloin
+    return(possible, h)
 
-def hlibre(pos):
-    if (pos[0]==[] or pos[1]==[]): #un pied libre
-        h=2
-    if (pos[2]==[] or pos[3]==[]): #une main libre
-        h=h+2
-    return(h)
+#def hlibre(pos):
+
 
 def mp(A,B,C):
-    Bp=[A[0],B[1]]
-    Cp=[A[0],C[1]]
-    t1=d(Bp,B)/d(A,B)
-    t2=d(Cp,C)/d(A,C)
-    hmp=(t1+t2)/2*40 #40 à changer
+    t1=(B[0]-A[0])/d(A,B)
+    t2=(C[0]-A[0])/d(A,C)
+    hmp=abs(t1+t2)/2*40 #40 à changer
     return(hmp)
 
-def hmp3(pos):
-    if pos[0]==-1 :
-        A,B,C=pos[1],pos[2],pos[3]
-        if A[0]<=min(B[0],C[0]):
+def hmp3(A,B,C,pied):
+    if pied==0:
+        if A[0]>=(B[0]+C[0])/2:
             return(mp(A,B,C))
-    elif pos[1]==-1 :
-        A,B,C=pos[0],pos[2],pos[3]
-        if A[0]>=max(B[0],C[0]):
+    elif pied==1:
+        if A[0]<=(B[0]+C[0])/2:
             return(mp(A,B,C))
     
 def mm(A,B,C):
-    Ap=[B[0],A[1]]
-    Cp=[B[0],C[1]]
-    t1=d(Ap,A)/d(A,B)
-    t2=d(Cp,C)/d(C,B)
-    hmm=(t1+t2)/2*20 #20 à changer
+    t1=(B[0]-A[0])/d(A,B)
+    t2=(B[0]-C[0])/d(C,B)
+    hmm=abs(t1+t2)/2*15 #15 à changer
     return(hmm)
     
-def hmm3(pos):
-    if pos[2]==-1 :
-        A,C,B=pos[0],pos[1],pos[3]
-        if B[0]<=min(A[0],C[0]):
-            return(mp(A,B,C))
-    elif pos[3]==-1 :
-        A,C,B=pos[0],pos[1],pos[2]
-        if B[0]>=max(A[0],C[0]):
-            return(mp(A,B,C))
+def hmm3(A,B,C,main):
+    if main==2 :
+        if B[0]<=(A[0]+C[0])/2:
+            return(mm(A,B,C))
+    elif main==3 :
+        if B[0]>=(A[0]+C[0])/2:
+            return(mm(A,B,C))
     
 #def htailleprises(pos):
 
-#def hch_p(pos): #(2p sur la m prise)
+#def hch_p(pos): #(2p sur la m prise) /!\ dépend de la difficulté de la position ! #inséré 
     
 
-#def hch_m(pos): #(2m sur la même prise)
+#def hch_m(pos): #(2m sur la même prise) #inséré
     
-def hsouplesse(pos):
-    if type_de_pos(pos)[0]==3.1:
-        L=dsouple-abs(pper(A,B,A,C))
-        if L>=0:
-            hsouple=L/10*(d(A,B)/(j+t+b))**2*10
-    return(hsouple)
-            
+def hproche(a,b,c,d): #a=pg, b=pd, c=mg, d=md
+    if a[0]<=b[0]:
+        gp,dp=a,b
+    else:
+        gp,dp=b,a
+    if c[0]<=d[0]:
+        gm,dm=c,d
+    else:
+        gm,dm=d,c
+    dmax = max(d(gm,gp),d(dm,dp))
+    return(2*dproche/dmax)
 
+def hinstable(a,b,c,d): #a=pg, b=pd, c=mg, d=md
+    E = [(a[0]+b[0])/2,(a[1]+b[1])/2]
+    F = [(c[0]+d[0])/2,(c[1]+d[1])/2]
+    sina = (abs(F[0]-E[0])/d(E,F) #inclinaison
+    G = [(a[0]+b[0]+c[0]+d[0])/4,(a[1]+b[1]+c[1]+d[1])/4] #barycentre des prises
+    cdg = abs(G[0]-E[0])/10
+    return((sina/3+2/3*cdg)*5) # 5 à changer
 
-#Atention : le booléen renvoyé est bon, mais pas l'heuristique
     
 def MDpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=pd, C=mg
-    return(MDpeutatteindreC3(a,c,d,Lprises) and PDpeutatteindreC3(a,d,b,Lprises) and MDpeutatteindreC3(b,c,d,Lprises))
+    b1,h1 = MDpeutatteindreC3(a,c,d,pied,Lprises,4)
+    b2,h2 = PDpeutatteindreC3(a,d,b,main,Lprises,4) 
+    b3,h3 = MDpeutatteindreC3(b,c,d,pied,Lprises,4)
+    if (b1 and b2 and b3):
+        hproche = hproche(a,b,c,d)
+        hinstable = hinstable(a,b,c,d)
+        h = (max(h1,h2,h3) + hproche + hinstable)/(a[3]+b[1]+c[2]+d[3])
+        return(True,h)
+    else :
+        return(False, 0)
 
 def MGpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=pd, C=md
-    return(MGpeutatteindreC3(a,c,d,Lprises) and PDpeutatteindreC3(a,d,b,Lprises) and MGpeutatteindreC3(b,c,d,Lprises))
+    b1,h1 = MGpeutatteindreC3(a,c,d,pied,Lprises,4)
+    b2,h2 = PDpeutatteindreC3(a,d,b,main,Lprises,4)
+    b3,h3 = MGpeutatteindreC3(b,c,d,pied,Lprises,4)
+    if (b1 and b2 and b3):
+        hproche = hproche(a,b,d,c)
+        hinstable = hinstable(a,b,d,c)
+        h = (max(h1,h2,h3) + hproche + hinstable)/(a[3]+b[1]+c[2]+d[3])
+        return(True,h)
+    else :
+        return(False, 0)
 
 def PDpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=mg, C=md
-    return(PDpeutatteindreC3(a,c,d,Lprises) and MDpeutatteindreC3(d,b,c,Lprises) and PDpeutatteindreC3(a,b,d,Lprises))
+    b1,h1 = PDpeutatteindreC3(a,c,d,main,Lprises,4)
+    b2,h2 = MDpeutatteindreC3(d,b,c,pied,Lprises,4)
+    b3,h3 = PDpeutatteindreC3(a,b,d,main,Lprises,4)
+    if (b1 and b2 and b3):
+        hproche = hproche(a,d,b,c)
+        hinstable = hinstable(a,d,b,c)
+        h = (max(h1,h2,h3) + hproche + hinstable)/(a[3]+b[1]+c[2]+d[3])
+        return(True,h)
+    else :
+        return(False, 0)
 
 def PGpeutatteindreD4(a,b,c,d,Lprises): #A=pd, B=mg, C=md
-    return(PGpeutatteindreC3(a,c,d,Lprises) and MDpeutatteindreC3(d,b,c,Lprises) and PDpeutatteindreC3(a,b,d,Lprises))
+    b1,h1 = PGpeutatteindreC3(a,c,d,main,Lprises,4)
+    b2,h2 = MDpeutatteindreC3(d,b,c,pied,Lprises,4)
+    b3,h3 = PDpeutatteindreC3(a,b,d,main,Lprises,4)
+    if (b1 and b2 and b3):
+        hproche = hproche(d,a,b,c)
+        hinstable = hinstable(d,a,b,c)
+        h = (max(h1,h2,h3) + hproche + hinstable)/(a[3]+b[1]+c[2]+d[3])
+        return(True,h)
+    else :
+        return(False, 0)
+    
 
