@@ -33,3 +33,4 @@ ltmain.sh
 */.libs/*
 
 *.dirstamp
+m4/
