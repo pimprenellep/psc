@@ -1,9 +1,10 @@
 #include "controller.hpp"
 
-Controller::Controller(ClimberModel const * c) :
+Controller::Controller(ClimberModel const * c, StanceGraph const * sg):
 	climber(c),
-	simulator(new Simulator())
+	stanceGraph(sg)
 {
+	simulator = new Simulator(sg->getRoute());
 	simulator->addClimber(climber);
 }
 

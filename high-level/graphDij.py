@@ -1,4 +1,7 @@
 from collections import defaultdict, deque
+from constructiongraphe import*
+
+
 import heapq
 
 
@@ -107,7 +110,6 @@ def dijkstra(graph, source):
     while len(Queue)>0 :
         u= Queue.pop()
         for node in graph.edges[u]:
-            print(u, node)
             distance = dist[u]+graph.distances[(u,node)]
             if(distance < dist[node]):
                 dist[node]= distance
@@ -115,7 +117,7 @@ def dijkstra(graph, source):
                 Queue.push(distance,node)
     return previous, dist
             
-def dij_k_path(graph,source):
+#def dij_k_path(graph,source):
     
 
 
@@ -177,16 +179,25 @@ def shortest_path(graph, origin, destination):
     return visited[destination], list(full_path)
 """
 
-#utilisation de la fonction créégraphe d'Elisabeth avec pondération p entre le coût des postitions et le coût des arrêtes
-def create_Graph(p):
-    (G, Lpos, Lprise)= Creegraphe(Lprise,ini)
+'''utilisation de la fonction crégraphe Elisabeth avec pondération p entre le coût des postitions et le coût des arrêtes'''
+
+def create_Graph(p,Lprise, ini, max):
+    (G, Lpos, n,m)= creegraphe(Lprise,ini)
     graph = GraphDij()
+    source=-1
+    destination=-1
     for i in range(len(Lpos)):
         graph.add_node(i)
+        if(Lpos[i][0]==ini[0] and Lpos[i][1]==ini[1] and Lpos[i][2]==ini[2] and Lpos[i][3]==ini[3]):
+            source=i
+        if Lpos[i][2]==max or Lpos[i][3] == max:
+            destination=i
     for i in range(len(Lpos)):
-        for j in range(len(Lpos[i])):
+        for j in range(len(G[i])):
             #on ajoute le coût de l'arrête +p*le coût du noeud
             graph.add_edge(i,G[i][j][0],G[i][j][1]+p*Lpos[i][4])
+    return (graph, source, destination)
+
 
 """create_Graph(1)
 #ini et final à déterminer
@@ -194,6 +205,32 @@ print(shortest_path(graph,ini, final))
 """
 if __name__ == '__main__':
     graph = GraphDij()
+
+    
+    b=1.75
+    t=1
+    j=2
+    alpha=1.8
+
+    A=[0,0]
+    B=[3,0]
+    C=[2,1]
+    D=[0,3]
+    E=[3,3]
+    F=[2,4]
+    G=[1,5]
+    H=[5,5]
+    I=[3,6]
+
+    Lprises=[A,B,C,D,E,F,G,H,I,[]]
+
+    ini=[0,2,4,-1,20]
+    max =6
+    
+    
+    (graph1, source, destination) = create_Graph(1, Lprises, ini,max)
+    print(len(graph1.nodes))
+    print(short_path(graph1, 0, destination))
 
     for node in [0, 1, 2, 3, 4, 5, 6]:
         graph.add_node(node)

@@ -1,7 +1,9 @@
 from colorthief import ColorThief
 from PIL import Image
 import numpy as np
-from math import*
+from math import *
+
+im = Image.new("RGB", (512, 512), "white")
 img=Image.open('copiedelespoir.bmp')
 color_thief = ColorThief('copiedelespoir.bmp')
 # get the dominant color
@@ -17,17 +19,16 @@ g=dominant_color[2]
 imgN=Image.new(img.mode,img.size)
 imgNN=Image.new(img.mode,img.size)
 
-L=np.zeros((l,c))
+L=np.zeros((l,c)) #matrice de zéros de dim lxc
 
 for i in range(l):
-    for j in range(c):
-        
+    for j in range(c):    
         pixel=img.getpixel((i,j))
-        if abs(pixel[0]-r)<=30 and abs(pixel[1]-b)<=30 and abs(pixel[2]-g)<=30:
+        if abs(pixel[0]-r)<=30 and abs(pixel[1]-b)<=30 and abs(pixel[2]-g)<=30: #on regarde si la couleur de la case est proche de la couleur majoritaire (donc pas intéressante)
             ##imgN.putpixel((i,j),dominant_color)
-            imgN.putpixel((i,j),(256,256,256))
+            imgN.putpixel((i,j),(256,256,256))#colorier le pixel en noir si celui-ci n'est pas intéressant
         else:
-            imgN.putpixel((i,j),pixel)
+            imgN.putpixel((i,j),pixel) 
             L[i][j]=1
 imgN.save('imgN.png')
 

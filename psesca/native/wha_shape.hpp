@@ -7,7 +7,13 @@
 class WHAShape : public Shape {
 	public:
 		WHAShape(float width, float height, float area);
-		virtual void glDraw(float x, float y) const;
+		virtual void getStrips(
+				std::vector<GLfloat> &stripsComponents,
+				std::vector<GLfloat> &stripsNormals,
+				std::vector<unsigned short> &stripsIndexes,
+				std::vector<GLsizei> &stripsCount,
+				glm::mat4 &trans) const;
+		virtual ~WHAShape();
 	private:
 		float width;
 		float height;

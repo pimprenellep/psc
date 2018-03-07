@@ -1,4 +1,4 @@
-from .route import Route, Hold
+from .native import Route, Hold
 from .native import WHAShape
 
 import json
@@ -10,7 +10,6 @@ import json
 class JSONBasicRoute(Route):
     def __init__(self, jtext):
         l = json.loads(jtext)
-        self.holds = [Hold(x=h[0], y=h[1], shape=WHAShape(*h[2:])) for h in l]
-        self.holds.sort(key=lambda h : h.y)
-
-
+        holds = [Hold(x=h[0], y=h[1], shape=WHAShape(*h[2:])) for h in l]
+        holds.sort(key=lambda h : h.y)
+        super().__init__(holds)

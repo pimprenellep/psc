@@ -1,20 +1,27 @@
 #include "simulator.hpp"
 
-Simulator::Simulator() :
-	world(dWorldCreate()),
+const float g =  9.80665;
+
+Simulator::Simulator(Route const* r) :
 	model(0),
+	route(r),
 	ODEParts(0),
-	ODEJoints(0)
+	ODEJoints(0),
+	renderer(new Renderer(route))
 {
 	climber = (struct ClimberModel::ClimberComponents){0, 0, 0, 0};
-	dWorldSetGravity(world, 0.0, - GSL_CONST_MKSA_GRAV_ACCEL, 0.0);
+	dInitODE();
+	world = dWorldCreate();
+	dWorldSetGravity(world, 0.0, -g, 0.0);
 }
 
 Simulator::~Simulator()
 {
 	delete[] ODEParts;
 	delete[] ODEJoints;
+	delete[] ODEMotors;
 	dWorldDestroy(world);
+	delete renderer;
 }
 
 void Simulator::addClimber(ClimberModel const * m)
@@ -24,6 +31,7 @@ void Simulator::addClimber(ClimberModel const * m)
 
 	ODEParts = new dBodyID[climber.nParts];
 	ODEJoints = new dJointID[climber.nJoints];
+	ODEMotors = new dJointID[climber.nJoints];
 	dMass mass;
 
 	for(int ip = 0; ip < climber.nParts; ip++) {
@@ -52,6 +60,12 @@ void Simulator::addClimber(ClimberModel const * m)
 		}
 		dJointAttach(ODEJoints[i],
 				ODEParts[j.parts[0]], ODEParts[j.parts[1]]);
+		//ODEMotors[i] = dJointCreateAMotor(world, 0);
+		ODEMotors[i] = 0;
+		/*
+		   dJointAttach(ODEMotors[i],
+				ODEParts[j.parts[0]], ODEParts[j.parts[1]]);
+				*/
 	}
 
 	bool *closed = new bool[climber.nParts]{false};
@@ -122,9 +136,48 @@ void Simulator::dumpFromOde() const
 
 bool Simulator::tests() const
 {
+	bool failed = false;
+
 	dumpFromOde();
+	failed = failed || testFreeFall(100.0, 1e5, 1e-6);
 	return false;
 }
+
+bool Simulator::testFreeFall(float time, int divs, float tolerance) const
+{
+	std::cout << "Test : free fall, time="<<time
+		<<", divs="<<divs
+		<<", tolerance="<<tolerance
+		<< std::endl;
+
+	float theo = -g * time * time / 2.0;
+	Morphology::Part ref = Morphology::HEAD;
+	dReal pos0[3];
+	const dReal * pos = dBodyGetPosition(ODEParts[ref]);
+	for(int d = 0; d < 3; d++) pos0[d] = pos[d];
+
+	for(int i = 0; i < divs; i++) {
+		dWorldStep(world, time/divs);
+	}
+	pos = dBodyGetPosition(ODEParts[ref]);
+	dReal delta[3];
+	for(int d = 0; d < 3; d++) delta[d] = pos[d] - pos0[d];
+	delta[1] -= theo;
+
+	float err2 = 0;
+	for(int d = 0; d < 3; d++) err2 += delta[d]*delta[d];
+	err2 /= theo*theo;
+
+	bool failed = (err2 > tolerance);
+	std::cout << "Test free fall "
+		<< (failed ? "failed" : "passed") << ". "
+		"(err2="<<err2<<", "
+		"tolerance="<<tolerance<<")"
+		<<std::endl;
+	return failed;
+}
+
+
 
 
 
