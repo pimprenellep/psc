@@ -7,6 +7,22 @@ AM_INIT_AUTOMAKE([subdir-objects])
 LT_INIT
 AC_CONFIG_SRCDIR([psesca/native/controller.cpp])
 AC_CONFIG_HEADERS([config.h])
+AC_CANONICAL_HOST
+
+case "${host_os}" in
+    linux*)
+	AC_SUBST([pymod_ext], [so])
+	AC_SUBST([so_ext], [so])
+        ;;
+    cygwin*|mingw*)
+	AC_SUBST([pymod_ext], [pyd])
+	AC_SUBST([so_ext], [dll])
+        ;;
+    *)
+        AC_MSG_ERROR(["OS $host_os is not supported"])
+        ;;
+esac
+
 
 # Checks for programs.
 AC_PROG_CXX

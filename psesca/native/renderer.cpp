@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <cassert>
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -23,7 +25,7 @@ Renderer::Renderer(const Route *r) :
 	sampling(4),
 	display(EGL_NO_DISPLAY),
 	context(EGL_NO_CONTEXT),
-	stripsFirst(0)
+	routeStripsFirst(0)
 {
 	initContext();
 	if(context == EGL_NO_CONTEXT)
@@ -259,9 +261,9 @@ void Renderer::initProjection()
 }
 
 void Renderer::loadRoute()
-{
-	GLuint routeArray, routeBuffer, normalsBuffer;
-	
+{ std::vector<GLfloat> stripsComponents;
+	std::vector<GLfloat> stripsNormals;
+
 	const int nHolds = route->getNHolds();
 	const Hold *holds = route->getHolds();
 
@@ -272,12 +274,12 @@ void Renderer::loadRoute()
 				0.0, 0.0, 1.0, 0.0,
 				holds[i].x, holds[i].y, 0.0, 1.0
 			       );
-		holds[i].shape->getStrips(stripsComponents, stripsNormals, stripsIndexes, stripsCount, trans);
+		holds[i].shape->getStrips(stripsComponents, stripsNormals, routeStripsIndexes, routeStripsCount, trans);
 	}
 	GLsizei bufSize = stripsComponents.size() * sizeof(stripsComponents[0]);
 
 	glGenBuffers(1, &routeBuffer);
-	glGenBuffers(1, &normalsBuffer);
+	glGenBuffers(1, &routeNormalsBuffer);
 	glGenVertexArrays(1, &routeArray);
 
 	glBindVertexArray(routeArray);
@@ -289,12 +291,12 @@ void Renderer::loadRoute()
 			GL_STATIC_DRAW);
 	glBindVertexBuffer(0, routeBuffer, 0, 3 * sizeof(stripsComponents[0]));
 
-	glBindBuffer(GL_ARRAY_BUFFER, normalsBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, routeNormalsBuffer);
 	glBufferData(GL_ARRAY_BUFFER, 
 			bufSize,
 			&(stripsNormals[0]),
 			GL_STATIC_DRAW);
-	glBindVertexBuffer(1, normalsBuffer, 0, 3 * sizeof(stripsNormals[0]));
+	glBindVertexBuffer(1, routeNormalsBuffer, 0, 3 * sizeof(stripsNormals[0]));
 
 	glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);
 	glVertexAttribBinding(0, 0);
@@ -304,24 +306,68 @@ void Renderer::loadRoute()
 	glVertexAttribBinding(1, 1);
 	glEnableVertexAttribArray(1);
 
-	int nStrips = stripsCount.size();
-	stripsFirst = new unsigned short* [nStrips];
+	int nStrips = routeStripsCount.size();
+	routeStripsFirst = new unsigned short* [nStrips];
 	
 	int cum = 0;
-	stripsFirst[0] = &(stripsIndexes[0]);
+	routeStripsFirst[0] = &(routeStripsIndexes[0]);
 	for(int i = 1; i < nStrips; i++) {
-		cum += stripsCount[i-1];
-		stripsFirst[i] = &(stripsIndexes[cum]);
+		cum += routeStripsCount[i-1];
+		routeStripsFirst[i] = &(routeStripsIndexes[cum]);
 	}
 }
+
+void Renderer::initGeoms()
+{
+	int divs = 73;
+	
+	cylFirsts[0] = 0;
+	cylCounts[0] = divs + 1 + 1;
+	cylFirsts[1] = cylCounts[0];
+	cylCounts[1] = cylCounts[0];
+	cylFirsts[2] = cylFirsts[1] + cylCounts[1];
+	cylCounts[2] = 2*divs + 2;
+	unsigned count = cylCounts[0] + cylCounts[1] + cylCounts[2];
+	GLfloat * components = new GLfloat[3*count];
+	GLfloat *cmpBot = components + 1;
+	GLfloat *cmpTop = components + 3*cylFirsts[1] + 1;
+	GLfloat *cmpSide = components + 3*cylFirsts[2];
+
+	
+	for(int i = 0; i < divs; i++) {
+		float c = cos(2*i*M_PI/divs);
+		float s = sin(2*i*M_PI/divs);
+		cmpBot[3*i] = c;
+		cmpBot[3*i+1] = s;
+		cmpBot[3*i+2] = 0.0;
+		cmpTop[3*i] = c;
+		cmpTop[3*i+1] = s;
+		cmpTop[3*i+2] = 1.0;
+		std::copy(cmpBot+3*i, cmpBot+3*i+3,
+				cmpSide+3*2*i);
+		std::copy(cmpTop+3*i, cmpTop+3*i+3,
+				cmpSide+3*2*i+3);
+	}
+
+	glGenVertexArrays(1, &cylArray);
+	glGenBuffers(1, &cylBuffer);
+	
+	glBindBuffer(GL_ARRAY_BUFFER, cylBuffer);
+	glBufferData(GL_ARRAY_BUFFER, 3*count*sizeof(*components), components, GL_STATIC_DRAW);
+
+
+
+	delete[] components;
+}
+
 
 void Renderer::draw()
 {
 	glMultiDrawElements(GL_TRIANGLE_STRIP,
-			&(stripsCount[0]),
+			&(routeStripsCount[0]),
 			GL_UNSIGNED_SHORT,
- 			(void**)stripsFirst,
-			stripsCount.size());
+ 			(void**)routeStripsFirst,
+			routeStripsCount.size());
 
 	glFinish();
 }
@@ -449,7 +495,7 @@ void Renderer::printGLError()
 
 Renderer::~Renderer()
 {
-	delete[] stripsFirst;
+	delete[] routeStripsFirst;
 	/*
 	glFinish();
 	glUseProgram(0);

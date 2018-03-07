@@ -29,6 +29,7 @@ class Renderer {
 		void loadShaders();
 		void initProjection();
 		void loadRoute();
+		void initGeoms();
 		void printGLError();
 		void printEGLError();
 		void printGLDebug();
@@ -50,11 +51,14 @@ class Renderer {
 		GLuint fragmentShader;
 		GLuint program;
 
-		std::vector<GLfloat> stripsComponents;
-		std::vector<GLfloat> stripsNormals;
-		std::vector<unsigned short> stripsIndexes;
-		std::vector<GLsizei> stripsCount;
-		unsigned short ** stripsFirst;
+		GLuint routeArray, routeBuffer, routeNormalsBuffer;
+		std::vector<unsigned short> routeStripsIndexes;
+		std::vector<GLsizei> routeStripsCount;
+		unsigned short ** routeStripsFirst;
+
+		GLuint cylArray, cylBuffer, cylNormalsBuffer;
+		GLsizei cylCounts[3];
+		unsigned short cylFirsts[3];
 
 };
 

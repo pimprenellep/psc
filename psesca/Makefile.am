@@ -17,10 +17,10 @@ native_la_SOURCES = native.cpp \
 	native/vertex.s		\
 	native/fragment.s
 
-all-local : native.so
+all-local : native.${pymod_ext}
 
-native.so : native.la
-	cp -uL .libs/native.so $@
+native.${pymod_ext} : native.la
+	cp -uL .libs/native.${so_ext} $@
 
 %.s : %.glsl
 	touch $@
