@@ -1,1 +1,5 @@
-native.cpp
+*.egg-info
+/*.cpp
+native/shaders.cpp
+*.ts
+setup.py

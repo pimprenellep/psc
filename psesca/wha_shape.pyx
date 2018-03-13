@@ -1,4 +1,4 @@
-from shape cimport _Shape
+from shape cimport _Shape, Shape
 from wha_shape cimport _WHAShape
 
 cdef class WHAShape(Shape) :

@@ -1,5 +1,5 @@
 from .dijkstraexplorer import DijkstraExplorer
-from .native import Controller
+from .controller import Controller
 
 class DefaultFactory:
 

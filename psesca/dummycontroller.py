@@ -1,4 +1,4 @@
-from .native import Controller
+from .controller import Controller
 
 
 class DummyController(Controller):

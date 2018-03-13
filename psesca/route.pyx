@@ -1,13 +1,12 @@
 from collections import namedtuple
 
 from route cimport _Hold, _Route
-from shape cimport _Shape
+from shape cimport Shape
 from libc.stdlib cimport malloc
 
 Hold=namedtuple("Hold", ["x", "y", "shape"])
 
 cdef class Route:
-    cdef _Route *thisptr
     ## Constructor meant to be called by subclasses
     # holds is a list of Hold named tuples, shape must
     #  be a wrapper of a native shape object or one of

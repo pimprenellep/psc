@@ -1,5 +1,5 @@
-from .native import Route, Hold
-from .native import WHAShape
+from .route import Route, Hold
+from .wha_shape import WHAShape
 
 import json
 

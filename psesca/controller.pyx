@@ -1,8 +1,8 @@
 from controller cimport _Controller
+from climbermodel cimport ClimberModel
+from stancegraph cimport StanceGraph
 
 cdef class Controller:
-    cdef _Controller * thisptr
-
     def __init__(self, ClimberModel climber, StanceGraph stanceGraph):
         self.thisptr = new _Controller(climber.thisptr, stanceGraph.thisptr)
 
