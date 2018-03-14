@@ -1,5 +1,6 @@
 #include "simulator.hpp"
 
+#include <iostream>
 #include <algorithm>
 const float g =  9.80665;
 
@@ -44,7 +45,7 @@ void Simulator::addClimber(ClimberModel const * m)
 		ODEParts[ip] = dBodyCreate(world);
 		switch(p.shape) {
 		case ClimberModel::PS_CYLINDER:
-			dMassSetCylinder(&mass, p.mass, 2,
+			dMassSetCylinderTotal(&mass, p.mass, 2,
 					0.5 * std::min(p.bbox[0], p.bbox[1]),
 					p.bbox[1]);
 			break;

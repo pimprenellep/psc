@@ -1,5 +1,7 @@
 #include "morphology.hpp"
 
+#include <iostream>
+
 Morphology::Morphology(float h, float m) :
 	mass(m),
 	height(h)

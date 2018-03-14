@@ -21,8 +21,8 @@ Renderer::Renderer(const Route *r) :
 	route(r),
 	width(1024),
 	height(768),
-	ctx(0),
 	sampling(4),
+	ctx(0),
 	routeStripsFirst(0)
 {
 	ctx = new GLContext();
