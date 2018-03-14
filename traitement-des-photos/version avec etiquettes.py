@@ -115,6 +115,8 @@ def echelle(colors,Liste_barycentres):
     print("hauteur pix = ", hauteur_pix)
     #print("min =", i)
     taille_pixel = 0.24/hauteur_pix
+    del Liste_barycentres[i]
+    del colors[i]
     return(taille_pixel, i)
 
 echelle = echelle(colors, Liste_barycentres)
