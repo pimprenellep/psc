@@ -35,6 +35,8 @@ imgN.save('imgN.png')
 ##parcours matrice cases adjacentes afin de délimiter les prises
 
 n=max(l,c)
+taille_pixel_h=0
+taille_pixel_l=0
 #n=5
 #M=[[0,0,1,0,0],[0,1,1,1,0],[0,0,0,1,0],[0,0,0,0,0],[1,1,1,1,0]]
 Liste_barycentres=[]
@@ -45,6 +47,7 @@ for i in range(l-1):
             bas_max=i
             gauche_max=j
             droite_max=j
+            color_min=(256,256,256)
             L[i][j]=2
             nb_pixel=1
             #on parcourt les cases adjacentes
@@ -77,13 +80,22 @@ for i in range(l-1):
                         haut_max=i
                     if bas_max>i:
                         bas_max=i
+                    pixel=img.getpixel((i,j))
+                    if color_min[0]>pixel[0]:
+                        color_min[0]=pixel[0]
+                    if color_min[1]>pixel[1]:
+                        color_min[1]=pixel[1]
+                    if color_min[2]>pixel[2]:
+                        color_min[2]=pixel[2]
                     nb_pixel+=1
                     dejavues[i][j] = True
                     L[i][j]=2
                     p.append((i,j))
-            if(nb_pixel>100):        
+            if(nb_pixel>(l*c)/4800):        
                 Liste_barycentres.append([int(floor((haut_max+bas_max)/2)),int(floor((gauche_max+droite_max)/2)), int(floor((haut_max - bas_max)/2)), int(floor((droite_max - gauche_max)/2)), nb_pixel])
-
+                if((color_min[0]<10)and(color_min[1]<10)and(color_min[2]<10)):
+                    echelle = 0,24/(haut_max-bas_max)
+                
 
 
 def proche_gris(pixel1):
