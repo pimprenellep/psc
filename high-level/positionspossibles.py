@@ -372,9 +372,9 @@ def hproche(a,b,c,d): #a=pg, b=pd, c=mg, d=md
 def hinstable(a,b,c,d): #a=pg, b=pd, c=mg, d=md
     E = [(a[0]+b[0])/2,(a[1]+b[1])/2]
     F = [(c[0]+d[0])/2,(c[1]+d[1])/2]
-    sina = (abs(F[0]-E[0])/d(E,F) #inclinaison
-    G = [(a[0]+b[0]+c[0]+d[0])/4,(a[1]+b[1]+c[1]+d[1])/4] #barycentre des prises
-    cdg = abs(G[0]-E[0])/10
+    sina = abs(F[0]-E[0])/d(E,F) #inclinaison
+    g = [(a[0]+b[0]+c[0]+d[0])/4,(a[1]+b[1]+c[1]+d[1])/4] #barycentre des prises
+    cdg = abs(g[0]-E[0])/10
     return((sina/3+2/3*cdg)*5) # 5 à changer
 
     

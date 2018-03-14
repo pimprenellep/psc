@@ -131,21 +131,21 @@ def voisins_de_pos_4prises(pos,Lprises,G,Lpos,file,courant):
             if possible:
                 v=[a,b,c,i,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
         #md bouge, mg pd posés, pg laché -> pos 3 prises
             (possible,diff)=MDpeutatteindreC3(pd,mg,1,I,Lprises,3)
             if possible:
                 v=[-1,b,c,i,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
         #md bouge, mg pg posés, pd laché -> pos 3 prises
             (possible,diff)=MDpeutatteindreC3(pg,mg,I,0,Lprises,3)
             if possible:
                 v=[a,-1,c,i,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
     #mg bouge -> pos 4 prises
         if I!= mg :
@@ -153,21 +153,21 @@ def voisins_de_pos_4prises(pos,Lprises,G,Lpos,file,courant):
             if possible:
                 v=[a,b,i,d,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
         #mg bouge, md pd posés, pg laché -> pos 3 prises
             (possible,diff)=MGpeutatteindreC3(pd,md,I,1,Lprises,3)
             if possible:
                 v=[-1,b,i,d,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
         #mg bouge, md pg posés, pd laché -> pos 3 prises
             (possible,diff)=MGpeutatteindreC3(pg,md,I,0,Lprises,3)
             if possible:
                 v=[a,-1,i,d,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
 #pbas_p = indice dans Lprises de la prise la plus basse qu'on essaye d'attraper avec le pied, phaut_p = " " " la plus haute " " "
     pbas_p, phaut_p = bashaut4_p(Lprises,pos,Lpos)
@@ -179,21 +179,21 @@ def voisins_de_pos_4prises(pos,Lprises,G,Lpos,file,courant):
             if possible:
                 v=[a,j,c,d,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
         #pd bouge, pg mg posés, md lachée -> pos 3 prises
             (possible,diff)=PDpeutatteindreC3(pg, mg,J,2,Lprises,3)
             if possible:
                 v=[a,j,c,-1,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
         #pd bouge, pg md posés, mg lachée -> pos 3 prises
             (possible,diff)=PDpeutatteindreC3(pg,md,J,3,Lprises,3)
             if possible:
                 v=[a,j,-1,d,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
     #pg bouge -> pos 4 prises
         if J != pg:
@@ -201,21 +201,21 @@ def voisins_de_pos_4prises(pos,Lprises,G,Lpos,file,courant):
             if possible:
                 v=[j,b,c,d,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
         #pg bouge, pd mg posés, md lachée -> pos 3 prises
             (possible,diff)=PGpeutatteindreC3(pd, mg, J,2,Lprises,3)
             if possible:
                 v=[j,b,c,-1,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
         #pg bouge, pd md posés, mg lachée -> pos 3 prises
             (possible,diff)=PGpeutatteindreC3(pd, md, J,3,Lprises,3)
             if possible:
                 v=[j,b,-1,d,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
     return(voisins,Lpos,file)
 
@@ -231,7 +231,7 @@ def voisins_de_pos_31prises(pos,Lprises,main,G,Lpos,file,courant): #2 pieds, 1 m
     md=Lprises[d]   
     v=[a,b,d,c]+Lpos[pos][4:] #changement de main
     Lpos, k, file, courant=presente(v,Lpos,file,courant)
-    cout=hmouvement(pos,v)
+    cout=hmouvement(pos,v,Lprises,Lpos)
     voisins=voisins+[(k,cout)]
       #vers position 4 prises
     bas_m, haut_m = bashaut4_m(Lprises,pos,Lpos) 
@@ -242,14 +242,14 @@ def voisins_de_pos_31prises(pos,Lprises,main,G,Lpos,file,courant): #2 pieds, 1 m
             if possible:
                 v=[a,b,c,i,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
         elif main==3:
             (possible,diff)=MGpeutatteindreD4(pg,pd,md,I,Lprises)
             if possible:
                 v=[a,b,i,d,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
       #vers position 3 prises
     bas_p, haut_p = bashaut3_p(Lprises,pos,main,Lpos)
@@ -260,14 +260,14 @@ def voisins_de_pos_31prises(pos,Lprises,main,G,Lpos,file,courant): #2 pieds, 1 m
             if possible:
                 v=[a,i,c,d,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
         if I != pg:        
             (possible,diff)=PGpeutatteindreC3(pd,Lprises[Lpos[pos][main]],I,main,Lprises,3) #pg bouge
             if possible:
                 v=[i,b,c,d,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
     for i in range( ): #attention
         I=Lprises[i]
@@ -278,7 +278,7 @@ def voisins_de_pos_31prises(pos,Lprises,main,G,Lpos,file,courant): #2 pieds, 1 m
                     if possible:
                         v=[a,-1,c,i,diff]
                         Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                        cout=hmouvement(pos,v)
+                        cout=hmouvement(pos,v,Lprises,Lpos)
                         voisins=voisins+[(k,cout)]
             elif main==3:
                 if I != md:
@@ -286,7 +286,7 @@ def voisins_de_pos_31prises(pos,Lprises,main,G,Lpos,file,courant): #2 pieds, 1 m
                     if possible:
                         v=[a,-1,i,d,diff]
                         Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                        cout=hmouvement(pos,v)
+                        cout=hmouvement(pos,v,Lprises,Lpos)
                         voisins=voisins+[(k,cout)]
         elif pd[1]>=pg[1]: #pg se lache
             if main==2:
@@ -295,7 +295,7 @@ def voisins_de_pos_31prises(pos,Lprises,main,G,Lpos,file,courant): #2 pieds, 1 m
                     if possible:
                         v=[-1,b,c,i,diff]
                         Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                        cout=hmouvement(pos,v)
+                        cout=hmouvement(pos,v,Lprises,Lpos)
                         voisins=voisins+[(k,cout)]
             elif main==3:
                 if I != md:
@@ -303,7 +303,7 @@ def voisins_de_pos_31prises(pos,Lprises,main,G,Lpos,file,courant): #2 pieds, 1 m
                     if possible:
                         v=[-1,b,i,d,diff]
                         Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                        cout=hmouvement(pos,v)
+                        cout=hmouvement(pos,v,Lprises,Lpos)
                         voisins=voisins+[(k,cout)]
     return(voisins,Lpos,file)
 
@@ -319,7 +319,7 @@ def voisins_de_pos_32prises(pos,Lprises,pied,G,Lpos,file,courant): #1 pied, 2 ma
     md=Lprises[d]
     v=[b,a]+Lpos[pos][2:] #changement de pied
     Lpos, k, file, courant=presente(v,Lpos,file,courant)
-    cout=hmouvement(pos,v)
+    cout=hmouvement(pos,v,Lprises,Lpos)
     voisins=voisins+[(k,cout)]
       #vers poition 4 prises
     bas_p, haut_p = bashaut4_p(Lprises,pos,Lpos) 
@@ -330,14 +330,14 @@ def voisins_de_pos_32prises(pos,Lprises,pied,G,Lpos,file,courant): #1 pied, 2 ma
             if possible:
                 v=[a,i,c,d,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
         elif pied==1:
             (possible,diff)=PGpeutatteindreD4(pd,mg,md,I,Lprises)
             if possible:
                 v=[i,b,c,d,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
       #vers position 3 prises
     bas_m, haut_m = bashaut3_m(Lprises,pos,pied,Lpos)
@@ -348,14 +348,14 @@ def voisins_de_pos_32prises(pos,Lprises,pied,G,Lpos,file,courant): #1 pied, 2 ma
             if possible:
                 v=[a,b,c,i,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
         if I != mg:
             (possible,diff)=MGpeutatteindreC3(Lprises[Lpos[pos][pied]],md,I,pied,Lprises,3) #mg bouge
             if possible:
                 v=[a,b,i,d,diff]
                 Lpos, k, file, courant=presente(v,Lpos,file,courant)
-                cout=hmouvement(pos,v)
+                cout=hmouvement(pos,v,Lprises,Lpos)
                 voisins=voisins+[(k,cout)]
     pbas_p, phaut_p = bashaut4_p(Lprises,pos,Lpos)
     for i in range(pbas_p, phaut_p+1):
@@ -364,11 +364,11 @@ def voisins_de_pos_32prises(pos,Lprises,pied,G,Lpos,file,courant): #1 pied, 2 ma
         if possible:
             v=[i,b,c,d,diff]
             Lpos, k, file, courant=presente(v,Lpos,file,courant)
-            cout=hmouvement(pos,v)
+            cout=hmouvement(pos,v,Lprises,Lpos)
             voisins=voisins+[(k,cout)]
             w=[a,i,c,d,diff]
             Lpos, l, file, courant=presente(w,Lpos,file,courant)
-            cout=hmouvement(pos,w)
+            cout=hmouvement(pos,w,Lprises,Lpos)
             voisins=voisins+[(l,cout)]
     return(voisins,Lpos,file)
 
@@ -444,11 +444,16 @@ def hgrandmouv(a,b,c,d,ap,bp,cp,dp):
 def htravailgrav(a,b,c,d,ap,bp,cp,dp):
     return( (bary(f)[1]-bary(i)[1])/10*1 )  #1 à changer
 
-def hpetitappui(a,b,c,d,ap,bp,cp,dp):
-    tdp1 = type_de_pos([a,b,c,d])
-    tdp2 = type_de_pos([ap,bp,cp,dp])
-    
-    return(1)
+def hpetitappui(a,b,c,d,ap,bp,cp,dp, Lprises):
+    p1=[a,b,c,d]
+    p2=[ap,bp,cp,dp]
+    tdp1 = type_de_pos(p1)
+    tdp2 = type_de_pos(p2)
+    somme_tailles = 0
+    for i in range(4): #trouver les appuis
+        if ((p1[i]==p2[i]) and (p1[i] != -1)):
+            somme_tailles = somme_tailles + Lprises[p1[i]][3]
+    return(somme_tailles)
 
 def hdynamique(a,b,c,d,ap,bp,cp,dp):
     tdp1 = type_de_pos([a,b,c,d])[0]
@@ -460,10 +465,22 @@ def hdynamique(a,b,c,d,ap,bp,cp,dp):
     else :
         return(0)
 
-def htraction(a,b,c,d,ap,bp,cp,dp):
-    return(1)
+def hadherence(a,b,c,d,ap,bp,cp,dp):
+    p1 = [a,b,c,d]
+    p2 = [ap,bp,cp,dp]
+    tdp1 = type_de_pos(p1)
+    tdp2 = type_de_pos(p2)
+    if ((tdp1 == tdp2) and (tdp1[0]==3.2)):
+        return(d(p1[tdp1[1]],p2[tdp1[1]])/10*3) #3 à changer
+    else:
+        return(0)
+
+def hinst(a,b,c,d,ap,bp,cp,dp):
     
-def hmouvement(i,f):
+    return(1)
+
+    
+def hmouvement(i,f,Lprises,Lpos):
     a=Lprises[Lpos[i][0]]
     b=Lprises[Lpos[i][1]]
     c=Lprises[Lpos[i][2]]
@@ -472,14 +489,12 @@ def hmouvement(i,f):
     bp=Lprises[Lpos[f][1]]
     cp=Lprises[Lpos[f][2]]
     dp=Lprises[Lpos[f][3]]
-    return( hgrandmouv(a,b,c,d,ap,bp,cp,dp) + htravailgrav(a,b,c,d,ap,bp,cp,dp) + hpetitappui(a,b,c,d,ap,bp,cp,dp) + hdynamique(a,b,c,d,ap,bp,cp,dp) + htraction(a,b,c,d,ap,bp,cp,dp) )
-    
+    return((hgrandmouv(a,b,c,d,ap,bp,cp,dp) + htravailgrav(a,b,c,d,ap,bp,cp,dp) + hinst(a,b,c,d,ap,bp,cp,dp) + hdynamique(a,b,c,d,ap,bp,cp,dp) + hadherence(a,b,c,d,ap,bp,cp,dp))/hpetitappui(a,b,c,d,ap,bp,cp,dp,Lprises))
 
-    
 
 # le graphe
 def creegraphe(Lprises, ini):
-    Lprises=echange_xy(Lprises)
+    #Lprises=echange_xy(Lprises)
     G=[]
     Lpos=[ini]
     file=[0] #ce sont des indices des positions dans la liste "Lpos"
