@@ -166,7 +166,8 @@ def print_voie(L):
                 if abs(256-r)>30 and abs(256-b)>=30 and abs(256-g)>=30:
                     imgNN.putpixel((Liste[0]+i-Liste[2]+1,Liste[1]+j-Liste[3]+1), pixel)
     return Liste
-    imgNN.save('voie_L.png')
-    imgNN.show()
+   
+imgNN.save('voie_L.png')
+imgNN.show()
 
                                 
