@@ -15,38 +15,111 @@ class GraphDij(object):
         self.edges[to_node].append(from_node)
         self.distances[(from_node, to_node)] = distance
 
+class Heap(object):
+    """ A neat min-heap wrapper which allows storing items by priority
+        and get the lowest item out first (pop()).
+        Also implements the iterator-methods, so can be used in a for
+        loop, which will loop through all items in increasing priority order.
+        Remember that accessing the items like this will iteratively call
+        pop(), and hence empties the heap! """
 
-def dijkstra(graph, initial):
-    visited = {initial: 0}
-    path = {}
+    def __init__(self):
+        """ create a new min-heap. """
+        self._heap = []
 
-    nodes = set(graph.nodes)
+    def push(self, priority, item):
+        """ Push an item with priority into the heap.
+            Priority 0 is the highest, which means that such an item will
+            be popped first."""
+        assert priority >= 0
+        heapq.heappush(self._heap, (priority, item))
 
-    while nodes:
-        min_node = None
-        for node in nodes:
-            if node in visited:
-                if min_node is None:
-                    min_node = node
-                elif visited[node] < visited[min_node]:
-                    min_node = node
-        if min_node is None:
-            break
+    def pop(self):
+        """ Returns the item with lowest priority. """
+        item = heapq.heappop(self._heap)[1] # (prio, item)[1] == item
+        return item
 
-        nodes.remove(min_node)
-        current_weight = visited[min_node]
+    def __len__(self):
+        return len(self._heap)
 
-        for edge in graph.edges[min_node]:
-            try:
-                weight = current_weight + graph.distances[(min_node, edge)]
-            except:
-                continue
-            if edge not in visited or weight < visited[edge]:
-                visited[edge] = weight
-                path[edge] = min_node
+    def __iter__(self):
+        """ Get all elements ordered by asc. priority. """
+        return self
 
-    return visited, path
+    def next(self):
+        """ Get all elements ordered by their priority (lowest first). """
+        try:
+            return self.pop()
+        except IndexError:
+            raise StopIteration
 
+
+def dijkstra(graph, source):
+    n=len(graph.nodes)
+    dist=[10000000]*n
+    previous = [0]*n
+    for i in range(n):
+        previous[i]=-1
+    dist[source]=0
+    Queue = Heap()
+    Queue.push(0,source)
+    while len(Queue)>0 :
+        u= Queue.pop()
+        for node in graph.edges[u]:
+            distance = dist[u]+graph.distances[(u,node)]
+            if(distance < dist[node]):
+                dist[node]= distance
+                previous[node]=u
+                Queue.push(distance,node)
+    return previous, dist
+            
+
+
+
+def dijkstra(graph, source):
+    n=len(graph.nodes)
+    dist=[10000000]*n
+    previous = [0]*n
+    for i in range(n):
+        previous[i]=-1
+    dist[source]=0
+    Queue = Heap()
+    Queue.push(0,source)
+    while len(Queue)>0 :
+        u= Queue.pop()
+        for node in graph.edges[u]:
+            distance = dist[u]+graph.distances[(u,node)]
+            if(distance < dist[node]):
+                dist[node]= distance
+                previous[node]=u
+                Queue.push(distance,node)
+    return previous, dist
+            
+def dij_k_path(graph,source, destination):
+    n=len(graph.nodes)
+    dist=[10000000]*n
+    previous = np.zeros(n,k)
+    for i in range(n):
+        previous[i]=-1
+    dist[source]=0
+    Queue = Heap()
+    Queue.push(0,(source,0))
+    etape =[0]*n
+    S= graph.nodes
+    while len(Queue)>0 and etape[destination]:
+        (u,n)=Queue.pop()
+        S.remove(u)
+        if u!= destination:
+            for node in graph.edges[u]:
+                distance = dist[u]+graph.distances[(u,node)]
+                Queue.push(distance,(node,etape[node]))
+                etape[node]+=1
+                previous[node][etape[node]]=[u,n]
+
+            
+        
+        
+    
 
 def shortest_path(graph, origin, destination):
     visited, paths = dijkstra(graph, origin)
