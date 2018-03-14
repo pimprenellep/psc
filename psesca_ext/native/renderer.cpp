@@ -26,7 +26,10 @@ Renderer::Renderer(const Route *r) :
 	routeStripsFirst(0)
 {
 	ctx = new GLContext();
-
+	if (!ctx->isValid()) {
+		std::cerr << "Cannot create GL context" << std::endl;
+		return;
+	}
 	std::cerr << "Api initialized :" << std::endl;
 	std::cerr << glGetString(GL_VENDOR) << std::endl;
 	std::cerr << glGetString(GL_RENDERER) << std::endl;

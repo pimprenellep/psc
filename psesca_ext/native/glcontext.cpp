@@ -98,6 +98,10 @@ GLContext::GLContext():
 	std::cout << "Context initialized (EGL " << major << "." << minor << ")." << std::endl;
 }
 
+bool GLContext::isValid()
+{
+	return (display != EGL_NO_DISPLAY && context != EGL_NO_CONTEXT);
+}
 
 #define ERRORS_EGL(X)	\
 	X(EGL_SUCCESS)		\
@@ -148,6 +152,11 @@ GLContext::GLContext()
 {
 	
 }
+bool GLContext::isValid()
+{
+	return false;
+}
+
 GLContext::~GLContext()
 {
 

@@ -19,7 +19,10 @@ class GLContext {
 public:
 	GLContext();
 	~GLContext();
+	bool isValid();
+#ifdef WITH_EGL
 	void printEGLError() const;
+#endif
 
 private:
 #ifdef WITH_EGL
