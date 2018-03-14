@@ -3,11 +3,17 @@
 *.swp
 *.swo
 *.so
+*.pyd
+*.dll
 *.o
 *.a
 *.la
 *.lo
 Makefile
 CMakeCache.txt
+CMakeSettings.json
 CMakeFiles/
 cmake_install.cmake
+.vs
+*.egg-info
+
