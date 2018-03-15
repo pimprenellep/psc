@@ -16,4 +16,8 @@ CMakeFiles/
 cmake_install.cmake
 .vs
 *.egg-info
-
+*.cmake
+psesca.*
+install_manifest.txt
+_CPack_Packages/
+build/
