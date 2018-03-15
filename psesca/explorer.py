@@ -1,6 +1,6 @@
 from abc import ABC,abstractmethod
-from .native import Morphology
-from .native import ClimberModel
+from .morphology import Morphology
+from .climbermodel import ClimberModel
 from .factory import Factory
 
 class Explorer(ABC) :

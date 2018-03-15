@@ -1,0 +1,5 @@
+*.egg-info
+*.ts
+setup.py
+native/shaders_data.hpp
+psesca/*.cpp

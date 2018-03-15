@@ -1,4 +1,4 @@
-from .native       import StanceGraph
+from .stancegraph       import StanceGraph
 from .factory           import Factory
 from .defaultfactory    import DefaultFactory
 from .jsonroutestore    import JSONRouteStore
