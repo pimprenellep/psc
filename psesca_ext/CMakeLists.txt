@@ -106,4 +106,4 @@ add_custom_command(
 add_custom_target(main ALL DEPENDS native.ts)
 
 # Install
-install(TARGETS native LIBRARY DESTINATION lib)
+install(TARGETS native DESTINATION lib)
