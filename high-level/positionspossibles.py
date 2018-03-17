@@ -19,6 +19,8 @@ d2mains=12
 #fontion distance
 def d(A,B):
     return(sqrt((A[0]-B[0])**2+(A[1]-B[1])**2))
+# naming conflict-fre version
+distance = d
 
 #Fonction produit scalaire AB.CD
 def sc(A,B,C,D):
@@ -61,7 +63,7 @@ def cosAlK(a,b,c):
 # ATTENTION ces fonctions prennent en argument les prises elles-mêmes!
 #fonction PIED GAUCHE bouge. A=Pied Droit, B=l'une des mains. C=prise potentielle Pied Gauche
 def PGpeutatteindreC3(A,B,C,main,Lprises,n):
-    return(PDpeutatteindreC3(C,B,A,Lprises,n))
+    return(PDpeutatteindreC3(C,B,A, main, Lprises,n))
 
 #fonction PIED DROIT bouge. A=Pied Gauche, B=l'une des mains (main = 2 ou 3), C=prise potentielle Pied Droit
 def PDpeutatteindreC3(A,B,C,main,Lprises,n): 
@@ -199,7 +201,7 @@ def PDcas2(A,B,C,main,dab,l,Lprises,n):
 
 #fonction MAIN GAUCHE bouge. A=l'un des pieds (pied = 0 ou 1), B=main droite. C=prise potentielle Main Gauche
 def MGpeutatteindreC3(A,B,C,pied,Lprises,n):
-    return(MDpeutatteindreC3(A,C,B,Lprises,n))
+    return(MDpeutatteindreC3(A,C,B, pied, Lprises,n))
     
 #fonction MAIN DROITE bouge. A=l'un des pieds, B=main gauche. C=prise potentielle Main Droite
 def MDpeutatteindreC3(A,B,C,pied,Lprises,n):
@@ -213,7 +215,7 @@ def MDpeutatteindreC3(A,B,C,pied,Lprises,n):
             if B[3]<=d2mains:
                 hch_m=4*(10/B[3]-10/d2mains)/A[3] #/b3 car c'est plus dur de changer de main quand la prise de pied est petite, 4 à changer
             return((True,hch_m)) 
-        elif dab>=b+t-b:
+        elif dab>=b+t-b: #???????
             return(MDcas1(A,B,C,pied,dab,Lprises))
         elif dab>=dmin:
             return(MDcas2(A,B,C,pied,dab,Lprises))
@@ -379,9 +381,10 @@ def hinstable(a,b,c,d): #a=pg, b=pd, c=mg, d=md
 
     
 def MDpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=pd, C=mg
-    b1,h1 = MDpeutatteindreC3(a,c,d,pied,Lprises,4)
-    b2,h2 = PDpeutatteindreC3(a,d,b,main,Lprises,4) 
-    b3,h3 = MDpeutatteindreC3(b,c,d,pied,Lprises,4)
+    # Not sure at all what I am doing, check me !
+    b1,h1 = MDpeutatteindreC3(a,c,d, 0, Lprises,4)
+    b2,h2 = PDpeutatteindreC3(a,d,b, 3,Lprises,4) 
+    b3,h3 = MDpeutatteindreC3(b,c,d, 1,Lprises,4)
     if (b1 and b2 and b3):
         hproche = hproche(a,b,c,d)
         hinstable = hinstable(a,b,c,d)
@@ -391,9 +394,10 @@ def MDpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=pd, C=mg
         return(False, 0)
 
 def MGpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=pd, C=md
-    b1,h1 = MGpeutatteindreC3(a,c,d,pied,Lprises,4)
-    b2,h2 = PDpeutatteindreC3(a,d,b,main,Lprises,4)
-    b3,h3 = MGpeutatteindreC3(b,c,d,pied,Lprises,4)
+    # Not sure at all what I am doing, check me !
+    b1,h1 = MGpeutatteindreC3(a,c,d, 0,Lprises,4)
+    b2,h2 = PDpeutatteindreC3(a,d,b, 2,Lprises,4)
+    b3,h3 = MGpeutatteindreC3(b,c,d, 1,Lprises,4)
     if (b1 and b2 and b3):
         hproche = hproche(a,b,d,c)
         hinstable = hinstable(a,b,d,c)
@@ -403,9 +407,10 @@ def MGpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=pd, C=md
         return(False, 0)
 
 def PDpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=mg, C=md
-    b1,h1 = PDpeutatteindreC3(a,c,d,main,Lprises,4)
-    b2,h2 = MDpeutatteindreC3(d,b,c,pied,Lprises,4)
-    b3,h3 = PDpeutatteindreC3(a,b,d,main,Lprises,4)
+    # Not sure at all what I am doing, check me !
+    b1,h1 = PDpeutatteindreC3(a,c,d, 3,Lprises,4)
+    b2,h2 = MDpeutatteindreC3(d,b,c, 1,Lprises,4)
+    b3,h3 = PDpeutatteindreC3(a,b,d, 2,Lprises,4)
     if (b1 and b2 and b3):
         hproche = hproche(a,d,b,c)
         hinstable = hinstable(a,d,b,c)
@@ -415,9 +420,9 @@ def PDpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=mg, C=md
         return(False, 0)
 
 def PGpeutatteindreD4(a,b,c,d,Lprises): #A=pd, B=mg, C=md
-    b1,h1 = PGpeutatteindreC3(a,c,d,main,Lprises,4)
-    b2,h2 = MDpeutatteindreC3(d,b,c,pied,Lprises,4)
-    b3,h3 = PDpeutatteindreC3(a,b,d,main,Lprises,4)
+    b1,h1 = PGpeutatteindreC3(a,c,d, 3,Lprises,4)
+    b2,h2 = MDpeutatteindreC3(d,b,c, 0,Lprises,4)
+    b3,h3 = PGpeutatteindreC3(a,b,d, 2,Lprises,4)
     if (b1 and b2 and b3):
         hproche = hproche(d,a,b,c)
         hinstable = hinstable(d,a,b,c)
