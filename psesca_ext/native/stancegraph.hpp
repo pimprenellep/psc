@@ -3,6 +3,13 @@
 
 #include "route.hpp"
 
+struct Stance {
+	int lf;
+	int rf;
+	int lh;
+	int rh;
+};
+
 class StanceGraph {
 	public:
 		StanceGraph(const Route *route);

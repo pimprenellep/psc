@@ -1,9 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
 
-# Tools
-set(Python_ADDITIONAL_VERSIONS 3.6 3.5 3.4 3.3 3.2 3.1 3.0)
-find_package(PythonInterp)
-
 # System libs
 find_package(OpenGL REQUIRED OpenGL OPTIONAL_COMPONENTS EGL)
 if(OpenGL_EGL_FOUND)
