@@ -215,7 +215,7 @@ def MDpeutatteindreC3(A,B,C,pied,Lprises,n):
             if B[3]<=d2mains:
                 hch_m=4*(10/B[3]-10/d2mains)/A[3] #/b3 car c'est plus dur de changer de main quand la prise de pied est petite, 4 à changer
             return((True,hch_m)) 
-        elif dab>=b+t-b: #???????
+        elif dab>=j+t-b:
             return(MDcas1(A,B,C,pied,dab,Lprises))
         elif dab>=dmin:
             return(MDcas2(A,B,C,pied,dab,Lprises))
@@ -381,23 +381,22 @@ def hinstable(a,b,c,d): #a=pg, b=pd, c=mg, d=md
 
     
 def MDpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=pd, C=mg
-    # Not sure at all what I am doing, check me !
-    b1,h1 = MDpeutatteindreC3(a,c,d, 0, Lprises,4)
+    b1,h1 = MGpeutatteindreC3(a,c,d, 0, Lprises,4)
     b2,h2 = PDpeutatteindreC3(a,d,b, 3,Lprises,4) 
     b3,h3 = MDpeutatteindreC3(b,c,d, 1,Lprises,4)
-    if (b1 and b2 and b3):
+    b4,h4 = PDpeutatteindreC3(a,c,b, 2,Lprises,4)
+    if (b1 and b2 and b3 and b4):
         hproche = hproche(a,b,c,d)
         hinstable = hinstable(a,b,c,d)
-        h = (max(h1,h2,h3) + hproche + hinstable)/(a[3]+b[1]+c[2]+d[3])
+        h = (max(h1,h2,h3,h4) + hproche + hinstable)/(a[3]+b[1]+c[2]+d[3])
         return(True,h)
     else :
         return(False, 0)
 
 def MGpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=pd, C=md
-    # Not sure at all what I am doing, check me !
     b1,h1 = MGpeutatteindreC3(a,c,d, 0,Lprises,4)
-    b2,h2 = PDpeutatteindreC3(a,d,b, 2,Lprises,4)
-    b3,h3 = MGpeutatteindreC3(b,c,d, 1,Lprises,4)
+    b2,h2 = PDpeutatteindreC3(a,d,b, 3,Lprises,4)
+    b3,h3 = MDpeutatteindreC3(b,c,d, 1,Lprises,4)
     if (b1 and b2 and b3):
         hproche = hproche(a,b,d,c)
         hinstable = hinstable(a,b,d,c)
@@ -407,14 +406,14 @@ def MGpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=pd, C=md
         return(False, 0)
 
 def PDpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=mg, C=md
-    # Not sure at all what I am doing, check me !
     b1,h1 = PDpeutatteindreC3(a,c,d, 3,Lprises,4)
     b2,h2 = MDpeutatteindreC3(d,b,c, 1,Lprises,4)
     b3,h3 = PDpeutatteindreC3(a,b,d, 2,Lprises,4)
-    if (b1 and b2 and b3):
+    b4,h4 = MDpeutatteindreC3(a,b,c, 0,Lprises,4)
+    if (b1 and b2 and b3 and b4):
         hproche = hproche(a,d,b,c)
         hinstable = hinstable(a,d,b,c)
-        h = (max(h1,h2,h3) + hproche + hinstable)/(a[3]+b[1]+c[2]+d[3])
+        h = (max(h1,h2,h3,h4) + hproche + hinstable)/(a[3]+b[1]+c[2]+d[3])
         return(True,h)
     else :
         return(False, 0)
@@ -423,10 +422,11 @@ def PGpeutatteindreD4(a,b,c,d,Lprises): #A=pd, B=mg, C=md
     b1,h1 = PGpeutatteindreC3(a,c,d, 3,Lprises,4)
     b2,h2 = MDpeutatteindreC3(d,b,c, 0,Lprises,4)
     b3,h3 = PGpeutatteindreC3(a,b,d, 2,Lprises,4)
-    if (b1 and b2 and b3):
+    b4,h4 = MDpeutatteindreC3(a,b,c, 1,Lprises,4)
+    if (b1 and b2 and b3 and b4):
         hproche = hproche(d,a,b,c)
         hinstable = hinstable(d,a,b,c)
-        h = (max(h1,h2,h3) + hproche + hinstable)/(a[3]+b[1]+c[2]+d[3])
+        h = (max(h1,h2,h3,h4) + hproche + hinstable)/(a[3]+b[1]+c[2]+d[3])
         return(True,h)
     else :
         return(False, 0)

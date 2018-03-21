@@ -495,8 +495,7 @@ class RouteStanceGraph(StanceGraph):
         dp=Lprises[Lpos[f][3]]
         return((self.hgrandmouv(a,b,c,d,ap,bp,cp,dp) + self.htravailgrav(a,b,c,d,ap,bp,cp,dp)
             + self.hinst(a,b,c,d,ap,bp,cp,dp) + self.hdynamique(a,b,c,d,ap,bp,cp,dp) +
-            self.hadherence(a,b,c,d,ap,bp,cp,dp))/self.hpetitappui(*Lpos[i][0:4],
-                *Lpos[f][0:4], Lprises))
+            self.hadherence(a,b,c,d,ap,bp,cp,dp))/self.hpetitappui(a,b,c,d,ap,bp,cp,dp, Lprises))
 
 
 
