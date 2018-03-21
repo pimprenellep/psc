@@ -72,6 +72,8 @@ class RouteStanceGraph(StanceGraph):
     #        i=i+1
     #    return(i)
 
+# dans tous les programmes suivants, pos est l'indice d'une position dans Lpos
+
     def bashaut4_m(self, Lprises,pos,Lpos):
         pg, pd = Lpos[pos][0], Lpos[pos][1]
         ph = pg if Lprises[pg][1] > Lprises[pd][1] else pd
@@ -81,9 +83,8 @@ class RouteStanceGraph(StanceGraph):
             i=i+1
         return(ph,i-1)
 
-    # FIXME
     def bashaut3_m(self, Lprises,pos,pied,Lpos):
-        ph = Lprises[Lpos[pos][pied]][0]
+        ph = Lpos[pos][pied]
         hmax = Lprises[ph][1]+j+t+b
         i=ph
         while (i<=len(Lprises)-2) and (Lprises[i][1]<hmax):
@@ -99,9 +100,8 @@ class RouteStanceGraph(StanceGraph):
             i=i-1
         return(i+1,mb)
 
-    # FIXME
     def bashaut3_p(self, Lprises,pos,main,Lpos):    
-        mb = Lprises[Lpos[pos][main]][0]
+        mb = Lpos[pos][main]
         hmin = Lprises[mb][1]-b-t-j
         i=mb
         while (i>=0) and (Lprises[i][1]>hmin):
@@ -233,7 +233,7 @@ class RouteStanceGraph(StanceGraph):
         voisins=voisins+[(k,cout)]
           #vers position 4 prises
         bas_m, haut_m = self.bashaut4_m(Lprises,pos,Lpos) 
-        for i in range(bas_m,haut_m):
+        for i in range(bas_m,haut_m+1):
             I=Lprises[i]
             if main==2:
                 (possible,diff)=MDpeutatteindreD4(pg,pd,mg,I,Lprises)
@@ -251,7 +251,7 @@ class RouteStanceGraph(StanceGraph):
                     voisins=voisins+[(k,cout)]
           #vers position 3 prises
         bas_p, haut_p = self.bashaut3_p(Lprises,pos,main,Lpos)
-        for i in range(bas_p,haut_p):
+        for i in range(bas_p,haut_p+1):
             I=Lprises[i]
             if I != pd:
                 (possible,diff)=PDpeutatteindreC3(pg,Lprises[Lpos[pos][main]],I,main,Lprises,3) #pd bouge
@@ -267,9 +267,7 @@ class RouteStanceGraph(StanceGraph):
                     Lpos, k, file, courant=self.presente(v,Lpos,file,courant)
                     cout=self.hmouvement(pos,k,Lprises,Lpos)
                     voisins=voisins+[(k,cout)]
-        # for i in range( ): #attention
-        # Not sure at all what I am doing, check me !!
-        for i in range(bas_m,haut_m):
+        for i in range(bas_m,haut_m+1):
             I=Lprises[i]
             if pg[1]>=pd[1]: #pd se lache
                 if main==2:
@@ -323,7 +321,7 @@ class RouteStanceGraph(StanceGraph):
         voisins=voisins+[(k,cout)]
           #vers poition 4 prises
         bas_p, haut_p = self.bashaut4_p(Lprises,pos,Lpos) 
-        for i in range(bas_p,haut_p):
+        for i in range(bas_p,haut_p+1):
             I=Lprises[i]
             if pied==0:
                 (possible,diff)=PDpeutatteindreD4(pg,mg,md,I,Lprises)
@@ -341,7 +339,7 @@ class RouteStanceGraph(StanceGraph):
                     voisins=voisins+[(k,cout)]
           #vers position 3 prises
         bas_m, haut_m = self.bashaut3_m(Lprises,pos,pied,Lpos)
-        for i in range(bas_m,haut_m):
+        for i in range(bas_m,haut_m+1):
             I=Lprises[i]
             if I != md:
                 (possible,diff)=MDpeutatteindreC3(Lprises[Lpos[pos][pied]],mg,I,pied,Lprises,3) #md bouge
@@ -437,7 +435,7 @@ class RouteStanceGraph(StanceGraph):
         bi,bf = self.bary(i),bary(f)
         if tdp1 != tdp2:
             dist = distance([bi[0]*3,bi[1]*3],[bf[0]*4,bf[1]*4])
-        if tdp1 == 4:
+        if tdp1[0] == 4:
             dist = distance(bi,bf)*4
         else:
             dist = distance(bi,bf)*3
