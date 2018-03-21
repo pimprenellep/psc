@@ -87,8 +87,8 @@ add_custom_command(TARGET native POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:native> ${CMAKE_SOURCE_DIR}/tests
 )
 
-#set($ENV{MSSdk} 1)
-#set($ENV{DISTUTILS_USE_SDK} 1)
+set($ENV{MSSdk} 1)
+set($ENV{DISTUTILS_USE_SDK} 1)
 add_custom_command(
 	OUTPUT native.ts
 	#COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/psesca ${CMAKE_CURRENT_BINARY_DIR}/psesca
