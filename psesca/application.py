@@ -1,4 +1,4 @@
-from .stancegraph       import StanceGraph
+from .routestancegraph  import RouteStanceGraph
 from .factory           import Factory
 from .defaultfactory    import DefaultFactory
 from .jsonroutestore    import JSONRouteStore
@@ -11,13 +11,13 @@ class Application :
 
     def cotationFromImage(self, image) :
         route = self.routeStore.getRoute('verte_scaled')
-        stanceGraph = StanceGraph(route)
+        stanceGraph = RouteStanceGraph(route)
         explorer = Factory.get().buildExplorer(stanceGraph)
         explorer.findPath()
 
     def tests(self, image):
         route = self.routeStore.getRoute('verte_scaled')
-        stanceGraph = StanceGraph(route)
+        stanceGraph = RouteStanceGraph(route)
         explorer = Factory.get().buildExplorer(stanceGraph)
         if any([
             explorer.tests()
