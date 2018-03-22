@@ -8,9 +8,8 @@ Controller::Controller(ClimberModel const * c, StanceGraph const * sg):
 	simulator->addClimber(climber);
 }
 
-Controller::~Controller()
+void Controller::tryStep(struct Stance startStance, struct MechState startState, struct Stance endStance)
 {
-	delete simulator;
 }
 
 bool Controller::tests() const
@@ -21,5 +20,10 @@ bool Controller::tests() const
 		std::cout << "Controller tests failed." << std::endl;
 	}
 	return r;
+}
+
+Controller::~Controller()
+{
+	delete simulator;
 }
 

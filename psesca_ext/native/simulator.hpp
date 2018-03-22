@@ -10,11 +10,19 @@
 #include "climbermodel.hpp"
 #include "route.hpp"
 
+/// Full state of the climber at a given time
+struct MechState {
+};
 
+/// Physical engine wrapper
 class Simulator {
 	public:
+		// Init the physical engine for the given route
 		Simulator(Route const * route);
 		~Simulator(); 
+		/// Adds the climber to the underlying engine
+		/** Warning : this function is not yet reentrant
+		 */
 		void addClimber(ClimberModel const * m);
 		void dumpFromOde() const;
 		bool tests() const;

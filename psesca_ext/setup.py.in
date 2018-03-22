@@ -8,14 +8,17 @@ native_sources = "@MOD_SOURCES@".split(';')
 exts = [
         Extension(
             name = ".".join("".join(source.split('.')[0:-1]).split('/')),
-			include_dirs=["@MOD_SOURCE_DIR@"] + "@MOD_INCLUDES@".split(';'),
-			define_macros=[(d, None) for d in "@MOD_DEFINES@".split(';')],
+            include_dirs=["@MOD_SOURCE_DIR@"] + "@MOD_INCLUDES@".split(';'),
+            define_macros=[(d, None) for d in "@MOD_DEFINES@".split(';')],
             sources = ["@MOD_SOURCE_DIR@/" + source],
             language='c++',
             library_dirs=['./'],
             libraries=['native'])
         for source in native_sources]
+
 setup(
         name = 'psesca',
-        ext_modules = cythonize(exts)
+        ext_modules = cythonize(exts,
+            include_path=["@MOD_SOURCE_DIR@"],
+            language='c++')
 )

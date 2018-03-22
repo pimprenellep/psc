@@ -1,4 +1,7 @@
 from psesca.route cimport Route
+from collections import namedtuple
+
+Stance = namedtuple("Stance", ["lf", "rf", "lh", "rh"])
 
 cdef class StanceGraph :
     def __cinit__(self):

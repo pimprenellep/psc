@@ -165,7 +165,7 @@ bool Simulator::testFreeFall(float time, int divs, float tolerance) const
 	for(int i = 0; i < divs; i++) {
 		dWorldStep(world, time/divs);
 	}
-	pos = dBodyGetPosition(ODEParts[ref]);
+	//pos = dBodyGetPosition(ODEParts[ref]);
 	dReal delta[3];
 	for(int d = 0; d < 3; d++) delta[d] = pos[d] - pos0[d];
 	delta[1] -= theo;

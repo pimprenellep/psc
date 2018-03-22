@@ -28,7 +28,7 @@ class RouteStanceGraph(StanceGraph):
                 voisins_de_courant,Lpos,file = self.voisins_de_pos_32prises(file[courant],Lprises,p_m,G,Lpos,file,courant)
             G=G+[voisins_de_courant]
             file, courant = self.retirer_file(file, courant)
-        dessin_graphe(G, Lpos, Lprises)
+        #dessin_graphe(G, Lpos, Lprises)
         #return(G,Lpos, len(G), len(Lpos))
 
     def trouve_ini(self, Lprises):
