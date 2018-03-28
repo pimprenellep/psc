@@ -342,10 +342,7 @@ def hmp3(A,B,C,pied):
             return(mp(A,B,C))
         else:
             return(0)
-    else:
-        return(0)    # !!!!!!!!!!!!! ATTENTION CETTE LIGNE DEVRAIT EN THEORIE POUVOIR ETRE SUPPRIMEE MAIS CE N4EST PAS LE CAS : IL Y A UN MAUVAIS INDICE DANS ROUTESTANCEGRAPH !!!!!!!!!
 
-    
 def mm(A,B,C):
     t1=(B[0]-A[0])/d(A,B)
     t2=(B[0]-C[0])/d(C,B)
@@ -363,9 +360,6 @@ def hmm3(A,B,C,main):
             return(mm(A,B,C))
         else:
             return(0)
-    else:
-        return(0)                     # !!!!!!!!!!!!! ATTENTION CETTE LIGNE DEVRAIT EN THEORIE POUVOIR ETRE SUPPRIMEE MAIS CE N4EST PAS LE CAS : IL Y A UN MAUVAIS INDICE DANS ROUTESTANCEGRAPH !!!!!!!!!                       
-
     
 def hproche(a,b,c,d): #a=pg, b=pd, c=mg, d=md
     if a[0]<=b[0]:

@@ -263,10 +263,10 @@ class RouteStanceGraph(StanceGraph):
                     voisins=voisins+[(k,cout)]
         for i in range(bas_m,haut_m+1):
             I=Lprises[i]
-            if pg[1]>=pd[1]: #pd se lache
+            if pg[1]>=pd[1]: #pd se lache, pg reste
                 if main==2:
                     if I != mg:
-                        (possible,diff)=MDpeutatteindreC3(pg,mg,I,2,Lprises,3) #md attrape
+                        (possible,diff)=MDpeutatteindreC3(pg,mg,I,0,Lprises,3) #md attrape
                         if possible:
                             v=[a,-1,c,i,diff]
                             Lpos, k, file, courant=self.presente(v,Lpos,file,courant)
@@ -274,16 +274,16 @@ class RouteStanceGraph(StanceGraph):
                             voisins=voisins+[(k,cout)]
                 elif main==3:
                     if I != md:
-                        (possible,diff)=MGpeutatteindreC3(pg,md,I,2,Lprises,3) #mg attrape
+                        (possible,diff)=MGpeutatteindreC3(pg,md,I,0,Lprises,3) #mg attrape
                         if possible:
                             v=[a,-1,i,d,diff]
                             Lpos, k, file, courant=self.presente(v,Lpos,file,courant)
                             cout=self.hmouvement(pos,k,Lprises,Lpos)
                             voisins=voisins+[(k,cout)]
-            elif pd[1]>=pg[1]: #pg se lache
+            elif pd[1]>=pg[1]: #pg se lache, pd reste
                 if main==2:
                     if I != mg:
-                        (possible,diff)=MDpeutatteindreC3(pd,mg,I,2,Lprises,3) #md attrape
+                        (possible,diff)=MDpeutatteindreC3(pd,mg,I,1,Lprises,3) #md attrape
                         if possible:
                             v=[-1,b,c,i,diff]
                             Lpos, k, file, courant=self.presente(v,Lpos,file,courant)
@@ -291,7 +291,7 @@ class RouteStanceGraph(StanceGraph):
                             voisins=voisins+[(k,cout)]
                 elif main==3:
                     if I != md:
-                        (possible,diff)=MGpeutatteindreC3(pd,md,I,2,Lprises,3) #mg attrape
+                        (possible,diff)=MGpeutatteindreC3(pd,md,I,1,Lprises,3) #mg attrape
                         if possible:
                             v=[-1,b,i,d,diff]
                             Lpos, k, file, courant=self.presente(v,Lpos,file,courant)
