@@ -5,15 +5,15 @@
 
 from math import *
 
-b=80
-t=50
-j=100
+b=0,80
+t=0,50
+j=1
 alpha=1.8
-dmin=50
-dloin=20
-dsouple=20
-d2pieds=12
-d2mains=12
+dmin=0,50
+dloin=0,20
+dsouple=0,20
+d2pieds=0,12
+d2mains=0,12
 
 
 #fontion distance
