@@ -66,18 +66,12 @@ class RouteStanceGraph(StanceGraph):
             else:
                 return(4,"")
 
-    #def hash_prise(self, p,Lprises):
-    #    i=0
-    #    while Lprises[i]!=p:
-    #        i=i+1
-    #    return(i)
-
 # dans tous les programmes suivants, pos est l'indice d'une position dans Lpos
 
     def bashaut4_m(self, Lprises,pos,Lpos):
         pg, pd = Lpos[pos][0], Lpos[pos][1]
         ph = pg if Lprises[pg][1] > Lprises[pd][1] else pd
-        hmax = Lprises[ph][1]+j+t+b
+        hmax = Lprises[ph][1] +j+t+b
         i=ph
         while (i<=len(Lprises)-2) and (Lprises[i][1]<hmax):
             i=i+1
@@ -85,7 +79,7 @@ class RouteStanceGraph(StanceGraph):
 
     def bashaut3_m(self, Lprises,pos,pied,Lpos):
         ph = Lpos[pos][pied]
-        hmax = Lprises[ph][1]+j+t+b
+        hmax = Lprises[ph][1] +j+t+b
         i=ph
         while (i<=len(Lprises)-2) and (Lprises[i][1]<hmax):
             i=i+1
@@ -94,7 +88,7 @@ class RouteStanceGraph(StanceGraph):
     def bashaut4_p(self, Lprises,pos,Lpos):    
         mg, md = Lpos[pos][2], Lpos[pos][3]
         mb = mg if Lprises[mg].y < Lprises[md].y else md
-        hmin = Lprises[mb].y-b-t-j
+        hmin = Lprises[mb].y -b-t-j
         i=mb
         while (i>=0) and (Lprises[i][1]>hmin):
             i=i-1
@@ -102,7 +96,7 @@ class RouteStanceGraph(StanceGraph):
 
     def bashaut3_p(self, Lprises,pos,main,Lpos):    
         mb = Lpos[pos][main]
-        hmin = Lprises[mb][1]-b-t-j
+        hmin = Lprises[mb][1] -b-t-j
         i=mb
         while (i>=0) and (Lprises[i][1]>hmin):
             i=i-1
@@ -371,35 +365,12 @@ class RouteStanceGraph(StanceGraph):
         return(voisins,Lpos,file)
 
     # gestion de la file_______________________________________________________________________________________________________________________________
-    #def ajout_file2(self, file,pos,dernier,courant):
-    #    long=len(file)
-    #    if dernier==long-1:
-    #        dernier=0
-    #    else:
-    #        dernier=dernier+1
-    #    if file[dernier] == -1:
-    #        file[dernier]=pos
-    #    else:
-    #        file=file+[-1]*long
-    #        for j in range(0,courant):
-    #            file[j+long]=file[j]
-    #            file[j]=-1
-    #        dernier = dernier + long
-    #        long=long*2
-    #        file[dernier]=pos
-    #    return(file,dernier,courant) 
+    
 
     def ajout_file(self, file,pos,courant):
         file=file+[pos]
         return(file,courant) 
 
-    #def retirer_file2(self, file, dernier, courant):
-    #    file[courant]=-1
-    #    if courant==len(file)-1:
-    #        courant=0
-    #    else:
-    #        courant = courant+1
-    #    return(file,dernier,courant)
 
     def retirer_file(self, file, courant):
         file[courant]=-1
@@ -407,11 +378,6 @@ class RouteStanceGraph(StanceGraph):
             courant = courant+1
         return(file,courant)
 
-    #file, der, cou = self.ajout_file(file, 2, der, cou)
-    #print(file, der,cou)
-
-    #file, der, cou = self.retirer_file(file, der, cou)
-    #print(file, der,cou)
 
     #heuristiques mouvement___________________________________________________________________________________________________________________________
     #i est la position initiale, f la position finale. ce sont les vraies positions (celles de Lpos)
@@ -432,10 +398,10 @@ class RouteStanceGraph(StanceGraph):
         f = [ap,bp,cp,dp]
         tdp1 = self.type_de_pos(i)[0]
         tdp2 = self.type_de_pos(f)[0]
-        bi,bf = self.bary(i),bary(f)
+        bi, bf = self.bary(i), self.bary(f)
         if tdp1 != tdp2:
             dist = distance([bi[0]*3,bi[1]*3],[bf[0]*4,bf[1]*4])
-        if tdp1[0] == 4:
+        if tdp1 == 4:
             dist = distance(bi,bf)*4
         else:
             dist = distance(bi,bf)*3
@@ -444,7 +410,7 @@ class RouteStanceGraph(StanceGraph):
     def htravailgrav(self, a,b,c,d,ap,bp,cp,dp):
         i = [a,b,c,d]
         f = [ap,bp,cp,dp]
-        return( (self.bary(f)[1]-bary(i)[1])/10*1 )  #1 à changer
+        return( (self.bary(f)[1]-self.bary(i)[1])/10*1 )  #1 à changer
 
     def hpetitappui(self, a,b,c,d,ap,bp,cp,dp, Lprises):
         p1=[a,b,c,d]
@@ -454,7 +420,8 @@ class RouteStanceGraph(StanceGraph):
         somme_tailles = 0
         for i in range(4): #trouver les appuis
             if ((p1[i]==p2[i]) and (p1[i] != -1)):
-                somme_tailles = somme_tailles + Lprises[p1[i]][3]
+                somme_tailles=1
+                #somme_tailles = somme_tailles + Lprises[p1[i]][3]     /!\ ATTENTION CORRIGER L'HEURISTIQUE
         return(somme_tailles)
 
     def hdynamique(self, a,b,c,d,ap,bp,cp,dp):
@@ -462,7 +429,7 @@ class RouteStanceGraph(StanceGraph):
         f = [ap,bp,cp,dp]
         tdp1 = self.type_de_pos([a,b,c,d])[0]
         tdp2 = self.type_de_pos([ap,bp,cp,dp])[0]
-        bi,bf = self.bary(i),bary(f)
+        bi,bf = self.bary(i), self.bary(f)
         if (tdp1==3) and (tdp2==3):
             dist = d(bi,bf)*3
             return(dist/10*0.5) #0.5 à changer
@@ -507,39 +474,4 @@ class RouteStanceGraph(StanceGraph):
 # mettre à jour le graphe après la recherche des voisins de chaque prise
 # gestion de la file pour ajout dedans et retirer (cf papier)
 #les heuristiques...
-
-# "self.presente" cherche si la position pos est déjà dans la listes des positions Lpos, et l'ajoute si elle n'y est pas et l'ajoute aussi à la file et renvoie son indice dans la liste Lpos
-#def prise_inf(self, A,B): #ordre alphabétique avec l'ordonnée en premier, l'abscisse de deuxième
-#    if A[1]<B[1]:
-#        return(True)
-#    elif A[1]>B[1]:
-#        return(False)
-#    else :
-#        return(A[0]<B[0])
-
-#def pos_inf(self, p,q): #ordre sur les positions : "ordre alphabétique" sur les ordonnées
-#    trouve=False
-#    i=0
-#    while i<4 and (trouve==False):
-#        if prise_inf(p[i],q[i]):
-#            return(True)
-#        elif prise_inf(q[i],p[i]):
-#            return(False)
-#        else :
-#            i=i+1
-#    return(False)
-
-#def presente(self, pos,Lpos,file,dernier,courant): #celle qui marche :)    k=len(Lpos)-1
-#    ajoute=False
-#    while (k>=0) and (ajoute==False) and (pos_inf(pos,Lpos[k])):
-#        k=k-1
-#    if k==-1:
-#        Lpos = [pos]+Lpos
-#        ajoute = True
-#        self.ajout_file(file, pos, dernier, courant)
-#    if pos_inf(Lpos[k],pos):
-#        Lpos = Lpos[:k+1]+[pos]+Lpos[k+1:]
-#        ajoute = True
-#        self.ajout_file(file, pos, dernier, courant)
-#    return(ajoute, Lpos)
 

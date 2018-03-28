@@ -5,15 +5,16 @@
 
 from math import *
 
-b=0,80
-t=0,50
+b=0.80
+t=0.50
 j=1
 alpha=1.8
-dmin=0,50
-dloin=0,20
-dsouple=0,20
-d2pieds=0,12
-d2mains=0,12
+dmin=0.50
+dloin=0.20
+dsouple=0.20
+d2pieds=0.12
+d2mains=0.12
+dproche=0.5
 
 
 #fontion distance
@@ -26,11 +27,11 @@ distance = d
 def sc(A,B,C,D):
     return((B[0]-A[0])*(D[0]-C[0])+(B[1]-A[1])*(D[1]-C[1]))
 
-#fonction projection parallèle de CD sur AB
+#fonction projection parallèle de CD sur le vect unitaire dans la direction de AB
 def ppara(A,B,C,D):
     return(((B[0]-A[0])*sc(A,B,C,D)/d(A,B)**2),(B[1]-A[1])*sc(A,B,C,D)/d(A,B)**2)
     
-#fonction projection perpendiculaire à AB de CD 
+#fonction projection perpendiculaire au vect unitaire dans la direction de AB de CD 
 def pper(A,B,C,D):
     return(D[0]-C[0]-ppara(A,B,C,D)[0],D[1]-C[1]-ppara(A,B,C,D)[1])
 
@@ -73,10 +74,10 @@ def PDpeutatteindreC3(A,B,C,main,Lprises,n):
         dab=d(A,B)
         if ((dab>b+t+j)or(dab<dmin)):
             return((False,0))
-        if A==C:
-            if A[3]<=d2pieds:
-                hch_p=6*(10/A[3]-10/d2pieds)/B[3] #/b3 car c'est plus dur de changer de pied quand la prise de main est petite, 6 à changer
-            return((True,hch_p)) 
+        if A==C:                  # !!!!!!!!!!!!!!!!!!!!!!!!!! ATTENTION CHANGER HCH_P !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            #if A[3]<=d2pieds:
+                #hch_p=6*(10/A[3]-10/d2pieds)/B[3] #/b3 car c'est plus dur de changer de pied quand la prise de main est petite, 6 à changer
+            return((True,5))   #hch_p)) 
         elif dab>=b+t:
             return(PDcas1(A,B,C,main,dab,Lprises,n))
         elif dab>=j:
@@ -87,7 +88,7 @@ def PDpeutatteindreC3(A,B,C,main,Lprises,n):
 def PDcas1(A,B,C,main,dab,Lprises,n):
     hloin=0
     hcroisé=0
-    hinstable=0
+    hinst=0
     hsouple=0
     possible=False
     if adroite(A,B,C): #bon côté
@@ -132,12 +133,12 @@ def PDcas1(A,B,C,main,dab,Lprises,n):
             if M<dloin :
                 hloin=hloin + (dloin-M)*5/dloin
     if possible:
-        hinstable = abs(B[0]-(A[0]+C[0])/2)*7/10 #10=10cm, 7 à modifier ?
-        L=dsouple-abs(pper(A,B,A,C))
+        hinst = abs(B[0]-(A[0]+C[0])/2)*7/10 #10=10cm, 7 à modifier ?
+        L=dsouple-abs(d(pper(A,B,A,C),(0,0)))
         if L>=0:
             hsouple=L/10*(d(A,B)/(j+t+b))**2*10
         if n==3:
-            h = (hcroisé+hloin+hsouple+hinstable + hmm3(A,B,C,main))/(A[3]+B[3]+C[3])
+            h = (hcroisé+hloin+hsouple+hinst + hmm3(A,B,C,main))/htailleprises(A,B,C,main)  #  /(A[3]+B[3]+C[3])
         elif n==4:
             h=hcroisé+hloin+hsouple
     return(possible, h)
@@ -145,7 +146,7 @@ def PDcas1(A,B,C,main,dab,Lprises,n):
 def PDcas2(A,B,C,main,dab,l,Lprises,n):
     hloin=0
     hcroisé=0
-    hinstable=0
+    hinst=0
     hsouple=0
     possible=False
     if adroite(A,B,C): #bon côté
@@ -189,12 +190,12 @@ def PDcas2(A,B,C,main,dab,l,Lprises,n):
             if M<dloin :
                 hloin=hloin + (dloin-M)*5/dloin
     if possible:
-        hinstable = abs(B[0]-(A[0]+C[0])/2)*7/10 #10=10cm, 7 à modifier ?
-        L=dsouple-abs(pper(A,B,A,C))
+        hinst = abs(B[0]-(A[0]+C[0])/2)*7/10 #10=10cm, 7 à modifier ?
+        L=dsouple-abs(d(pper(A,B,A,C),(0,0)))
         if L>=0:
             hsouple=L/10*(d(A,B)/(j+t+b))**2*10
         if n==3:
-            h =  (hcroisé+hloin+hsouple+hinstable + hmm3(A,B,C,main))/(A[3]+B[3]+C[3])
+            h =  (hcroisé+hloin+hsouple+hinst + hmm3(A,B,C,main))/htailleprises(A,B,C,main) # /(A[3]+B[3]+C[3])
         elif n==4:
             h =  hcroisé+hloin+hsouple
     return(possible, h)
@@ -211,19 +212,19 @@ def MDpeutatteindreC3(A,B,C,pied,Lprises,n):
         dab=d(A,B)
         if ((dab>b+t+j)or(dab<dmin)):
             return((False,0))
-        if B==C:
-            if B[3]<=d2mains:
-                hch_m=4*(10/B[3]-10/d2mains)/A[3] #/b3 car c'est plus dur de changer de main quand la prise de pied est petite, 4 à changer
-            return((True,hch_m)) 
+        if B==C:                                       # !!!!!!!!!!!!!!!!!!!!! ATTENTION CHANGER HCH_M !!!!!!!!!!!!!!!!!
+            #if B[3]<=d2mains:
+                #hch_m=4*(10/B[3]-10/d2mains)/A[3] #/b3 car c'est plus dur de changer de main quand la prise de pied est petite, 4 à changer
+            return((True,5)) # hch_m)) 
         elif dab>=j+t-b:
-            return(MDcas1(A,B,C,pied,dab,Lprises))
+            return(MDcas1(A,B,C,pied,dab,Lprises,n))
         elif dab>=dmin:
-            return(MDcas2(A,B,C,pied,dab,Lprises))
+            return(MDcas2(A,B,C,pied,dab,Lprises,n))
 
 def MDcas1(A,B,C,pied,dab,Lprises,n):
     hloin=0
     hcroisé=0
-    hinstable=0
+    hinst=0
     possible=False
     E=((A[0]-B[0])*b/dab+B[0],(A[1]-B[1])*b/dab+B[1])
     if adroite(A,B,C): #bon côté
@@ -274,9 +275,9 @@ def MDcas1(A,B,C,pied,dab,Lprises,n):
                 if L<dloin :
                     hloin=(dloin-L)*5/dloin
     if possible:
-        hinstable = abs(A[0]-(C[0]+B[0])/2)*7/10 #10=10cm, 7 à modifier ?
+        hinst = abs(A[0]-(C[0]+B[0])/2)*7/10 #10=10cm, 7 à modifier ?
         if n==3:
-            h = (hcroisé+hloin+hinstable + hmp3(A,B,C,pied))/(A[3]+B[3]+C[3])
+            h = (hcroisé+hloin+hinst + hmp3(A,B,C,pied))/htailleprises(A,B,C,pied)  # /(A[3]+B[3]+C[3])
         elif n==4:
             h=hcroisé+hloin
     return(possible, h)
@@ -284,7 +285,7 @@ def MDcas1(A,B,C,pied,dab,Lprises,n):
 def MDcas2(A,B,C,pied,dab,Lprises,n):
     hloin=0
     hcroisé=0
-    hinstable=0
+    hinst=0
     possible=False
     if adroite(A,B,C): #bon côté
         L=2*b-d(B,C)
@@ -314,9 +315,9 @@ def MDcas2(A,B,C,pied,dab,Lprises,n):
                 if L<dloin :
                     hloin=(dloin-L)*5/dloin
     if possible:
-        hinstable = abs(A[0]-(C[0]+B[0])/2)*7/10 #10=10cm, 7 à modifier ?
+        hinst = abs(A[0]-(C[0]+B[0])/2)*7/10 #10=10cm, 7 à modifier ?
         if n==3:
-            h = (hcroisé+hloin+hinstable + hmp3(A,B,C,pied))/(A[3]+B[3]+C[3])
+            h = (hcroisé+hloin+hinst + hmp3(A,B,C,pied))/htailleprises(A,B,C,pied)   # /(A[3]+B[3]+C[3])
         elif n==4:
             h=hcroisé+hloin
     return(possible, h)
@@ -334,9 +335,16 @@ def hmp3(A,B,C,pied):
     if pied==0:
         if A[0]>=(B[0]+C[0])/2:
             return(mp(A,B,C))
+        else:
+            return(0)
     elif pied==1:
         if A[0]<=(B[0]+C[0])/2:
             return(mp(A,B,C))
+        else:
+            return(0)
+    else:
+        return(0)    # !!!!!!!!!!!!! ATTENTION CETTE LIGNE DEVRAIT EN THEORIE POUVOIR ETRE SUPPRIMEE MAIS CE N4EST PAS LE CAS : IL Y A UN MAUVAIS INDICE DANS ROUTESTANCEGRAPH !!!!!!!!!
+
     
 def mm(A,B,C):
     t1=(B[0]-A[0])/d(A,B)
@@ -348,16 +356,16 @@ def hmm3(A,B,C,main):
     if main==2 :
         if B[0]<=(A[0]+C[0])/2:
             return(mm(A,B,C))
+        else:
+            return(0)
     elif main==3 :
         if B[0]>=(A[0]+C[0])/2:
             return(mm(A,B,C))
-    
-#def htailleprises(pos):
+        else:
+            return(0)
+    else:
+        return(0)                     # !!!!!!!!!!!!! ATTENTION CETTE LIGNE DEVRAIT EN THEORIE POUVOIR ETRE SUPPRIMEE MAIS CE N4EST PAS LE CAS : IL Y A UN MAUVAIS INDICE DANS ROUTESTANCEGRAPH !!!!!!!!!                       
 
-#def hch_p(pos): #(2p sur la m prise) /!\ dépend de la difficulté de la position ! #inséré 
-    
-
-#def hch_m(pos): #(2m sur la même prise) #inséré
     
 def hproche(a,b,c,d): #a=pg, b=pd, c=mg, d=md
     if a[0]<=b[0]:
@@ -368,16 +376,19 @@ def hproche(a,b,c,d): #a=pg, b=pd, c=mg, d=md
         gm,dm=c,d
     else:
         gm,dm=d,c
-    dmax = max(d(gm,gp),d(dm,dp))
+    dmax = max(distance(gm,gp),distance(dm,dp))
     return(2*dproche/dmax)
 
 def hinstable(a,b,c,d): #a=pg, b=pd, c=mg, d=md
     E = [(a[0]+b[0])/2,(a[1]+b[1])/2]
     F = [(c[0]+d[0])/2,(c[1]+d[1])/2]
-    sina = abs(F[0]-E[0])/d(E,F) #inclinaison
+    sina = abs(F[0]-E[0])/distance(E,F) #inclinaison
     g = [(a[0]+b[0]+c[0]+d[0])/4,(a[1]+b[1]+c[1]+d[1])/4] #barycentre des prises
     cdg = abs(g[0]-E[0])/10
     return((sina/3+2/3*cdg)*5) # 5 à changer
+
+def htailleprises(a,b,c,d):   #   /!\ ATTENTION CHANGER L'HEURISTIQUE
+    return(1)
 
     
 def MDpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=pd, C=mg
@@ -386,9 +397,9 @@ def MDpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=pd, C=mg
     b3,h3 = MDpeutatteindreC3(b,c,d, 1,Lprises,4)
     b4,h4 = PDpeutatteindreC3(a,c,b, 2,Lprises,4)
     if (b1 and b2 and b3 and b4):
-        hproche = hproche(a,b,c,d)
-        hinstable = hinstable(a,b,c,d)
-        h = (max(h1,h2,h3,h4) + hproche + hinstable)/(a[3]+b[1]+c[2]+d[3])
+        hpr = hproche(a,b,c,d)
+        hinst = hinstable(a,b,c,d)
+        h = (max(h1,h2,h3,h4) + hpr + hinst)/htailleprises(a,b,c,d)  # /(a[3]+b[1]+c[2]+d[3])
         return(True,h)
     else :
         return(False, 0)
@@ -398,9 +409,9 @@ def MGpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=pd, C=md
     b2,h2 = PDpeutatteindreC3(a,d,b, 3,Lprises,4)
     b3,h3 = MDpeutatteindreC3(b,c,d, 1,Lprises,4)
     if (b1 and b2 and b3):
-        hproche = hproche(a,b,d,c)
-        hinstable = hinstable(a,b,d,c)
-        h = (max(h1,h2,h3) + hproche + hinstable)/(a[3]+b[1]+c[2]+d[3])
+        hpr = hproche(a,b,d,c)
+        hinst = hinstable(a,b,d,c)
+        h = (max(h1,h2,h3) + hpr + hinst)/htailleprises(a,b,c,d)   # /(a[3]+b[1]+c[2]+d[3])
         return(True,h)
     else :
         return(False, 0)
@@ -411,9 +422,9 @@ def PDpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=mg, C=md
     b3,h3 = PDpeutatteindreC3(a,b,d, 2,Lprises,4)
     b4,h4 = MDpeutatteindreC3(a,b,c, 0,Lprises,4)
     if (b1 and b2 and b3 and b4):
-        hproche = hproche(a,d,b,c)
-        hinstable = hinstable(a,d,b,c)
-        h = (max(h1,h2,h3,h4) + hproche + hinstable)/(a[3]+b[1]+c[2]+d[3])
+        hpr = hproche(a,d,b,c)
+        hinst = hinstable(a,d,b,c)
+        h = (max(h1,h2,h3,h4) + hpr + hinst)/htailleprises(a,b,c,d)  #  /(a[3]+b[1]+c[2]+d[3])
         return(True,h)
     else :
         return(False, 0)
@@ -424,9 +435,9 @@ def PGpeutatteindreD4(a,b,c,d,Lprises): #A=pd, B=mg, C=md
     b3,h3 = PGpeutatteindreC3(a,b,d, 2,Lprises,4)
     b4,h4 = MDpeutatteindreC3(a,b,c, 1,Lprises,4)
     if (b1 and b2 and b3 and b4):
-        hproche = hproche(d,a,b,c)
-        hinstable = hinstable(d,a,b,c)
-        h = (max(h1,h2,h3,h4) + hproche + hinstable)/(a[3]+b[1]+c[2]+d[3])
+        hpr = hproche(d,a,b,c)
+        hinst = hinstable(d,a,b,c)
+        h = (max(h1,h2,h3,h4) + hpr + hinst)/htailleprises(a,b,c,d)  #  /(a[3]+b[1]+c[2]+d[3])
         return(True,h)
     else :
         return(False, 0)
