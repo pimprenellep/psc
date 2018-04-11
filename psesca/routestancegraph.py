@@ -10,7 +10,7 @@ class RouteStanceGraph(StanceGraph):
         Lprises = route.getHolds()
 
         # FIXME : find the start position
-        ini = [0, 1, 2, 3, 20]
+        ini = self.trouve_ini(Lprises)
 
         #Lprises=self.echange_xy(Lprises)
         G=[]
@@ -30,6 +30,34 @@ class RouteStanceGraph(StanceGraph):
             file, courant = self.retirer_file(file, courant)
         dessin_graphe(G, Lpos, Lprises)
         #return(G,Lpos, len(G), len(Lpos))
+
+    def trouve_ini(self, Lprises):
+        #trouver les pieds possibles pour ini :
+        p=0 
+        while ((p<len(Lprises)) and (Lprises[p][1] <= j+t/2)):
+            p=p+1
+        #trouver les mains possibles pour ini :
+        m=0
+        while ((m<len(Lprises)) and (Lprises[m][1] <= j+t+b)):
+            m=m+1
+        #cherche la positiond e départ la plus facile
+        coutmin = 1000000000
+        p_ini = [0,0,1,1]
+        for i in range(p):
+            for k in range(i+1, m):
+        #position du 2ème pied
+                pied2 = [(Lprises[i][0]+Lprises[k][0])/2, 0]
+                if Lprises[i][0]<Lprises[k][0]:
+                    bool,cout=PDpeutatteindreC3(Lprises[i],Lprises[k],pied2,3,Lprises,3)
+                    if (bool and (cout<=coutmin)):
+                        coutmin=cout
+                        p_ini = [i,-1,k,k,cout]
+                else :
+                    bool,cout=PGpeutatteindreC3(Lprises[i],Lprises[k],pied2,2,Lprises,3)
+                    if (bool and (cout<=coutmin)):
+                        coutmin=cout
+                        p_ini = [-1,i,k,k,cout]
+        return(p_ini)
 
     def echange_xy(self, L):
         for i in range(len(L)):
