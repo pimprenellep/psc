@@ -393,19 +393,27 @@ class RouteStanceGraph(StanceGraph):
         elif tdp == 3.2:
             return([(c[0]+d[0]+pos[m][0])/3,(c[1]+d[1]+pos[m][1])/3])
 
-    def hgrandmouv(self, a,b,c,d,ap,bp,cp,dp):
+        
+    def hgrandmouv(self,a,b,c,d,ap,bp,cp,dp):
         i = [a,b,c,d]
         f = [ap,bp,cp,dp]
         tdp1 = self.type_de_pos(i)[0]
-        tdp2 = self.type_de_pos(f)[0]
-        bi, bf = self.bary(i), self.bary(f)
-        if tdp1 != tdp2:
-            dist = distance([bi[0]*3,bi[1]*3],[bf[0]*4,bf[1]*4])
-        if tdp1 == 4:
-            dist = distance(bi,bf)*4
-        else:
-            dist = distance(bi,bf)*3
-        return(dist/10*2) # 2 à changer
+        tdp2 = self.type_de_pos(i)[0]
+        bi,bf = self.bary(i),bary(f)
+        dist = distance(bi,bf)/10
+        if tdp2==4:
+            if tdp1==3.2:
+                L=1#L est à changer, c'est en L/4 que c'est minimum
+                h = L/(4*dist) + (4*dist)/L
+            else:
+                h=4*dist
+        elif tdp1==tdp2:
+            h=3*dist
+        elif tdp1==3.1 and tdp2==3.2:
+            h=2*dist
+        else :
+            h=2*dist
+        return h#voir s'il ne faut pas multiplier par un préfacteur
 
     def htravailgrav(self, a,b,c,d,ap,bp,cp,dp):
         i = [a,b,c,d]
@@ -420,8 +428,11 @@ class RouteStanceGraph(StanceGraph):
         somme_tailles = 0
         for i in range(4): #trouver les appuis
             if ((p1[i]==p2[i]) and (p1[i] != -1)):
-                somme_tailles=1
-                #somme_tailles = somme_tailles + Lprises[p1[i]][3]     /!\ ATTENTION CORRIGER L'HEURISTIQUE
+                if i<2:
+                    somme_tailles+=1
+                else :
+                    somme_tailles+=10
+                #le but est de diviser par l'indice de taille de la prise
         return(somme_tailles)
 
     def hdynamique(self, a,b,c,d,ap,bp,cp,dp):
@@ -430,7 +441,7 @@ class RouteStanceGraph(StanceGraph):
         tdp1 = self.type_de_pos([a,b,c,d])[0]
         tdp2 = self.type_de_pos([ap,bp,cp,dp])[0]
         bi,bf = self.bary(i), self.bary(f)
-        if (tdp1==3) and (tdp2==3):
+        if (tdp1!=3) and (tdp!==3):
             dist = d(bi,bf)*3
             return(dist/10*0.5) #0.5 à changer
         else :
@@ -446,6 +457,7 @@ class RouteStanceGraph(StanceGraph):
         else:
             return(0)
 
+<<<<<<< HEAD
     def hinst(self, a,b,c,d,ap,bp,cp,dp):
         p1=[a,b,c,d]
         p2=[ap,bp,cp,dp]
@@ -468,6 +480,11 @@ class RouteStanceGraph(StanceGraph):
         elif membre[0]==1 :
             hinst = abs(cdg[0]-p1[1][0]) /10 *8 # 8 à changer
         return(hinst)
+=======
+    """def hinst(self, a,b,c,d,ap,bp,cp,dp):
+
+        return(1)"""#hint est défini dans une autre biblio
+>>>>>>> 30a305707aadf5b3306d9f0d64f3483f569ca649
 
 
     def hmouvement(self, i,f,Lprises,Lpos):
