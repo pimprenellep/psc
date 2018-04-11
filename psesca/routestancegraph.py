@@ -52,7 +52,7 @@ class RouteStanceGraph(StanceGraph):
         return(Lpos, ind, file,  courant)
 
 
-    # les voisins______________________________________________________________________________________________________________________________________
+    # les voisins__________________________________________________________________________________________________________________________________
     def type_de_pos(self, pos): #rq: ici c'est une vraie position
         if pos[0]==-1:
             return(3.2,1)   #3.2 = avec les 2 mains
@@ -447,8 +447,27 @@ class RouteStanceGraph(StanceGraph):
             return(0)
 
     def hinst(self, a,b,c,d,ap,bp,cp,dp):
-
-        return(1)
+        p1=[a,b,c,d]
+        p2=[ap,bp,cp,dp]
+        tdp1 = self.type_de_pos(p1)
+        tdp2 = self.type_de_pos(p2)
+        appuisX = []
+        appuisY = []
+        membres = []
+        for i in range(4): #trouver les appuis
+            if ((p1[i]==p2[i]) and (p1[i] != -1)):
+                appuisX = appuisX + [p1[i][0]]
+                appuisY = appuisY + [p1[i][1]]
+                membres = membres + [i]
+        cdg = [sum(appuisX),sum(appuisY)]
+        if membre[0]==0 :
+            if membre[1]==1 :
+                hinst = abs(cdg[0]-(p1[0][0]+p1[1][0])/2) /10 *5 # 5 à changer
+            else:
+                hinst = abs(cdg[0]-p1[0][0]) /10 *8 # 8 à changer
+        elif membre[0]==1 :
+            hinst = abs(cdg[0]-p1[1][0]) /10 *8 # 8 à changer
+        return(hinst)
 
 
     def hmouvement(self, i,f,Lprises,Lpos):
