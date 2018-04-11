@@ -399,7 +399,7 @@ class RouteStanceGraph(StanceGraph):
         f = [ap,bp,cp,dp]
         tdp1 = self.type_de_pos(i)[0]
         tdp2 = self.type_de_pos(i)[0]
-        bi,bf = self.bary(i),bary(f)
+        bi,bf = self.bary(i),self.bary(f)
         dist = distance(bi,bf)/10
         if tdp2==4:
             if tdp1==3.2:
@@ -413,7 +413,7 @@ class RouteStanceGraph(StanceGraph):
             h=2*dist
         else :
             h=2*dist
-        return h#voir s'il ne faut pas multiplier par un préfacteur
+        return(h)#voir s'il ne faut pas multiplier par un préfacteur
 
     def htravailgrav(self, a,b,c,d,ap,bp,cp,dp):
         i = [a,b,c,d]
@@ -429,10 +429,9 @@ class RouteStanceGraph(StanceGraph):
         for i in range(4): #trouver les appuis
             if ((p1[i]==p2[i]) and (p1[i] != -1)):
                 if i<2:
-                    somme_tailles+=1
-                else :
                     somme_tailles+=10
-                #le but est de diviser par l'indice de taille de la prise
+                else :
+                    somme_tailles+=1
         return(somme_tailles)
 
     def hdynamique(self, a,b,c,d,ap,bp,cp,dp):
@@ -441,7 +440,7 @@ class RouteStanceGraph(StanceGraph):
         tdp1 = self.type_de_pos([a,b,c,d])[0]
         tdp2 = self.type_de_pos([ap,bp,cp,dp])[0]
         bi,bf = self.bary(i), self.bary(f)
-        if (tdp1!=3) and (tdp!==3):
+        if (tdp1!=4) and (tdp2!=4):
             dist = d(bi,bf)*3
             return(dist/10*0.5) #0.5 à changer
         else :
@@ -457,20 +456,20 @@ class RouteStanceGraph(StanceGraph):
         else:
             return(0)
 
-<<<<<<< HEAD
-    def hinst(self, a,b,c,d,ap,bp,cp,dp):
+    def hinsta(self, a,b,c,d,ap,bp,cp,dp):
         p1=[a,b,c,d]
         p2=[ap,bp,cp,dp]
         tdp1 = self.type_de_pos(p1)
         tdp2 = self.type_de_pos(p2)
         appuisX = []
         appuisY = []
-        membres = []
+        membre = []
+        hinst = 0
         for i in range(4): #trouver les appuis
             if ((p1[i]==p2[i]) and (p1[i] != -1)):
                 appuisX = appuisX + [p1[i][0]]
                 appuisY = appuisY + [p1[i][1]]
-                membres = membres + [i]
+                membre = membre + [i]
         cdg = [sum(appuisX),sum(appuisY)]
         if membre[0]==0 :
             if membre[1]==1 :
@@ -480,11 +479,6 @@ class RouteStanceGraph(StanceGraph):
         elif membre[0]==1 :
             hinst = abs(cdg[0]-p1[1][0]) /10 *8 # 8 à changer
         return(hinst)
-=======
-    """def hinst(self, a,b,c,d,ap,bp,cp,dp):
-
-        return(1)"""#hint est défini dans une autre biblio
->>>>>>> 30a305707aadf5b3306d9f0d64f3483f569ca649
 
 
     def hmouvement(self, i,f,Lprises,Lpos):
@@ -497,7 +491,7 @@ class RouteStanceGraph(StanceGraph):
         cp=Lprises[Lpos[f][2]]
         dp=Lprises[Lpos[f][3]]
         return((self.hgrandmouv(a,b,c,d,ap,bp,cp,dp) + self.htravailgrav(a,b,c,d,ap,bp,cp,dp)
-            + self.hinst(a,b,c,d,ap,bp,cp,dp) + self.hdynamique(a,b,c,d,ap,bp,cp,dp) +
+            + self.hinsta(a,b,c,d,ap,bp,cp,dp) + self.hdynamique(a,b,c,d,ap,bp,cp,dp) +
             self.hadherence(a,b,c,d,ap,bp,cp,dp))/self.hpetitappui(a,b,c,d,ap,bp,cp,dp, Lprises))
 
 
