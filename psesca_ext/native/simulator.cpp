@@ -129,14 +129,27 @@ void Simulator::addClimber(ClimberModel const * m)
 	delete[] open;
 }
 
+struct MechState Simulator::getMechState() const {
+	struct MechState mechState;
+	dVector3 *buf = new dVector3[climber.nParts];
+	for(int ip = 0; ip < climber.nParts; ip++) {
+		dBodyCopyPosition(ODEParts[ip], buf[ip]);
+	}
+	mechState.positions = buf;
+	return mechState;
+};
+
 void Simulator::dumpFromOde() const
 {
 	std::cout << "Position of all parts:" << std::endl;	
+	struct MechState mechState = getMechState();
 	for(int ip = 0; ip < climber.nParts; ip++) {
-		const dReal * p = dBodyGetPosition(ODEParts[ip]);
+		//const dReal * p = dBodyGetPosition(ODEParts[ip]);
+		const dReal * p = mechState.positions[ip];
 		std::cout << "Part " << ip << ": "
 			<< p[0] << ", " << p[1] << ", " << p[2]
 			<< std::endl;
+
 	}
 }
 

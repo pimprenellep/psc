@@ -11,7 +11,11 @@
 #include "route.hpp"
 
 /// Full state of the climber at a given time
+/** Values are pointers to the engine's internal data structures,
+ *  and the content can change with any call to a simulation method.
+ */
 struct MechState {
+	const dVector3* positions;
 };
 
 /// Physical engine wrapper
@@ -24,6 +28,8 @@ class Simulator {
 		/** Warning : this function is not yet reentrant
 		 */
 		void addClimber(ClimberModel const * m);
+		/// Get the mechanical state for the engine
+		struct MechState getMechState() const;
 		void dumpFromOde() const;
 		bool tests() const;
 		bool testFreeFall(float time, int divs, float tolerance) const;
