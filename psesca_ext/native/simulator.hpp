@@ -16,6 +16,7 @@
  */
 struct MechState {
 	const dVector3* positions;
+	const dMatrix3* rotations;
 };
 
 struct Position {
@@ -37,14 +38,20 @@ class Simulator {
 		/** Warning : this function is not yet reentrant
 		 */
 		void addClimber(ClimberModel const * m);
-		/// Get the mechanical state for the engine
+		/// Get a copy of the mechanical state for the engine
+		/** Must be freed with freeMechState after use
+		 */
 		struct MechState getMechState() const;
+<<<<<<< HEAD
 
 		Position getPositionlf() const;
 		
 		//Position * getPositionrf;
 		//Position * getPositionlh;
 		//Position * getPositionrh;
+=======
+		void freeMechState(struct MechState& mechState) const;
+>>>>>>> 2b303ebaed62dc85995c99d0571797829981b948
 		void dumpFromOde() const;
 		bool tests() const;
 		bool testFreeFall(float time, int divs, float tolerance) const;
