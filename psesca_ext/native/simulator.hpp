@@ -16,6 +16,7 @@
  */
 struct MechState {
 	const dVector3* positions;
+	const dMatrix3* rotations;
 };
 
 /// Physical engine wrapper
@@ -28,8 +29,11 @@ class Simulator {
 		/** Warning : this function is not yet reentrant
 		 */
 		void addClimber(ClimberModel const * m);
-		/// Get the mechanical state for the engine
+		/// Get a copy of the mechanical state for the engine
+		/** Must be freed with freeMechState after use
+		 */
 		struct MechState getMechState() const;
+		void freeMechState(struct MechState& mechState) const;
 		void dumpFromOde() const;
 		bool tests() const;
 		bool testFreeFall(float time, int divs, float tolerance) const;
