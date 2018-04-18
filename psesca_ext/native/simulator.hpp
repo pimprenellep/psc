@@ -11,8 +11,8 @@
 #include "route.hpp"
 
 /// Full state of the climber at a given time
-/** Values are pointers to the engine's internal data structures,
- *  and the content can change with any call to a simulation method.
+/** Values are pointers to buffers containing a copy of the simulator internal
+ *  data, and can be used to save and load states of the simulator.
  */
 struct MechState {
 	const dVector3* positions;
@@ -25,6 +25,12 @@ struct Position {
 	float z;
 };
 
+struct MovePlan {
+	/** Array of size nJoints, whose components are arrays of reals of size
+	  * matching the degree of freedom of the joint
+	  */
+	dReal ** targetVelocities;
+};
 
 /// Physical engine wrapper
 class Simulator {
@@ -38,20 +44,23 @@ class Simulator {
 		/** Warning : this function is not yet reentrant
 		 */
 		void addClimber(ClimberModel const * m);
+
 		/// Get a copy of the mechanical state for the engine
 		/** Must be freed with freeMechState after use
 		 */
 		struct MechState getMechState() const;
-<<<<<<< HEAD
 
 		Position getPositionlf() const;
 		
 		//Position * getPositionrf;
 		//Position * getPositionlh;
 		//Position * getPositionrh;
-=======
 		void freeMechState(struct MechState& mechState) const;
->>>>>>> 2b303ebaed62dc85995c99d0571797829981b948
+		void loadMechState(const struct MechState& mechState);
+
+		/// Simulate a portion of a move
+		void move(float dt, int divs, struct MovePlan movePlan);
+
 		void dumpFromOde() const;
 		bool tests() const;
 		bool testFreeFall(float time, int divs, float tolerance) const;

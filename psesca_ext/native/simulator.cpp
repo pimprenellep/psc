@@ -72,12 +72,9 @@ void Simulator::addClimber(ClimberModel const * m)
 		}
 		dJointAttach(ODEJoints[i],
 				ODEParts[j.parts[0]], ODEParts[j.parts[1]]);
-		//ODEMotors[i] = dJointCreateAMotor(world, 0);
-		ODEMotors[i] = 0;
-		/*
-		   dJointAttach(ODEMotors[i],
+		ODEMotors[i] = dJointCreateAMotor(world, 0);
+		dJointAttach(ODEMotors[i],
 				ODEParts[j.parts[0]], ODEParts[j.parts[1]]);
-				*/
 	}
 
 	bool *closed = new bool[climber.nParts]{false};
@@ -135,7 +132,8 @@ void Simulator::addClimber(ClimberModel const * m)
 	delete[] open;
 }
 
-struct MechState Simulator::getMechState() const {
+struct MechState Simulator::getMechState() const
+{
 	struct MechState mechState;
 	dVector3 *pos = new dVector3[climber.nParts];
 	dMatrix3 *rot = new dMatrix3[climber.nParts];
@@ -148,7 +146,8 @@ struct MechState Simulator::getMechState() const {
 	return mechState;
 }
 
-void Simulator::freeMechState(struct MechState& mechState) const {
+void Simulator::freeMechState(struct MechState& mechState) const
+{
 	delete[] mechState.positions;
 	delete[] mechState.rotations;
 }
@@ -160,9 +159,32 @@ struct Position Simulator::getPositionlf() const {
 	return position;
 }
 
+void Simulator::loadMechState(const struct MechState& mechState)
+{
+	for(int ip = 0; ip < climber.nParts; ip++) {
+		const dReal *pos = mechState.positions[ip];
+		const dMatrix3 &rot = mechState.rotations[ip];
+		dBodySetPosition(ODEParts[ip], pos[0], pos[1], pos[2]);
+		dBodySetRotation(ODEParts[ip], rot);
+	}
+}
+
+void Simulator::move(float dt, int divs, struct MovePlan movePlan) {
+	for(int i = 0; i < divs; i++) {
+		for(int ij = 0; ij < climber.nJoints; ij++) {
+			int dof = (climber.joints[ij].type == ClimberModel::JT_HINGE) ? 1 : 3;
+			for(int f = 0; f < dof; f++) {
+				dJointSetAMotorParam(ODEJoints[ij], dParamVel + f*dParamGroup,
+						(float)i / divs * movePlan.targetVelocities[ij][f]);
+			}
+		}
+		dWorldStep(world, dt/divs);
+	}
+}
+
 void Simulator::dumpFromOde() const
 {
-	std::cout << "Position of all parts:" << std::endl;	
+	std::cout << "Position of all parts:" << std::endl;
 	struct MechState mechState = getMechState();
 	for(int ip = 0; ip < climber.nParts; ip++) {
 		//const dReal * p = dBodyGetPosition(ODEParts[ip]);
