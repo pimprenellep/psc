@@ -17,6 +17,7 @@ class Controller {
 		ClimberModel const * climber;
 		StanceGraph const * stanceGraph;
 		Simulator * simulator;
+		float sumphi(struct Stance stance, float kro, struct Route route, struct MechState startState);
 };
 
 #endif // _CONTROLLER_HPP

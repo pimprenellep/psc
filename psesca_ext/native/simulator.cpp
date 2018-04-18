@@ -4,6 +4,9 @@
 #include <algorithm>
 const float g =  9.80665;
 
+//mettre ici le calcul des positions des membres
+
+
 Simulator::Simulator(Route const* r) :
 	model(0),
 	route(r),
@@ -29,6 +32,9 @@ Simulator::~Simulator()
 	dWorldDestroy(world);
 	delete renderer;
 }
+
+//calcul de la position des membres
+
 
 void Simulator::addClimber(ClimberModel const * m)
 {
@@ -138,6 +144,13 @@ struct MechState Simulator::getMechState() const {
 	mechState.positions = buf;
 	return mechState;
 };
+
+struct Position Simulator::getPositionlf() const {
+	struct Position position;
+	struct MechState mechState = getMechState();
+	position.x=mechState.positions[Morphology::FOREARM_LEFT][0];
+	return position;
+}
 
 void Simulator::dumpFromOde() const
 {
