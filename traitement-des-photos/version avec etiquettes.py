@@ -4,8 +4,8 @@ import numpy as np
 from math import *
 
 im = Image.new("RGB", (512, 512), "white")
-img=Image.open('copiedelespoir3.bmp')
-color_thief = ColorThief('copiedelespoir3.bmp')
+img=Image.open('grise.jpg')
+color_thief = ColorThief('grise.jpg')
 # get the dominant color
 dominant_color = color_thief.get_color(quality=1)
 # build a color palette
@@ -168,9 +168,9 @@ for m in range(len(Liste_barycentres)-1):
             if(0<Liste_barycentres[m][0]+i-Liste_barycentres[m][2]+1<l) and (0<Liste_barycentres[m][1]+j-Liste_barycentres[m][3]+1<c):
                 imgchiffre.putpixel((Liste_barycentres[m][0]+i-Liste_barycentres[m][2]+1,Liste_barycentres[m][1]+j-Liste_barycentres[m][3]+1), chiffre.getpixel((i,j)))
 
-#imgNtemp.show()
+imgNtemp.show()
 imgNtemp.save('imgNtemp.png')
-#imgchiffre.show()
+imgchiffre.show()
 imgchiffre.save('imgchiffre.png')
 
 #à partir de la liste des prises données par l'utilisateur, renvoie la voie sélectionnée à titre de confirmation
