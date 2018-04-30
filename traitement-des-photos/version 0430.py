@@ -145,8 +145,8 @@ for i in range(l-1):
                     p.append((i,j))
             if(nb_pixel>(l*c)/4800) and (droite_max - gauche_max)<l/10 and (bas_max - haut_max)<c/10 and (droite_max - gauche_max)/(bas_max - haut_max)<4 and (bas_max - haut_max)/(droite_max - gauche_max)<4 and nb_pixel*10>(droite_max - gauche_max)*(bas_max - haut_max):
                 for col in color : 
-                    somme_color = [somme_color[0]+col[0]/nb_pixel,somme_color[1]+col[1]/nb_pixel,somme_color[2]+col[2]/nb_pixel]
-                    somme_color = [int(somme_color[0]),int(somme_color[1]),int(somme_color[2])]
+                    somme_color = [somme_color[0]+(col[0]+.0)/(nb_pixel+.0),somme_color[1]+(col[1]+.0)/(nb_pixel+.0),somme_color[2]+(col[2]+.0)/(nb_pixel+.0)]
+                    
                 colors.append(somme_color[0]+somme_color[1]+somme_color[2])
                 Liste_barycentres.append([int(floor((haut_max+bas_max)/2)),int(floor((gauche_max+droite_max)/2)), int(floor((haut_max - bas_max)/2)), int(floor((droite_max - gauche_max)/2)), nb_pixel, somme_color])   
 
