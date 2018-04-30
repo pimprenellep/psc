@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 T=400
 Dt=0.4
 N=int(T/Dt)
-A1=180000.
+A1=180000. #caractériqtique d'une personne
 A=A1*Dt
-f21=60.
+f21=60. #caractéristique d'une personne
 f2=f21*Dt
-Flim=3200
+Flim=3200 #caractéristique
 R=30#durée de repos en secondes
 R2=R/Dt#durée du repos en pas de temps
 Rn=int(R2)
