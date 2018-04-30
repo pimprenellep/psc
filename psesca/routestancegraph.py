@@ -9,7 +9,6 @@ class RouteStanceGraph(StanceGraph):
         super().__init__(route)
         Lprises = route.getHolds()
 
-        # FIXME : find the start position
         ini = self.trouve_ini(Lprises)
 
         #Lprises=self.echange_xy(Lprises)

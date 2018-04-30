@@ -5,12 +5,17 @@
 
 from math import *
 
-b=0.80
-t=0.50
+"""FIX ME
+à voir avec morphology : 
+ 
+"""
+
+b=0.6
+t=0.55
 j=1
-alpha=1.8
+alpha=1.8 #environ 103 degrés
 dmin=0.50
-dloin=0.20
+dloin=0.15
 dsouple=0.20
 d2pieds=0.12
 d2mains=0.12
@@ -86,6 +91,7 @@ def PDpeutatteindreC3(A,B,C,main,Lprises,n):
             return(PDcas2(A,B,C,main,dab,dab,Lprises,n))
 
 def PDcas1(A,B,C,main,dab,Lprises,n):
+    h=0
     hloin=0
     hcroisé=0
     hinst=0
@@ -98,14 +104,12 @@ def PDcas1(A,B,C,main,dab,Lprises,n):
                 possible=True
                 G = rot(E,A,cos(alpha))
                 L=d(pper(E,G,E,C),(0,0))
-                if L<dloin:
-                    hloin=(dloin-L)*5/dloin
+                hloin=h_loin(L)
         if cossc(A,B,C)>=cos(acos(cosAlK(dab,j,b+t))+pi/2-alpha/2):
             L=2*j*sin(alpha/2)-d(A,C)
             if L>=0 :
                 possible=True
-                if L<dloin :
-                    hloin=(dloin-L)*5/dloin
+                hloin=h_loin(L)
         if cossc(B,A,C)>=cosAlK(dab,b+t,j):
             possible=(d(B,C)<=b+t+j)
         else:
@@ -113,37 +117,33 @@ def PDcas1(A,B,C,main,dab,Lprises,n):
             L=j-d(D,C)
             if L>=0 :
                 possible=True
-                if L<dloin :
-                    hloin=(dloin-L)*5/dloin
+                hloin=h_loin(L)
     else: #mauvais côté
-        hcroisé=2 #2 à modifier ?
+        hcroisé=1 #1 à modifier ?
         F=((A[0]-B[0])*(b+t)/dab+B[0],(A[1]-B[1])*(b+t)/dab+B[1])
         if cossc(F,B,C)<=0:
             L=j-d(F,C)
             if L>=0 :
                 possible=True
-                if L<dloin :
-                    hloin=(dloin-L)*5/dloin
+                hloin=h_loin(L)
         L=j-d(pper(A,B,A,C),(0,0))
         M=j-d(ppara(A,B,A,C),(0,0))
         if ((L>=0) and (M>=0)):
             possible=True
-            if L<dloin :
-                hloin=hloin + (dloin-L)*5/dloin
-            if M<dloin :
-                hloin=hloin + (dloin-M)*5/dloin
+            hloin=h_loin(L) + h_loin(M)
     if possible:
-        hinst = abs(B[0]-(A[0]+C[0])/2)*7/10 #10=10cm, 7 à modifier ?
+        hinst = abs(B[0]-(A[0]+C[0])/2)/distance(B,[(C[0]+A[0])/2,(C[1]+A[1])/2])*7 #7 à modifier ?
         L=dsouple-abs(d(pper(A,B,A,C),(0,0)))
         if L>=0:
-            hsouple=L/10*(d(A,B)/(j+t+b))**2*10
+            hsouple=L/10*(d(A,B)/(j+t+b))**2*7 # 7 à modifier ?
         if n==3:
-            h = (hcroisé+hloin+hsouple+hinst + hmm3(A,B,C,main))/htailleprises(A,B,C,main)  #  /(A[3]+B[3]+C[3])
+            h = (hcroisé+hloin+hsouple+hinst + hmm3(A,B,C,main) + hproche31(A,C,B))/htailleprises(A,B,C,main)  #  /(A[3]+B[3]+C[3])
         elif n==4:
             h=hcroisé+hloin+hsouple
     return(possible, h)
 
 def PDcas2(A,B,C,main,dab,l,Lprises,n):
+    h=0
     hloin=0
     hcroisé=0
     hinst=0
@@ -156,14 +156,12 @@ def PDcas2(A,B,C,main,dab,l,Lprises,n):
                 possible=True
                 G = rot(E,A,cos(alpha))
                 L=d(pper(E,G,E,C),(0,0))
-                if L<dloin:
-                    hloin=(dloin-L)*5/dloin
+                hloin=h_loin(L)
         if cossc(A,B,C)>=cos(acos(cosAlK(dab,j,b+t))+pi/2-alpha/2):
             L=2*j*sin(alpha/2)-d(A,C)
             if L>=0 :
                 possible=True
-                if L<dloin :
-                    hloin=(dloin-L)*5/dloin
+                hloin=h_loin(L)
         if d(A,C)<=j:
             possible=True
         else:
@@ -171,31 +169,27 @@ def PDcas2(A,B,C,main,dab,l,Lprises,n):
             L=j-d(D,C)
             if L>=0 :
                 possible=True
-                if L<dloin :
-                    hloin=(dloin-L)*5/dloin           
+                hloin=h_loin(L)          
     else: #mauvais côté
         hcroisé=2 # 2 à changer ?
         if cossc(A,B,C)<=0:
             L=j-d(A,C)
             if L>=0 :
                 possible=True
-                if L<dloin :
-                    hloin=(dloin-L)*5/dloin
+                hloin=h_loin(L)
         L=j-d(pper(A,B,A,C),(0,0))
         M=l-d(ppara(A,B,A,C),(0,0))
         if ((L>=0) and (M>=0)):
             possible=True
-            if L<dloin :
-                hloin=hloin + (dloin-L)*5/dloin
-            if M<dloin :
-                hloin=hloin + (dloin-M)*5/dloin
+            hloin=h_loin(L) + h_loin(M)                
     if possible:
-        hinst = abs(B[0]-(A[0]+C[0])/2)*7/10 #10=10cm, 7 à modifier ?
+        hinst = abs(B[0]-(A[0]+C[0])/2)/distance(B,[(C[0]+A[0])/2,(C[1]+A[1])/2])*7 #7 à modifier ?
         L=dsouple-abs(d(pper(A,B,A,C),(0,0)))
         if L>=0:
-            hsouple=L/10*(d(A,B)/(j+t+b))**2*10
+            hsouple=L/10*(d(A,B)/(j+t+b))**2*7 #7 à modifier ?
         if n==3:
-            h =  (hcroisé+hloin+hsouple+hinst + hmm3(A,B,C,main))/htailleprises(A,B,C,main) # /(A[3]+B[3]+C[3])
+            #h =  (hcroisé+hloin+hsouple+hinst )/htailleprises(A,B,C,main)
+            h =  (hcroisé+hloin+hsouple+hinst + hmm3(A,B,C,main) + hproche31(A,C,B))/htailleprises(A,B,C,main) # /(A[3]+B[3]+C[3])
         elif n==4:
             h =  hcroisé+hloin+hsouple
     return(possible, h)
@@ -222,34 +216,39 @@ def MDpeutatteindreC3(A,B,C,pied,Lprises,n):
             return(MDcas2(A,B,C,pied,dab,Lprises,n))
 
 def MDcas1(A,B,C,pied,dab,Lprises,n):
+    h=0
     hloin=0
     hcroisé=0
     hinst=0
     possible=False
     E=((A[0]-B[0])*b/dab+B[0],(A[1]-B[1])*b/dab+B[1])
-    if adroite(A,B,C): #bon côté
-        if cossc(B,A,C)>=cosAlK(dab,b,t+j):
-            L=2*b-d(B,C)
-            if L>=0 :
-                possible=True
-                if L<dloin :
-                    hloin=(dloin-L)*5/dloin
-        D=rot(B,E,cosAlK(dab,b,j+t))
-        if cossc(D,B,C)<=-cosAlK(b,t+j,dab):
-            L=b-d(D,C)
-            if L>=0 :
-                possible=True
-                if L<dloin :
-                    hloin=(dloin-L)*5/dloin
-        else:
-            L=j+t+b-d(A,C)
-            if L>=0 :
-                possible=True
-                if L<dloin :
-                    hloin=(dloin-L)*5/dloin
-    else: #mauvais côté
-        hcroise = 1 #1 à changer ?
-        if cossc(E,A,C)>=0:
+    if cossc(B,A,C)>=cosAlK(dab,b,t+j):
+        L=2*b-d(B,C)
+        if L>=0 :
+            possible=True
+            hloin=h_loin(L)
+    D=rot(B,E,cosAlK(dab,b,j+t))
+    if cossc(D,B,C)<=-cosAlK(b,t+j,dab):
+        L=b-d(D,C)
+        if L>=0 :
+            possible=True
+            hloin=h_loin(L)
+    else:
+        L=j+t+b-d(A,C)
+        if L>=0 :
+            possible=True
+            hloin=h_loin(L)
+    if possible:
+        hinst = abs(A[0]-(C[0]+B[0])/2)/distance(A,[(C[0]+B[0])/2,(C[1]+B[1])/2])*8 #8 à modifier ?
+        if n==3:
+            h = (hcroisé+hloin+hinst + hmp3(A,B,C,pied) + hproche32(A,B,C))/htailleprises(A,B,C,pied)  # /(A[3]+B[3]+C[3])
+        elif n==4:
+            h=hcroisé+hloin
+        if not(adroite(A,B,C)): #mauvais côté
+            hcroise=3*(1+cossc(B,A,C))**2 #3 à changer #1 à changer ?
+    return(possible, h)
+        
+"""        if cossc(E,A,C)>=0:
             L=b-d(E,C)
             if L>=0 :
                 possible=True
@@ -274,62 +273,67 @@ def MDcas1(A,B,C,pied,dab,Lprises,n):
                 possible=True
                 if L<dloin :
                     hloin=(dloin-L)*5/dloin
-    if possible:
-        hinst = abs(A[0]-(C[0]+B[0])/2)*7/10 #10=10cm, 7 à modifier ?
-        if n==3:
-            h = (hcroisé+hloin+hinst + hmp3(A,B,C,pied))/htailleprises(A,B,C,pied)  # /(A[3]+B[3]+C[3])
-        elif n==4:
-            h=hcroisé+hloin
-    return(possible, h)
+"""
 
 def MDcas2(A,B,C,pied,dab,Lprises,n):
+    h=0
     hloin=0
     hcroisé=0
     hinst=0
     possible=False
-    if adroite(A,B,C): #bon côté
-        L=2*b-d(B,C)
-        if L>=0 :
-            possible=True
-            if L<dloin :
-                hloin=(dloin-L)*5/dloin 
-    else: #mauvais côté
-        hcroisé = 1 #1 à changer ?
-        if cossc(B,A,C)<=0:
-            L=b-d(B,C)
-            if L>=0 :
-                possible=True
-                if L<dloin :
-                    hloin=(dloin-L)*5/dloin
-        F=((B[0]-A[0])*(t+j)/dab+A[0],(B[1]-A[1])*(t+j)/dab+A[1])
-        if cossc(F,B,C)<=0:
-            L=b-d(B,C)
-            if L>=0 :
-                possible=True
-                if L<dloin :
-                    hloin=(dloin-L)*5/dloin
-        else:
-            L=b-d(pper(A,B,A,C),(0,0))
-            if L>=0 :
-                possible=True
-                if L<dloin :
-                    hloin=(dloin-L)*5/dloin
+    L=2*b-d(B,C)
+    if L>=0 :
+        possible=True
+        hloin=h_loin(L)
+    if not(adroite(A,B,C)):
+        hcroise=3*(1+cossc(B,A,C))**2 #3 à changer
     if possible:
-        hinst = abs(A[0]-(C[0]+B[0])/2)*7/10 #10=10cm, 7 à modifier ?
+        hinst = abs(A[0]-(C[0]+B[0])/2)/distance(A,[(C[0]+B[0])/2,(C[1]+B[1])/2])*8 # 8 à modifier ?
         if n==3:
-            h = (hcroisé+hloin+hinst + hmp3(A,B,C,pied))/htailleprises(A,B,C,pied)   # /(A[3]+B[3]+C[3])
+            h = (hcroisé+hloin+hinst + hmp3(A,B,C,pied)+hproche32(A,B,C))/htailleprises(A,B,C,pied)   # /(A[3]+B[3]+C[3])
         elif n==4:
             h=hcroisé+hloin
     return(possible, h)
+    
+#    if adroite(A,B,C): #bon côté
+#        L=2*b-d(B,C)
+#        if L>=0 :
+#            possible=True
+#            if L<dloin :
+#                hloin=(dloin-L)*5/dloin 
+#    else: #mauvais côté
+#        hcroisé = 1 #1 à changer ?
+#        if cossc(B,A,C)<=0:
+#            L=b-d(B,C)
+#            if L>=0 :
+#                possible=True
+#                if L<dloin :
+#                    hloin=(dloin-L)*5/dloin
+#        F=((B[0]-A[0])*(t+j)/dab+A[0],(B[1]-A[1])*(t+j)/dab+A[1])
+#        if cossc(F,B,C)<=0:
+#            L=b-d(B,C)
+#            if L>=0 :
+#                possible=True
+#                if L<dloin :
+#                    hloin=(dloin-L)*5/dloin
+#        else:
+#            L=b-d(pper(A,B,A,C),(0,0))
+#            if L>=0 :
+#                possible=True
+#                if L<dloin :
+#                    hloin=(dloin-L)*5/dloin
+    
 
 #def hlibre(pos):
 
-
+#A,B,C des codes *peutatteindre*
 def mp(A,B,C):
-    t1=(B[0]-A[0])/d(A,B)
+    return(abs(A[0]-(B[0]+C[0])/2)/10*20) #20 à changer
+    
+"""    t1=(B[0]-A[0])/d(A,B)
     t2=(C[0]-A[0])/d(A,C)
     hmp=abs(t1+t2)/2*40 #40 à changer
-    return(hmp)
+    return(hmp) """
 
 def hmp3(A,B,C,pied):
     if pied==0:
@@ -343,11 +347,19 @@ def hmp3(A,B,C,pied):
         else:
             return(0)
 
+def h_loin(L):
+    if L<dloin :
+        return((dloin-L)*2/dloin) #1 à changer
+    else:
+        return(0)
+
 def mm(A,B,C):
-    t1=(B[0]-A[0])/d(A,B)
+    return(abs(B[0]-(A[0]+C[0])/2)/10*15) #15 à changer ?
+    
+"""    t1=(B[0]-A[0])/d(A,B)
     t2=(B[0]-C[0])/d(C,B)
     hmm=abs(t1+t2)/2*15 #15 à changer
-    return(hmm)
+    return(hmm)  """
     
 def hmm3(A,B,C,main):
     if main==2 :
@@ -360,8 +372,22 @@ def hmm3(A,B,C,main):
             return(mm(A,B,C))
         else:
             return(0)
-    
-def hproche(a,b,c,d): #a=pg, b=pd, c=mg, d=md
+
+def hproche31(pg,pd,m): #les arguments sont des vraies prises
+    hp=0
+    dmin = min(distance(pg,m),distance(pd,m))
+    if dmin<dproche:
+        hp=(1-dmin/dproche)*2 #2 à changer
+    return(hp)
+
+def hproche32(p,mg,md): #les arguments sont des vraies prises
+    hp=0
+    dmin = min(distance(p,mg),distance(p,md))
+    if dmin<dproche:
+        hp=(1-dmin/dproche)*2 #2 à changer
+    return(hp)
+
+def hproche4(a,b,c,d): #a=pg, b=pd, c=mg, d=md
     if a[0]<=b[0]:
         gp,dp=a,b
     else:
@@ -371,15 +397,16 @@ def hproche(a,b,c,d): #a=pg, b=pd, c=mg, d=md
     else:
         gm,dm=d,c
     dmax = max(distance(gm,gp),distance(dm,dp))
-    return(2*dproche/dmax)
+    return(3*dproche/dmax) # 3 à changer
 
 def hinstable(a,b,c,d): #a=pg, b=pd, c=mg, d=md
     E = [(a[0]+b[0])/2,(a[1]+b[1])/2]
     F = [(c[0]+d[0])/2,(c[1]+d[1])/2]
     sina = abs(F[0]-E[0])/distance(E,F) #inclinaison
-    g = [(a[0]+b[0]+c[0]+d[0])/4,(a[1]+b[1]+c[1]+d[1])/4] #barycentre des prises
-    cdg = abs(g[0]-E[0])/10
-    return((sina/3+2/3*cdg)*5) # 5 à changer
+    #g = [(a[0]+b[0]+c[0]+d[0])/4,(a[1]+b[1]+c[1]+d[1])/4] #barycentre des prises
+    #cdg = abs(g[0]-E[0])/10
+    #return((sina/3+2/3*cdg)*7) # 7 à changer
+    return(sina*1) # 1 à changer
 
 def htailleprises(a,b,c,d):   #   /!\ ATTENTION CHANGER L'HEURISTIQUE
     return(1)
@@ -391,7 +418,7 @@ def MDpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=pd, C=mg
     b3,h3 = MDpeutatteindreC3(b,c,d, 1,Lprises,4)
     b4,h4 = PDpeutatteindreC3(a,c,b, 2,Lprises,4)
     if (b1 and b2 and b3 and b4):
-        hpr = hproche(a,b,c,d)
+        hpr = hproche4(a,b,c,d)
         hinst = hinstable(a,b,c,d)
         h = (max(h1,h2,h3,h4) + hpr + hinst)/htailleprises(a,b,c,d)  # /(a[3]+b[1]+c[2]+d[3])
         return(True,h)
@@ -403,7 +430,7 @@ def MGpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=pd, C=md
     b2,h2 = PDpeutatteindreC3(a,d,b, 3,Lprises,4)
     b3,h3 = MDpeutatteindreC3(b,c,d, 1,Lprises,4)
     if (b1 and b2 and b3):
-        hpr = hproche(a,b,d,c)
+        hpr = hproche4(a,b,d,c)
         hinst = hinstable(a,b,d,c)
         h = (max(h1,h2,h3) + hpr + hinst)/htailleprises(a,b,c,d)   # /(a[3]+b[1]+c[2]+d[3])
         return(True,h)
@@ -416,7 +443,7 @@ def PDpeutatteindreD4(a,b,c,d,Lprises): #A=pg, B=mg, C=md
     b3,h3 = PDpeutatteindreC3(a,b,d, 2,Lprises,4)
     b4,h4 = MDpeutatteindreC3(a,b,c, 0,Lprises,4)
     if (b1 and b2 and b3 and b4):
-        hpr = hproche(a,d,b,c)
+        hpr = hproche4(a,d,b,c)
         hinst = hinstable(a,d,b,c)
         h = (max(h1,h2,h3,h4) + hpr + hinst)/htailleprises(a,b,c,d)  #  /(a[3]+b[1]+c[2]+d[3])
         return(True,h)
@@ -429,7 +456,7 @@ def PGpeutatteindreD4(a,b,c,d,Lprises): #A=pd, B=mg, C=md
     b3,h3 = PGpeutatteindreC3(a,b,d, 2,Lprises,4)
     b4,h4 = MDpeutatteindreC3(a,b,c, 1,Lprises,4)
     if (b1 and b2 and b3 and b4):
-        hpr = hproche(d,a,b,c)
+        hpr = hproche4(d,a,b,c)
         hinst = hinstable(d,a,b,c)
         h = (max(h1,h2,h3,h4) + hpr + hinst)/htailleprises(a,b,c,d)  #  /(a[3]+b[1]+c[2]+d[3])
         return(True,h)
@@ -437,3 +464,11 @@ def PGpeutatteindreD4(a,b,c,d,Lprises): #A=pd, B=mg, C=md
         return(False, 0)
     
 
+""" questions pour Etienne
+comment accéder à la tailles des prises donnée par le traitement de photo ?
+comment tester tout avec une autre voie (par ex la 6b orange ?
+
+questions pour Noémie :
+ajouter à la fin de djikstra le schéma de la montée de la voie ("dessin_escalade")
+renverser la liste des positions (du bas vers le haut
+"""
