@@ -1,0 +1,49 @@
+import matplotlib.pyplot as plt
+
+T=400
+Dt=0.4
+N=int(T/Dt)
+A1=180000. #caractériqtique d'une personne
+A=A1*Dt
+f21=60. #caractéristique d'une personne
+f2=f21*Dt
+Flim=3200 #caractéristique
+R=30#durée de repos en secondes
+R2=R/Dt#durée du repos en pas de temps
+Rn=int(R2)
+M1=150.#valeur du moment M=63*10*0.25 (m*g*d)
+M=M1*Dt
+t=[0]#durée des efforts
+
+F1=[0 for k in range(N)]
+F2=[0 for k in range(N)]
+
+def f0(x):
+    return A/x
+#décroissance de la fatigue "sans mémoire"
+
+def calc():
+    k=0
+    j=0
+    while k<N-1:
+        if F1[k]>=Flim:
+            if j==0:
+                t.append((k-j)*Dt)
+            else: t.append((k-j)*Dt-R)               
+            j=k
+            for i in range(Rn):
+                if k<N-1:
+                    F1[k+1]=max(F1[k]-f0(F2[k]),0)
+                    F2[k+1]=max(F2[k]-f2,0)
+                    k+=1
+        else:
+            F1[k+1]=F1[k]+M
+            F2[k+1]=F2[k]+M
+            k+=1
+#permet d'obtenir le profil au court du temps des deux différentes fatigues, avec des efforts jusqu'à la limite, et un temps de repos de R secondes entre chaque
+    
+def plotter():
+    plt.plot([k*Dt for k in range(N)], F1, label = "F1", color = "red")
+    plt.plot([k*Dt for k in range(N)], F2, label = "F2", color = "blue")
+    plt.show()
+#modélisation et représentation visuelle

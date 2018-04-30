@@ -25,18 +25,18 @@ include_directories(${GLM_Includes})
 
 # Sources
 set(NATIVE_SOURCES
-			native/glcontext.cpp
-            native/simulator.cpp
-            native/climbermodel.cpp
-            native/morphology.cpp
-            native/controller.cpp
-            native/shape.cpp
-            native/wha_shape.cpp
-            native/route.cpp
-            native/stancegraph.cpp
-            native/renderer.cpp
-            native/shaders.cpp
-	    )
+	native/glcontext.cpp
+	native/simulator.cpp
+	native/climbermodel.cpp
+	native/morphology.cpp
+	native/controller.cpp
+	native/shape.cpp
+	native/wha_shape.cpp
+	native/route.cpp
+	native/stancegraph.cpp
+	native/renderer.cpp
+	native/shaders.cpp
+	)
 if(${GL_PLATFORM} STREQUAL WGL)
 	set(NATIVE_SOURCES ${NATIVE_SOURCES} native/glew.c)
 	add_definitions(-DGLEW_BUILD)
@@ -83,23 +83,22 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/native)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 add_library(native SHARED ${NATIVE_SOURCES})
 target_link_libraries(native ${GL_LIBS} ${ODE_Lib})
-add_custom_command(TARGET native POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:native> ${CMAKE_SOURCE_DIR}/tests
-)
 
 set($ENV{MSSdk} 1)
 set($ENV{DISTUTILS_USE_SDK} 1)
 add_custom_command(
-	OUTPUT native.ts
-	#COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/psesca ${CMAKE_CURRENT_BINARY_DIR}/psesca
-	COMMAND ${PYTHON_EXECUTABLE} setup.py build_ext
-	COMMAND ${PYTHON_EXECUTABLE} setup.py install -f --root=${CMAKE_SOURCE_DIR} --install-lib=.
-	COMMAND ${CMAKE_COMMAND} -E touch native.ts
+	OUTPUT extensions.ts
+	COMMAND ${PYTHON_EXECUTABLE} setup.py install -f --root=${CMAKE_BINARY_DIR}  --install-lib=.
+	COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/psesca"
+	"${CMAKE_BINARY_DIR}/tests/psesca_ext"
+	COMMAND ${CMAKE_COMMAND} -E touch extensions.ts
 	DEPENDS ${MOD_SOURCES} ${MOD_HEADERS} setup.py.in native
 	)
 
 # Targets
-add_custom_target(main ALL DEPENDS native.ts)
+add_custom_target(extensions ALL DEPENDS extensions.ts)
 
 # Install
 install(TARGETS native DESTINATION lib)
+install(DIRECTORY "${CMAKE_BINARY_DIR}/tests/psesca_ext" DESTINATION .)
+
