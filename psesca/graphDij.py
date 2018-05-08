@@ -1,5 +1,6 @@
 from collections import defaultdict, deque
 import heapq
+import numpy as np
 
 
 class GraphDij(object):
@@ -95,88 +96,50 @@ class Heap(object):
             raise StopIteration
 
 
-def dijkstra(graph, source):
-    n=len(graph.nodes)
-    dist=[10000000]*n
-    previous = [0]*n
-    for i in range(n):
-        previous[i]=-1
-    dist[source]=0
+def dij_k_path(graph,source, destination,k):
+    nb_sommet=len(graph.nodes)
+    
+    
+    paths=[]
+    previous={}
     Queue = Heap()
-    Queue.push(0,source)
-    while len(Queue)>0 :
-        u= Queue.pop()
-        for node in graph.edges[u]:
-            print(u, node)
-            distance = dist[u]+graph.distances[(u,node)]
-            if(distance < dist[node]):
-                dist[node]= distance
-                previous[node]=u
-                Queue.push(distance,node)
-    return previous, dist
+    Queue.push(0,(source,source,0,0))
+    etape =[0]*nb_sommet
+    
+    dejaVu=[]
+    
+    for i in range(nb_sommet):
+        dejaVu.append(False)
+        
+    while (len(Queue)>0 and etape[destination]!=k) :
+        (prev,u,n,c)=Queue.pop()
+        
+        #print(prev,u,n,c)
+        if (not dejaVu[u]):
+            etape[u]+=1
+            dejaVu[u] = True
+            previous[(u,etape[u])]=(prev,n)
+            #print(previous)
             
-def dij_k_path(graph,source):
-    pass
-    
-
-
-    
-"""    visited = {initial: 0}
-    path = {}
-
-    nodes = set(graph.nodes)
-
-    while nodes:
-        min_node = None
-        for node in nodes:
-            if node in visited:
-                if min_node is None:
-                    min_node = node
-                elif visited[node] < visited[min_node]:
-                    min_node = node
-        if min_node is None:
-            break
-
-        nodes.remove(min_node)
-        current_weight = visited[min_node]
-
-        for edge in graph.edges[min_node]:
-            try:
-                weight = current_weight + graph.distances[(min_node, edge)]
-            except:
-                continue
-            if edge not in visited or weight < visited[edge]:
-                visited[edge] = weight
-                path[edge] = min_node
-
-    return visited, path
-"""
-def short_path(graph, source, destination):
-    previous, dist = dijkstra(graph, source)
-    full_path = deque()
-    current = previous[destination]
-    while current !=source :
-        full_path.appendleft(current)
-        current = previous[current]
-    full_path.appendleft(source)
-    full_path.append(destination)
-    return dist[destination], list(full_path)
-
-"""
-def shortest_path(graph, origin, destination):
-    visited, paths = dijkstra(graph, origin)
-    full_path = deque()
-    _destination = paths[destination]
-
-    while _destination != origin:
-        full_path.appendleft(_destination)
-        _destination = paths[_destination]
-
-    full_path.appendleft(origin)
-    full_path.append(destination)
-
-    return visited[destination], list(full_path)
-"""
+            if u!= destination:
+                for node in graph.edges[u]:
+                    distance = c+graph.distances[(u,node)]
+                    Queue.push(distance,(u,node,etape[u], distance))
+                    
+                    
+            else :
+                full_path = deque()
+                w = u
+                n = etape[w]
+                full_path.appendleft(w)
+                while w!= source :
+                    dejaVu[w] = False
+                    (w,n) = previous[(w,n)]
+                    full_path.appendleft(w)
+                    
+                paths.append(full_path)
+        
+    return previous, paths
 
 #utilisation de la fonction créégraphe d'Elisabeth avec pondération p entre le coût des postitions et le coût des arrêtes
 def create_Graph(p):
@@ -189,24 +152,4 @@ def create_Graph(p):
             #on ajoute le coût de l'arrête +p*le coût du noeud
             graph.add_edge(i,G[i][j][0],G[i][j][1]+p*Lpos[i][4])
 
-"""create_Graph(1)
-#ini et final à déterminer
-print(shortest_path(graph,ini, final))
-"""
-if __name__ == '__main__':
-    graph = GraphDij()
 
-    for node in [0, 1, 2, 3, 4, 5, 6]:
-        graph.add_node(node)
-
-    graph.add_edge(0, 1, 10)
-    graph.add_edge(0, 2, 20)
-    graph.add_edge(0,3,25)
-    graph.add_edge(1, 3, 15)
-    graph.add_edge(2, 3, 30)
-    graph.add_edge(1, 4, 50)
-    graph.add_edge(3, 4, 30)
-    graph.add_edge(4, 5, 5)
-    graph.add_edge(5, 6, 2)
-
-    print(short_path(graph, 0, 3)) # output: (25, ['A', 'B', 'D']) 

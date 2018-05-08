@@ -166,12 +166,12 @@ def dij_k_path(graph,source, destination,k):
     while (len(Queue)>0 and etape[destination]!=k) :
         (prev,u,n,c)=Queue.pop()
         
-        print(prev,u,n,c)
+        #print(prev,u,n,c)
         if (not dejaVu[u]):
             etape[u]+=1
             dejaVu[u] = True
             previous[(u,etape[u])]=(prev,n)
-            print(previous)
+            #print(previous)
             
             if u!= destination:
                 for node in graph.edges[u]:
