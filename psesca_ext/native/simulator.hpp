@@ -50,11 +50,11 @@ class Simulator {
 		 */
 		struct MechState getMechState() const;
 
-		Position getPositionlf() const;
-		
-		//Position * getPositionrf;
-		//Position * getPositionlh;
-		//Position * getPositionrh;
+		Position getPosition(Morphology::Part part) const;
+		//gives the position of the extremities
+
+
+	
 		void freeMechState(struct MechState& mechState) const;
 		void loadMechState(const struct MechState& mechState);
 

@@ -152,12 +152,24 @@ void Simulator::freeMechState(struct MechState& mechState) const
 	delete[] mechState.rotations;
 }
 
-struct Position Simulator::getPositionlf() const {
-	struct Position position;
-	struct MechState mechState = getMechState();
-	position.x=mechState.positions[Morphology::FOREARM_LEFT][0];
+struct Position Simulator::getPosition(Morphology::Part part) const {
+	Position position;
+	dVector3 pos;
+	float length = climber.parts[part].bbox[1];
+	if (part == Morphology::ARM_LEFT || part == Morphology::ARM_RIGHT)
+	{
+		dBodyGetRelPointPos(ODEParts[part], 0, length / 2, 0, pos);
+	}
+	else {
+		dBodyGetRelPointPos(ODEParts[part], 0, - length / 2, 0, pos);
+	}
+	position.x = pos[0];
+	position.y = pos[1];
+	position.z = pos[2];
 	return position;
 }
+
+
 
 void Simulator::loadMechState(const struct MechState& mechState)
 {

@@ -21,7 +21,8 @@ def type_de_pos(pos): #rq: ici c'est une vraie position
 def dessinvoie(Lprises):
     X=[Lprises[i][0] for i in range(len(Lprises)-1)]
     Y=[Lprises[i][1] for i in range(len(Lprises)-1)]
-    plt.plot(X,Y, "gs", markersize = 15) #prises
+    plt.plot(X,Y, "gs", markersize = 5) #prises
+    plt.axis('equal')
    
 def dessin31(pos, Lprises):
     dessinvoie(Lprises)
@@ -32,12 +33,13 @@ def dessin31(pos, Lprises):
     #plt.axis([min(A[0],B[0],C[0])-1, max(A[0],B[0],C[0])+1, min(A[1],B[1],C[1])-1, max(A[1],B[1],C[1])+1]) #taille
     I=((A[0]+B[0])/2, (A[1]+B[1])/2)
     T=((I[0]-C[0])/4+C[0],(I[1]-C[1])/4+C[1]) #tete
-    plt.plot([C[0],T[0],T[0],A[0]],[C[1],T[1],T[1]-(T[1]-I[1])*2/3,A[1]],"b", linewidth = 5)
-    plt.plot([T[0]],[T[1]], "r", marker = 'o', markersize=20) #tête
-    plt.plot([B[0],T[0]],[B[1],T[1]-(T[1]-I[1])*2/3], "b", linewidth = 5)
+    plt.plot([C[0],T[0],T[0],A[0]],[C[1],T[1],T[1]-(T[1]-I[1])*2/3,A[1]],"b", linewidth = 2)
+    plt.plot([T[0]],[T[1]], "r", marker = 'o', markersize=10) #tête
+    plt.plot([B[0],T[0]],[B[1],T[1]-(T[1]-I[1])*2/3], "b", linewidth = 2)
     plt.text(A[0], A[1], "PG")
     plt.text(C[0], C[1], "M")
     plt.text(B[0], B[1], "PD")
+    plt.axis('equal')
     #plt.show()
 
 def dessin32(pos, Lprises):
@@ -50,12 +52,13 @@ def dessin32(pos, Lprises):
     I=((C[0]+B[0])/2, (C[1]+B[1])/2)
     T=((I[0]-A[0])/4+A[0],(I[1]-A[1])/4+A[1]) 
     J=(T[0],T[1]-(T[1]-I[1])*2/3)
-    plt.plot([A[0],T[0],J[0],C[0]],[A[1],T[1],J[1],C[1]],"b", linewidth = 5)
-    plt.plot([B[0],J[0]],[B[1],J[1]], "b", linewidth = 5)
-    plt.plot([J[0]],[J[1]], "r", marker = 'o', markersize=20) #tête
+    plt.plot([A[0],T[0],J[0],C[0]],[A[1],T[1],J[1],C[1]],"b", linewidth = 2)
+    plt.plot([B[0],J[0]],[B[1],J[1]], "b", linewidth = 2)
+    plt.plot([J[0]],[J[1]], "r", marker = 'o', markersize=10) #tête
     plt.text(A[0], A[1], "P")
     plt.text(C[0], C[1], "MD")
     plt.text(B[0], B[1], "MG")
+    plt.axis('equal')
    # plt.show()
 
 def dessin4(pos, Lprises):
@@ -69,13 +72,14 @@ def dessin4(pos, Lprises):
     F=[(C[0]+D[0])/2,(C[1]+D[1])/2]
     I=[(E[0]-F[0])/4+F[0],(E[1]-F[1])/4+F[1]]
     J=[(F[0]-E[0])/4+E[0],(F[1]-E[1])/4+E[1]]
-    plt.plot([A[0],J[0],I[0],C[0]],[A[1],J[1],I[1],C[1]],"b", linewidth = 5)
-    plt.plot([B[0],J[0],I[0],D[0]],[B[1],J[1],I[1],D[1]],"b", linewidth = 5)
-    plt.plot([I[0]],[I[1]], "r", marker = 'o', markersize=20) #tête
+    plt.plot([A[0],J[0],I[0],C[0]],[A[1],J[1],I[1],C[1]],"b", linewidth = 2)
+    plt.plot([B[0],J[0],I[0],D[0]],[B[1],J[1],I[1],D[1]],"b", linewidth = 2)
+    plt.plot([I[0]],[I[1]], "r", marker = 'o', markersize=10) #tête
     plt.text(A[0], A[1], "PG")
     plt.text(B[0], B[1], "PD")
     plt.text(C[0], C[1],"MG")
     plt.text(D[0], D[1],"MD")
+    plt.axis('equal')
     #plt.show()
 
 def dessin_escalade(Lprises, Lmouv): #Lmouv est le liste des positions successives

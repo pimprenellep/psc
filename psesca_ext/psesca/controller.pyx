@@ -31,7 +31,7 @@ cdef class Controller:
         e.rf = endPosition.rf
         e.lh = endPosition.lh
         e.rh = endPosition.rh
-        self.__thisptr.tryStep(s, startPosition.thisptr, e)
+        ##self.__thisptr.tryStep(s, startPosition.thisptr, e)
 
     def tests(self) :
         return self.__thisptr.tests()

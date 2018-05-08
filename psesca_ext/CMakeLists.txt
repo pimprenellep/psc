@@ -36,6 +36,7 @@ set(NATIVE_SOURCES
 	native/stancegraph.cpp
 	native/renderer.cpp
 	native/shaders.cpp
+	native/cmaes.c
 	)
 if(${GL_PLATFORM} STREQUAL WGL)
 	set(NATIVE_SOURCES ${NATIVE_SOURCES} native/glew.c)
