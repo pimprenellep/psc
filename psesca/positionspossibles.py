@@ -73,7 +73,7 @@ def PGpeutatteindreC3(A,B,C,main,Lprises,n):
 
 #fonction PIED DROIT bouge. A=Pied Gauche, B=l'une des mains (main = 2 ou 3), C=prise potentielle Pied Droit
 def PDpeutatteindreC3(A,B,C,main,Lprises,n): 
-    if C[1]>=B[1]:
+    if  C[1]>=B[1]:
         return((False,0)) #attention à l'ordre des arguments
     else:
         dab=d(A,B)

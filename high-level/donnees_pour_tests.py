@@ -28,7 +28,7 @@ L=[1.95,3.851]
 N=[2.034,4.251]
 M=[1.234,4.201]
 
-Lpr = [A,B,C,D,I,E,F,G,K,L,M,N]
+Lpr = [A,B,C,D,I,E,F,G,K,L,M,N,[]]
 
 PGpeutatteindreD4(A,D,C,B,Lpr)
 PGpeutatteindreD4(A,D,E,B,Lpr)

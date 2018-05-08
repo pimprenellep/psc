@@ -7,9 +7,10 @@ from .dessin_graphe import *
 class RouteStanceGraph(StanceGraph):
     def __init__(self, route):
         super().__init__(route)
-        Lprises = route.getHolds()
+        Lprises = route.getHolds() + [[]]
 
         ini = self.trouve_ini(Lprises)
+        fin = self.trouve_fin(Lprises)
 
         #Lprises=self.echange_xy(Lprises)
         G=[]
@@ -29,39 +30,67 @@ class RouteStanceGraph(StanceGraph):
             file, courant = self.retirer_file(file, courant)
         self.G=G
         self.Lpos=Lpos
-        #dessin_graphe(G, Lpos, Lprises)
+        self.ini=ini
+        self.fin=fin
+        dessin_graphe(G, Lpos, Lprises)
         #return(G,Lpos, len(G), len(Lpos))
     
     def getGraphRep(self):
-        return (self.G, self.Lpos)
+        return (self.G, self.Lpos, self.ini, self.fin)
 
     def trouve_ini(self, Lprises):
-        #trouver les pieds possibles pour ini :
+        # pieds = prise la plus basse :
         p=0 
-        while ((p<len(Lprises)) and (Lprises[p][1] <= j+t/2)):
-            p=p+1
         #trouver les mains possibles pour ini :
         m=0
-        while ((m<len(Lprises)) and (Lprises[m][1] <= j+t+b)):
+        while ((m<len(Lprises)-2) and (Lprises[m][1] <= j+t+b)):
             m=m+1
         #cherche la positiond e départ la plus facile
         coutmin = 1000000000
-        p_ini = [0,0,1,1]
-        for i in range(p):
-            for k in range(i+1, m):
+        for k in range(1, m):
         #position du 2ème pied
-                pied2 = [(Lprises[i][0]+Lprises[k][0])/2, 0]
-                if Lprises[i][0]<Lprises[k][0]:
-                    bool,cout=PDpeutatteindreC3(Lprises[i],Lprises[k],pied2,3,Lprises,3)
-                    if (bool and (cout<=coutmin)):
-                        coutmin=cout
-                        p_ini = [i,-1,k,k,cout]
-                else :
-                    bool,cout=PGpeutatteindreC3(Lprises[i],Lprises[k],pied2,2,Lprises,3)
-                    if (bool and (cout<=coutmin)):
-                        coutmin=cout
-                        p_ini = [-1,i,k,k,cout]
+            pied2 = [(Lprises[0][0]+Lprises[k][0])/2, 0]
+            if Lprises[0][0]<Lprises[k][0]:
+                bool,cout=PDpeutatteindreC3(Lprises[0],Lprises[k],pied2,3,Lprises,3)
+                if (bool and (cout<=coutmin)):
+                    coutmin=cout
+                    p_ini = [0,-1,k,k,cout]
+            else :
+                bool,cout=PGpeutatteindreC3(Lprises[0],Lprises[k],pied2,2,Lprises,3)
+                if (bool and (cout<=coutmin)):
+                    coutmin=cout
+                    p_ini = [-1,0,k,k,cout]
         return(p_ini)
+
+    def trouve_fin(self, Lprises):
+        #trouver les pieds possibles pour fin :
+        N = len(Lprises)-2
+        hauteur = Lprises[N][1]
+        p=N 
+        while ( (p>=0) and (Lprises[p][1] >= hauteur-(j+t+b)) ):
+            p=p-1
+        #cherche une position de fin assez facile
+        coutmin = 1000000000
+        main = Lprises[N] #position de la main sur la prise finale
+        for i in range(max(p,0), N):
+            for k in range(max(p,0), N):
+                bool,cout=PDpeutatteindreC3(Lprises[i],main,Lprises[k],2,Lprises,3)
+                if (bool and (cout<=coutmin)):
+                    coutmin=cout
+                    p_fin = [i,k,N,-1,cout]
+                bool,cout=PDpeutatteindreC3(Lprises[i],main,Lprises[k],3,Lprises,3)
+                if (bool and (cout<=coutmin)):
+                    coutmin=cout
+                    p_fin = [i,k,-1,N,cout]
+                bool,cout=PDpeutatteindreC3(Lprises[k],main,Lprises[i],2,Lprises,3)
+                if (bool and (cout<=coutmin)):
+                    coutmin=cout
+                    p_fin = [k,i,N,-1,cout]
+                bool,cout=PDpeutatteindreC3(Lprises[k],main,Lprises[i],3,Lprises,3)
+                if (bool and (cout<=coutmin)):
+                    coutmin=cout
+                    p_fin = [k,i,-1,N,cout]
+        return(p_fin)
 
     def echange_xy(self, L):
         for i in range(len(L)):
@@ -413,7 +442,7 @@ class RouteStanceGraph(StanceGraph):
 
     #heuristiques mouvement___________________________________________________________________________________________________________________________
     #i est la position initiale, f la position finale. ce sont les vraies positions (celles de Lpos)
-    #i=a,b,c,d --- f=ap,bp,cp,dp
+    #i=a,b,c,d --- f=ap,bp,cp,dp, a,b,c... sont des vraies prises !
 
     def bary(self, pos):
         a,b,c,d = pos[0],pos[1],pos[2],pos[3]
@@ -429,8 +458,8 @@ class RouteStanceGraph(StanceGraph):
     def hgrandmouv(self,a,b,c,d,ap,bp,cp,dp):
         i = [a,b,c,d]
         f = [ap,bp,cp,dp]
-        tdp1 = self.type_de_pos(i)[0]
-        tdp2 = self.type_de_pos(i)[0]
+        tdp1 = self.type_de_pos([-1 if i[j]==[] else 0 for j in range(4)])[0]
+        tdp2 = self.type_de_pos([-1 if f[j]==[] else 0 for j in range(4)])[0]
         bi,bf = self.bary(i),self.bary(f)
         dist = distance(bi,bf)/10
         if tdp2==4:
@@ -455,8 +484,8 @@ class RouteStanceGraph(StanceGraph):
     def hpetitappui(self, a,b,c,d,ap,bp,cp,dp, Lprises):
         p1=[a,b,c,d]
         p2=[ap,bp,cp,dp]
-        tdp1 = self.type_de_pos(p1)
-        tdp2 = self.type_de_pos(p2)
+        tdp1 = self.type_de_pos([-1 if p1[i]==[] else 0 for i in range(4)])
+        tdp2 = self.type_de_pos([-1 if p2[i]==[] else 0 for i in range(4)])
         somme_tailles = 0
         for i in range(4): #trouver les appuis
             if ((p1[i]==p2[i]) and (p1[i] != -1)):
@@ -469,11 +498,11 @@ class RouteStanceGraph(StanceGraph):
     def hdynamique(self, a,b,c,d,ap,bp,cp,dp):
         i = [a,b,c,d]
         f = [ap,bp,cp,dp]
-        tdp1 = self.type_de_pos([a,b,c,d])[0]
-        tdp2 = self.type_de_pos([ap,bp,cp,dp])[0]
+        tdp1 = self.type_de_pos([-1 if i[j]==[] else 0 for j in range(4)])[0]
+        tdp2 = self.type_de_pos([-1 if f[j]==[] else 0 for j in range(4)])[0]
         bi,bf = self.bary(i), self.bary(f)
         if (tdp1!=4) and (tdp2!=4):
-            dist = d(bi,bf)*3
+            dist = distance(bi,bf)*3
             return(dist/10*0.5) #0.5 à changer
         else :
             return(0)
@@ -481,24 +510,24 @@ class RouteStanceGraph(StanceGraph):
     def hadherence(self, a,b,c,d,ap,bp,cp,dp):
         p1 = [a,b,c,d]
         p2 = [ap,bp,cp,dp]
-        tdp1 = self.type_de_pos(p1)
-        tdp2 = self.type_de_pos(p2)
+        tdp1 = self.type_de_pos([-1 if p1[j]==[] else 0 for j in range(4)])
+        tdp2 = self.type_de_pos([-1 if p2[j]==[] else 0 for j in range(4)])
         if ((tdp1 == tdp2) and (tdp1[0]==3.2)):
-            return(d(p1[tdp1[1]],p2[tdp1[1]])/10*3) #3 à changer
+            return(distance(p1[tdp1[1]],p2[tdp1[1]])/10*3) #3 à changer
         else:
             return(0)
 
     def hinsta(self, a,b,c,d,ap,bp,cp,dp):
         p1=[a,b,c,d]
         p2=[ap,bp,cp,dp]
-        tdp1 = self.type_de_pos(p1)
-        tdp2 = self.type_de_pos(p2)
+        tdp1 = self.type_de_pos([-1 if p1[j]==[] else 0 for j in range(4)])
+        tdp2 = self.type_de_pos([-1 if p2[j]==[] else 0 for j in range(4)])
         appuisX = []
         appuisY = []
         membre = []
         hinst = 0
         for i in range(4): #trouver les appuis
-            if ((p1[i]==p2[i]) and (p1[i] != -1)):
+            if ((p1[i]==p2[i]) and (p1[i] != [])):
                 appuisX = appuisX + [p1[i][0]]
                 appuisY = appuisY + [p1[i][1]]
                 membre = membre + [i]
