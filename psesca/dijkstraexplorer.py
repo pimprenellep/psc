@@ -84,27 +84,26 @@ class DijkstraExplorer(Explorer) :
 
 
     def findPath(self):
-        G, Lpos = self.graph.getGraphRep()
+        G, Lpos, ini, fin = self.graph.getGraphRep()
         Lprises = self.graph.getRoute().getHolds()
-        #ini
-        #fin
+        
 
         #p paramètre heuristique à ajuster pour faire varier le poids du coût de la position par rapport au coût du mouvement
         p=1
-        graph = GraphDij()
+        gr = GraphDij()
         for i in range(len(Lpos)):
-            graph.add_node(i)
+            gr.add_node(i)
         for i in range(len(Lpos)):
             for j in range(len(Lpos[i])):
                 #on ajoute le coût de l'arrête +p*le coût du noeud
-                graph.add_edge(i,G[i][j][0],G[i][j][1]+p*Lpos[i][4])
+                gr.add_edge(i,G[i][j][0],G[i][j][1]+p*Lpos[i][4])
 
         
         print("Traversing graph")
         #nombre de chemins que l'on cherche : k
         k=10
-        dij_k_path(graph, ini, fin, k)
-        #utilise Lprise et ini
+        dij_k_path(gr, ini, fin, k)
+        print(paths[0])
     """create_Graph(1)
 #ini et final à déterminer
 print(shortest_path(graph,ini, final))
