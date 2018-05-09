@@ -12,13 +12,16 @@ class Controller {
 		~Controller();
 		bool tests() const;
 		/// Main function : tries to do a move
-		void tryStep(struct Stance startStance, struct MechState startState, struct Stance endStance);
+		float tryStep(struct Stance startStance, struct MechState startState, struct Stance endStance, struct MovePlan moveplan);
 	private:
 		ClimberModel const * climber;
 		StanceGraph const * stanceGraph;
 		Simulator * simulator;
-		float sumphi(struct Stance stance, float kro, struct Route route, struct MechState startState);
+		Route const * route;
+		float sumphi(struct Stance stance, float kro, struct MechState startState);
 		float com(struct Stance stance, float kcom, struct MechState startState);
+		float cost(double const *x, unsigned long dim);
+		int optLoop();
 };
 
 #endif // _CONTROLLER_HPP
